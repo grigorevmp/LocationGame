@@ -1,4 +1,6 @@
-package core.ECS
+@file:Suppress("UNCHECKED_CAST")
+
+package com.mikhailgrigorev.game.core.ecs
 
 abstract class Component {
     private var _entity : Entity? = null
@@ -9,7 +11,7 @@ abstract class Component {
 
     /**
     * Not for using
-    */ 
+    */
     fun __setEntity(entity: Entity){
         this._entity = entity
     }
@@ -20,7 +22,7 @@ abstract class Component {
     * @return added Component
     */
     fun <_Component : Component> addComponent(component: _Component) : _Component {
-        _entity?.addComponent(component);
+        _entity?.addComponent(component)
         return component
     }
 
@@ -29,13 +31,13 @@ abstract class Component {
 }
 
 open class Entity {
-    private var _components : HashMap<Any,Component>
+    private var _components : HashMap<Any, Component>
 
     constructor(){
         _components = HashMap()
     }
     constructor(entity: Entity){
-        this._components = entity._components;
+        this._components = entity._components
     }
 
     /**
@@ -57,7 +59,7 @@ open class Entity {
     * @return removed Component or null if missing
     */   
     fun <_Component : Component> removeComponent(componentClass : Class<_Component>) : _Component? {
-        val removingComponent = _components[componentClass];
+        val removingComponent = _components[componentClass]
         if(removingComponent != null){
             _components.remove(componentClass)
         }
@@ -77,7 +79,7 @@ open class Entity {
     * Use to get component
     * @param ComponentClassName::class.java 
     * @return Component or null if missing
-    */   
+    */
     fun <_Component : Component> getComponent(componentClass : Class<_Component>): _Component? {
         return _components[componentClass] as _Component?
     }
