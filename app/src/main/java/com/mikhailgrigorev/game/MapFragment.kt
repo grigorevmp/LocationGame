@@ -1,12 +1,14 @@
 package com.mikhailgrigorev.game
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.LinearLayout
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.mikhailgrigorev.game.core.GameView
+import kotlinx.android.synthetic.main.fragment_map.*
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -14,8 +16,8 @@ import androidx.navigation.fragment.findNavController
 class MapFragment : Fragment() {
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_map, container, false)
@@ -24,8 +26,17 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<Button>(R.id.menuBack).setOnClickListener {
+        menuBack.setOnClickListener {
             findNavController().navigate(R.id.action_PlayFragment_to_FirstFragment)
         }
+
+        val gameView = GameView(this.context) // создаём gameView
+        val gameLayout = gameLayout as LinearLayout // находим gameLayout
+        gameLayout.addView(gameView) // и добавляем в него gameView
+
+        forward.setOnClickListener {
+            gameView.step()
+        }
+
     }
 }

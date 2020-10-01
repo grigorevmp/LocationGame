@@ -34,6 +34,7 @@
     <!-- Auth elements -->
 
     <string name="auth_info">Logging…</string>
+    <string name="Forward">Forward</string>
 
 
 </resources>
