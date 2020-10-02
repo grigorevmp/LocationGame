@@ -50,11 +50,8 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 //Check if the x and y position of the touch is inside the bitmap
-                if (x >= player!!.getXPos() * unitW &&
-                    x <= (player!!.getXPos() + player!!.getObjectSize()) * unitW &&
-                    y >= player!!.getYPos() * unitH &&
-                    y <= (player!!.getYPos() + player!!.getObjectSize()) * unitH
-                ) {
+                val objectRect = player!!.getObjectRect()
+                if (objectRect.contains(x, y)) {
                     Toast.makeText(context, "SHIP TOUCHED", Toast.LENGTH_SHORT).show()
                     //Bitmap touched
                 }

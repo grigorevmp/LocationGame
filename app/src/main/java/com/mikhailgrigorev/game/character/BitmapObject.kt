@@ -1,10 +1,7 @@
 package com.mikhailgrigorev.game.character
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Paint
+import android.graphics.*
 import com.mikhailgrigorev.game.game.GameView
 
 open class BitmapObject{
@@ -25,6 +22,8 @@ open class BitmapObject{
     // картинка
     var bitmap : Bitmap? = null
 
+    var rect = RectF()
+
     // сжимаем картинку до нужных размеров
     fun init(context: Context) {
         val cBitmap = BitmapFactory.decodeResource(context.resources, bitmapId)
@@ -39,6 +38,7 @@ open class BitmapObject{
 
     // тут будут вычисляться новые координаты
     open fun update() {
+        rect.set(x*GameView.unitW, y*GameView.unitH, (x+size)*GameView.unitW, (y+size)*GameView.unitH);
     }
 
     // рисуем картинку
@@ -56,6 +56,10 @@ open class BitmapObject{
 
     fun getYPos(): Float{
         return y
+    }
+
+    fun getObjectRect(): RectF{
+        return rect
     }
 
     fun getObjectSpeed(): Float{

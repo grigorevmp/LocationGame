@@ -26,10 +26,13 @@ class Player(context: Context): BitmapObject() {
         init(context)
     }
 
-    override fun update() {}
+    override fun update() {
+        rect.set(x*GameView.unitW, y*GameView.unitH, (x+size)*GameView.unitW, (y+size)*GameView.unitH);
+    }
 
     fun stepUp() {
         y -= speed
+        update()
     }
 
 }
