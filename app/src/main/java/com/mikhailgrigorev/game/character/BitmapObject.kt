@@ -10,6 +10,10 @@ open class BitmapObject{
     var x = 0f
     var y = 0f
 
+    // характеристики
+    var id = 0
+    var desc = "object"
+
     // размер
     var size = 0f
 
@@ -20,7 +24,7 @@ open class BitmapObject{
     var bitmapId = 0
 
     // картинка
-    var bitmap : Bitmap? = null
+    private var bitmap : Bitmap? = null
 
     var rect = RectF()
 
@@ -59,6 +63,14 @@ open class BitmapObject{
 
     fun getObjectRect(): RectF{
         return rect
+    }
+
+    fun getObjectId(): Int {
+        return id
+    }
+
+    fun getObjectDesc(): String {
+        return desc
     }
 
     fun getObjectSpeed(): Float{

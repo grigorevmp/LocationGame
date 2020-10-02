@@ -9,6 +9,10 @@ class Player(context: Context): BitmapObject() {
 
     init{
 
+        // характеристики
+        id = 0
+        desc = "Player"
+
         // координаты
         x = 7f
         y = GameView.maxY - size - 1

@@ -23,6 +23,9 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
         var unitH = 0f
     }
 
+    // for storing game objects
+    private var gameEntities = ArrayList<Player>()
+
     // for game control
     private var gameRunning = true
     private var firstTime = true
@@ -45,16 +48,21 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        /**
+         * listener for touch events
+         * @x - user x coord
+         * @y - user y coord
+         *
+         */
         val x = event.x
         val y = event.y
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                //Check if the x and y position of the touch is inside the bitmap rectangle
-                val objectRect = player!!.getObjectRect()
-                if (objectRect.contains(x, y)) {
-                    Toast.makeText(context, "SHIP TOUCHED", Toast.LENGTH_SHORT).show()
+                for(obj in gameEntities){
+                    if (obj.getObjectRect().contains(x, y))
+                        Toast.makeText(context, "You touch " + obj.getObjectDesc(), Toast.LENGTH_SHORT).show()
+                    return true
                 }
-                return true
             }
         }
         return false
@@ -68,7 +76,6 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
         // Thread
         gameThread = Thread(this, "Поток для примера")
         gameThread.start()
-
     }
 
     override fun surfaceCreated(holder: SurfaceHolder?) {}
@@ -95,7 +102,7 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
             startTime = System.nanoTime()
             update()
             draw()
-            control()
+            threadControl()
         }
     }
 
@@ -111,21 +118,28 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
 
     private fun draw() {
         if (surfaceHolder.surface.isValid) {  //проверяем валидный ли surface
-            if (firstTime) { // инициализация при первом запуске
+            if (firstTime) {
                 firstTime = false
-                unitW =
-                    surfaceHolder.surfaceFrame.width() / maxX.toFloat() // вычисляем число пикселей в юните
+                unitW = surfaceHolder.surfaceFrame.width() / maxX.toFloat()
                 unitH = surfaceHolder.surfaceFrame.height() / maxY.toFloat()
-                player = Player(context) // добавляем корабль
+
+                // init objects
+                player = Player(context)
+                gameEntities.add(player!!)
             }
-            canvas = surfaceHolder.lockCanvas() // закрываем canvas
-            canvas!!.drawColor(Color.BLACK) // заполняем фон чёрным
-            player?.draw(paint, canvas!!) // рисуем корабль
-            surfaceHolder.unlockCanvasAndPost(canvas) // открываем canvas
+            // close canvas
+            canvas = surfaceHolder.lockCanvas()
+            // background
+            canvas!!.drawColor(Color.BLACK)
+            // draw objects
+            for(obj in gameEntities)
+                obj.draw(paint, canvas!!)
+            // open canvas
+            surfaceHolder.unlockCanvasAndPost(canvas)
         }
     }
 
-    private fun control() {
+    private fun threadControl() {
         timeMillis = (System.nanoTime() - startTime) / 1000000
         waitTime = targetTime - timeMillis
         try {
@@ -133,6 +147,7 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
         } catch (e: InterruptedException) {
             e.printStackTrace()
         } catch (e: Exception) {
+            Toast.makeText(context, "Unexpected exception has arisen", Toast.LENGTH_SHORT).show()
         }
 
     }
