@@ -10,6 +10,9 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.widget.Toast
 import com.mikhailgrigorev.game.character.Player
+import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
+import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
+import com.mikhailgrigorev.game.core.ecs.Entity
 import java.lang.Exception
 
 
@@ -24,7 +27,7 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
     }
 
     // for storing game objects
-    private var gameEntities = ArrayList<Player>()
+    private var gameEntities = ArrayList<Entity>()
 
     // for game control
     private var gameRunning = true
@@ -59,8 +62,9 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 for(obj in gameEntities){
-                    if (obj.getObjectRect().contains(x, y))
-                        Toast.makeText(context, "You touch " + obj.getObjectDesc(), Toast.LENGTH_SHORT).show()
+                    var positionComponent = obj.getComponent(PositionComponent::class.java)
+                    if (positionComponent!= null && positionComponent.rect().contains(x, y))
+                        Toast.makeText(context, "You touch " + positionComponent.rect(), Toast.LENGTH_SHORT).show()
                     return true
                 }
             }
@@ -132,8 +136,9 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
             // background
             canvas!!.drawColor(Color.BLACK)
             // draw objects
-            for(obj in gameEntities)
-                obj.draw(paint, canvas!!)
+            for(obj in gameEntities) {
+                obj.getComponent(BitmapComponent::class.java)?.draw(paint, canvas!!)
+            }
             // open canvas
             surfaceHolder.unlockCanvasAndPost(canvas)
         }

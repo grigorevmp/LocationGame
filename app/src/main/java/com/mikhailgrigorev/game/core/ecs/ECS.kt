@@ -90,4 +90,7 @@ open class Entity {
     fun <_Component : Component> getComponent(componentClass : Class<_Component>): _Component? {
         return _components[componentClass] as _Component?
     }
+
+    open fun action() {}
+    open fun update() {}
 }
