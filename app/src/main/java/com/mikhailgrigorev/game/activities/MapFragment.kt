@@ -1,4 +1,4 @@
-package com.mikhailgrigorev.game
+package com.mikhailgrigorev.game.activities
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +7,8 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.mikhailgrigorev.game.core.GameView
+import com.mikhailgrigorev.game.R
+import com.mikhailgrigorev.game.game.GameView
 import kotlinx.android.synthetic.main.fragment_map.*
 
 /**

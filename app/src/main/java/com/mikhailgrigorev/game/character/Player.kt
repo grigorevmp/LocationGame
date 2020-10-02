@@ -1,39 +1,36 @@
 package com.mikhailgrigorev.game.character
 
-
 import android.content.Context
-import com.mikhailgrigorev.game.core.GameView
+import com.mikhailgrigorev.game.game.GameView
 import com.mikhailgrigorev.game.R
 
 
-class Player(context: Context): PlayerBody() {
+class Player(context: Context): BitmapObject() {
+
     init{
-        bitmapId = R.drawable.ship// определяем начальные параметры
-        size = 5f
+
+        // координаты
         x = 7f
         y = GameView.maxY - size - 1
+
+        // размер
+        size = 5f
+
+        // скорость
         speed = 0.2.toFloat()
-        init(context) // инициализируем корабль
+
+        // id картинки
+        bitmapId = R.drawable.ship
+
+        // инициализируем корабль
+        init(context)
     }
 
-    override fun update() { // перемещаем корабль в зависимости от нажатой кнопки
+    override fun update() {}
 
-    }
-
-    fun getXPos(): Float {
-        return x
-    }
-
-    fun getYPos(): Float{
-        return y
-    }
-
-    fun getSizePos(): Float{
-        return size
-    }
-
-    fun step() {
+    fun stepUp() {
         y -= 1
     }
+
 }
 

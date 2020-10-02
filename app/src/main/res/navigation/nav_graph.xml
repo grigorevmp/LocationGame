@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/MainFragment"
-        android:name="com.mikhailgrigorev.game.MainFragment"
+        android:name="com.mikhailgrigorev.game.activities.MainFragment"
         android:label="@string/first_fragment_label"
         tools:layout="@layout/fragment_main">
 
@@ -26,7 +26,7 @@
 
     <fragment
         android:id="@+id/PlayFragment"
-        android:name="com.mikhailgrigorev.game.MapFragment"
+        android:name="com.mikhailgrigorev.game.activities.MapFragment"
         android:label="@string/play_fragment_label"
         tools:layout="@layout/fragment_map">
 
@@ -37,7 +37,7 @@
 
     <fragment
         android:id="@+id/AuthFragment"
-        android:name="com.mikhailgrigorev.game.AuthFragment"
+        android:name="com.mikhailgrigorev.game.activities.AuthFragment"
         android:label="@string/auth_fragment_label"
         tools:layout="@layout/fragment_map">
 
@@ -48,7 +48,7 @@
 
     <fragment
         android:id="@+id/SettingsFragment"
-        android:name="com.mikhailgrigorev.game.SettingsFragment"
+        android:name="com.mikhailgrigorev.game.activities.SettingsFragment"
         android:label="@string/settings_fragment_label"
         tools:layout="@layout/fragment_map">
 
