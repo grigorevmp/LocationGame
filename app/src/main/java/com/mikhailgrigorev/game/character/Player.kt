@@ -11,31 +11,32 @@ import com.mikhailgrigorev.game.core.ecs.Entity
 
 
 class Player(context: Context): Entity() {
+    private var bitmapComponent: BitmapComponent
+    private var positionComponent: PositionComponent
+    private var speed: Float = 0.2.toFloat()
+
 
     init{
-        var bitmapComponent = this.addComponent(BitmapComponent(
+        val size = 5f
+        positionComponent = this.addComponent(PositionComponent(7f,GameView.maxY - size - 1, size))
+        bitmapComponent = this.addComponent(BitmapComponent(
             id = 0,
             desc = "Player",
-            size = 5f,
-            speed = 0.2.toFloat(),
             bitmapId = R.drawable.ship
         ))
         bitmapComponent.init(context)
-        this.addComponent(PositionComponent(7f,GameView.maxY - bitmapComponent.size - 1))
+
     }
 
     override fun update() {
-        var bitmapComponent = this.getComponent(BitmapComponent::class.java)
-        var positionComponent = this.getComponent(PositionComponent::class.java)
-        positionComponent!!.rect().set(
-            positionComponent.x()*GameView.unitW,
-            positionComponent.y()*GameView.unitH,
-            (positionComponent.x()+bitmapComponent!!.size)*GameView.unitW,
-            (positionComponent.y()+bitmapComponent.size)*GameView.unitH)
+        positionComponent.update()
+        bitmapComponent.update()
     }
 
     fun stepUp() {
-        this.getComponent(PositionComponent::class.java)!!.move(0f, this.getComponent(BitmapComponent::class.java)!!.speed)
+        positionComponent.move(
+            0f,
+            -speed)
         update()
     }
 

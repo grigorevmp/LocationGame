@@ -6,35 +6,29 @@ import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
 import com.mikhailgrigorev.game.game.GameView
 
-class BitmapComponent (
+class BitmapComponent(
     // характеристики
     var id : Int = 0,
     var desc: String = "object",
-
-    // размер
-    var size: Float = 0f,
-
-    // скорость
-    var speed: Float = 0f,
-
     // id картинки
     var bitmapId: Int = 0,
     // картинка
     private var bitmap : Bitmap? = null
 ) : Component() {
-
-
-
     // сжимаем картинку до нужных размеров
     fun init(context: Context) {
-        val cBitmap = BitmapFactory.decodeResource(context.resources, bitmapId)
-        bitmap = Bitmap.createScaledBitmap(
-            cBitmap,
-            (size * GameView.unitW).toInt(),
-            (size * GameView.unitH).toInt(),
-            false
-        )
-        cBitmap.recycle()
+        val positionComponent = this.getEntity()?.getComponent(PositionComponent::class.java)
+        if(positionComponent != null) {
+            val size = positionComponent.getSize()
+            val cBitmap = BitmapFactory.decodeResource(context.resources, bitmapId)
+            bitmap = Bitmap.createScaledBitmap(
+                cBitmap,
+                (size * GameView.unitW).toInt(),
+                (size * GameView.unitH).toInt(),
+                false
+            )
+            cBitmap.recycle()
+        }
     }
 
     // тут будут вычисляться новые координаты
@@ -43,12 +37,12 @@ class BitmapComponent (
 
     // рисуем картинку
     fun draw(paint: Paint?, canvas: Canvas) {
-        var positionComponent = this.entity()?.getComponent(PositionComponent::class.java)
+        val positionComponent = this.getEntity()?.getComponent(PositionComponent::class.java)
         if(positionComponent != null)
         bitmap?.let { canvas.drawBitmap(
             it,
-            positionComponent.x() * GameView.unitW,
-            positionComponent.y() * GameView.unitH,
+            positionComponent.getX() * GameView.unitW,
+            positionComponent.getY() * GameView.unitH,
             paint) }
     }
 
@@ -60,15 +54,7 @@ class BitmapComponent (
         return desc
     }
 
-    fun getObjectSpeed(): Float{
-        return speed
-    }
-
     fun getObjectBitmapId(): Int{
         return bitmapId
-    }
-
-    fun getObjectSize(): Float{
-        return size
     }
 }

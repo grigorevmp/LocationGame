@@ -5,7 +5,7 @@ package com.mikhailgrigorev.game.core.ecs
 abstract class Component {
     private var _entity : Entity? = null
 
-    fun entity() : Entity? {
+    fun getEntity() : Entity? {
         return _entity
     }
 

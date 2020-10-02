@@ -62,9 +62,9 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 for(obj in gameEntities){
-                    var positionComponent = obj.getComponent(PositionComponent::class.java)
-                    if (positionComponent!= null && positionComponent.rect().contains(x, y))
-                        Toast.makeText(context, "You touch " + positionComponent.rect(), Toast.LENGTH_SHORT).show()
+                    val positionComponent = obj.getComponent(PositionComponent::class.java)
+                    if (positionComponent!= null && positionComponent.getRect().contains(x, y))
+                        Toast.makeText(context, "You touch " + positionComponent.getRect(), Toast.LENGTH_SHORT).show()
                     return true
                 }
             }
