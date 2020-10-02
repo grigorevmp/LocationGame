@@ -38,7 +38,6 @@ open class BitmapObject{
 
     // тут будут вычисляться новые координаты
     open fun update() {
-        rect.set(x*GameView.unitW, y*GameView.unitH, (x+size)*GameView.unitW, (y+size)*GameView.unitH);
     }
 
     // рисуем картинку

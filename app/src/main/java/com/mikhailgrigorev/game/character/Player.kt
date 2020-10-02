@@ -27,7 +27,7 @@ class Player(context: Context): BitmapObject() {
     }
 
     override fun update() {
-        rect.set(x*GameView.unitW, y*GameView.unitH, (x+size)*GameView.unitW, (y+size)*GameView.unitH);
+        rect.set(x*GameView.unitW, y*GameView.unitH, (x+size)*GameView.unitW, (y+size)*GameView.unitH)
     }
 
     fun stepUp() {
