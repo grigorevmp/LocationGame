@@ -46,7 +46,8 @@ open class BitmapObject{
         bitmap?.let { canvas.drawBitmap(
             it,
             x * GameView.unitW,
-            y * GameView.unitH, paint) }
+            y * GameView.unitH,
+            paint) }
     }
 
     fun getXPos(): Float {

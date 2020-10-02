@@ -29,7 +29,7 @@ class Player(context: Context): BitmapObject() {
     override fun update() {}
 
     fun stepUp() {
-        y -= 1
+        y -= speed
     }
 
 }

@@ -12,6 +12,7 @@ import com.mikhailgrigorev.game.R
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
+
 class AuthFragment : Fragment() {
 
     override fun onCreateView(
