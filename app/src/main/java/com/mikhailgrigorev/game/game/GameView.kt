@@ -10,6 +10,7 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.widget.Toast
 import com.mikhailgrigorev.game.character.Player
+import java.lang.Exception
 
 
 class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Callback {
@@ -32,7 +33,7 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
     private var waitTime: Long = 0
 
     // for thread control
-    private var gameThread: Thread? = null
+    private var gameThread: Thread
 
     // for object drawing
     private var surfaceHolder: SurfaceHolder = holder
@@ -70,8 +71,7 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
 
         // Thread
         gameThread = Thread(this, "Поток для примера")
-        gameThread!!.start()
-        // add callback
+        gameThread.start()
 
     }
 
@@ -79,7 +79,20 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {}
 
-    override fun surfaceDestroyed(holder: SurfaceHolder?) {}
+    override fun surfaceDestroyed(holder: SurfaceHolder?) {
+        gameRunning = false
+        var retry = true
+        // завершаем работу потока
+        while (retry) {
+            try {
+                gameThread.join()
+                retry = false
+            } catch (e: InterruptedException) {
+                // если не получилось, то будем пытаться еще и еще
+            }
+        }
+
+    }
 
     override fun run() {
         while (gameRunning) {
@@ -123,7 +136,9 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
             Thread.sleep(waitTime)
         } catch (e: InterruptedException) {
             e.printStackTrace()
+        } catch (e: Exception) {
         }
+
     }
 
 
