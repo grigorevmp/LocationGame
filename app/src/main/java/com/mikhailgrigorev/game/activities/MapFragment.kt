@@ -31,7 +31,7 @@ class MapFragment : Fragment() {
             findNavController().navigate(R.id.action_PlayFragment_to_FirstFragment)
         }
 
-        val gameView = GameView(this.context) // создаём gameView
+        val gameView = GameView(this.context)
         val gameLayout = gameLayout as LinearLayout // находим gameLayout
         gameLayout.addView(gameView) // и добавляем в него gameView
 
@@ -40,4 +40,5 @@ class MapFragment : Fragment() {
         }
 
     }
+
 }

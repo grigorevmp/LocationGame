@@ -8,20 +8,18 @@ import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
 
 import com.mikhailgrigorev.game.core.ecs.Entity
 
-
-
 class Player(context: Context): Entity() {
     private var bitmapComponent: BitmapComponent
     private var positionComponent: PositionComponent
     private var speed: Float = 0.2.toFloat()
-
 
     init{
         val size = 5f
         positionComponent = this.addComponent(PositionComponent(7f,GameView.maxY - size - 1, size))
         bitmapComponent = this.addComponent(BitmapComponent(
             id = 0,
-            desc = "Player",
+            name = "Player",
+            desc = "Desc",
             bitmapId = R.drawable.ship
         ))
         bitmapComponent.init(context)

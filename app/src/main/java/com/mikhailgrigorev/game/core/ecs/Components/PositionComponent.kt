@@ -1,24 +1,25 @@
 package com.mikhailgrigorev.game.core.ecs.Components
 
-import android.graphics.Rect
 import android.graphics.RectF
 import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.game.GameView
-import java.nio.channels.FileLock
 
-class PositionComponent(
-    private var _x: Float,
-    private var _y: Float,
-    private var _size: Float,
+class PositionComponent( x: Float, y: Float, size: Float,
 ) : Component() {
-    lateinit var _rect: RectF
+
+    var _x = x
+        private set
+    var _y = y
+        private set
+    var _size = size
+        private set
+
+    var _rect: RectF = RectF(_x, _y, _x + _size, _y + _size)
+        private set
+
     init {
         update()
     }
-    fun getX(): Float { return _x }
-    fun getY(): Float { return _y }
-    fun getSize(): Float {return  _size }
-    fun getRect(): RectF { return _rect }
 
     fun move(xDisplacement: Float, yDisplacement: Float) {
         _x += xDisplacement

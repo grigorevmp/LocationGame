@@ -10,9 +10,9 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.widget.Toast
 import com.mikhailgrigorev.game.character.Player
+import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
-import com.mikhailgrigorev.game.core.ecs.Entity
 import java.lang.Exception
 
 
@@ -63,8 +63,8 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
             MotionEvent.ACTION_DOWN -> {
                 for(obj in gameEntities){
                     val positionComponent = obj.getComponent(PositionComponent::class.java)
-                    if (positionComponent!= null && positionComponent.getRect().contains(x, y))
-                        Toast.makeText(context, "You touch " + positionComponent.getRect(), Toast.LENGTH_SHORT).show()
+                    if (positionComponent!= null && positionComponent._rect.contains(x, y))
+                        Toast.makeText(context, "You touch " + positionComponent._rect, Toast.LENGTH_SHORT).show()
                     return true
                 }
             }
@@ -105,7 +105,12 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
         while (gameRunning) {
             startTime = System.nanoTime()
             update()
-            draw()
+            try {
+                draw()
+            }
+            catch (e: Exception){
+                Toast.makeText(context, "Написать Мише, если это увидите", Toast.LENGTH_SHORT).show()
+            }
             threadControl()
         }
     }
