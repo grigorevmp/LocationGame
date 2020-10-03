@@ -14,7 +14,7 @@ class Player(context: Context): Entity() {
     private var speed: Float = 0.2.toFloat()
 
     init{
-        val size = 5f
+        val size = 3f
         positionComponent = this.addComponent(PositionComponent(
             7f,
             GameView.maxY - size - 1,
@@ -23,7 +23,7 @@ class Player(context: Context): Entity() {
             id = 0,
             name = "Player",
             desc = "Desc",
-            bitmapId = R.drawable.ship,
+            bitmapId = R.drawable.player,
             group = "player"
         ))
         bitmapComponent.init(context)

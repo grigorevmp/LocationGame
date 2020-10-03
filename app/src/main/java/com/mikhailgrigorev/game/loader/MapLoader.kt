@@ -10,6 +10,7 @@ class MapLoader(context: Context) {
 
     var mapObjects = ArrayList<Entity>()
         private set
+    //val fileReader = FileReader()
 
     init{
         val obj = Building(context,
@@ -19,7 +20,7 @@ class MapLoader(context: Context) {
             _id = 0,
             _name = "Apple Store",
             _desc = "Description",
-            _bitmapId = R.drawable.bulding,
+            _bitmapId = R.drawable.building,
             _group = "building")
         val obj2 = Building(context,
             _x = 7f,
