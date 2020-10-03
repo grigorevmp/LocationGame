@@ -1,6 +1,6 @@
 # How to use
 ## Create some components
-`Kotlin
+`Kotlin`
 
 	class HealthComponent(var healthValue: Int) : Component() {
 	
@@ -15,7 +15,7 @@ Kotlin
 `
 ## Create instance and use
 `Kotlin
-	var player = Player()
+	var player = Player()`
 	
 	// adding component
 	
