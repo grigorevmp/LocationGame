@@ -1,20 +1,20 @@
 # How to use
 ## Create some components
-```Kotlin
-```
+`Kotlin`
+
 	class HealthComponent(var healthValue: Int) : Component() {
 		fun applyDamage(vlaue: Int) {...}	
 	}
-```
+
 ## Inherit from Entity class
 `Kotlin` 
 
 	class Player : Entity {...}
 
 ## Create instance and use
-```Kotlin
-```
-	var player = Player()
+`Kotlin`
+
+	var player = Player()`
 	// adding component
 	player.addComponent(HealthComponent(100))	
 	// check for a component
@@ -24,4 +24,3 @@
 	}
 	// remove component
 	player.removeComponent(HealthComponent::class.java)
-```
