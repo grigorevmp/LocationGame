@@ -3,36 +3,24 @@
 `Kotlin`
 
 	class HealthComponent(var healthValue: Int) : Component() {
-	
-		fun applyDamage(vlaue: Int) {...}
-		
+		fun applyDamage(vlaue: Int) {...}	
 	}
-`
+
 ## Inherit from Entity class
-`
-Kotlin
+`Kotlin` 
+
 	class Player : Entity {...}
-`
+
 ## Create instance and use
-`Kotlin
+`Kotlin`
+
 	var player = Player()`
-	
 	// adding component
-	
-	player.addComponent(HealthComponent(100))
-	
+	player.addComponent(HealthComponent(100))	
 	// check for a component
-	
 	if (player.hasComponent(HealthComponent::class.java)) {
-	
-		// get component
-		
-		player.getComponent(HealthComponent::class.java)?.applyDamage(50)
-		
+		// get component	
+		player.getComponent(HealthComponent::class.java)?.applyDamage(50)	
 	}
-	
 	// remove component
-	
 	player.removeComponent(HealthComponent::class.java)
-	
-`
