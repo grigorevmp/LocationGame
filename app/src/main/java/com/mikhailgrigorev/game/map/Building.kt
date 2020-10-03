@@ -38,13 +38,14 @@ class Building(context: Context,
             size
         ))
         bitmapComponent = this.addComponent(BitmapComponent(
+            positionComponent = positionComponent,
+            context = context,
             id = id,
             name = name,
             desc = desc,
             bitmapId = bitmapId,
             group = group
         ))
-        bitmapComponent.init(context)
     }
 
     override fun update() {

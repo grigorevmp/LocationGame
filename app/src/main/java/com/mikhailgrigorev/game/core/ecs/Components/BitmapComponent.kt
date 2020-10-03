@@ -6,6 +6,8 @@ import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.game.GameView
 
 class BitmapComponent(
+    positionComponent: PositionComponent,
+    context: Context,
     id: Int = 0,
     name: String = "objectName",
     desc: String= "objectDesc",
@@ -33,19 +35,16 @@ class BitmapComponent(
         private set
 
     // сжимаем картинку до нужных размеров
-    fun init(context: Context) {
-        val positionComponent = this.getEntity()?.getComponent(PositionComponent::class.java)
-        if(positionComponent != null) {
-            val size = positionComponent._size
-            val cBitmap = BitmapFactory.decodeResource(context.resources, _bitmapId)
-            _bitmap = Bitmap.createScaledBitmap(
-                cBitmap,
-                (size * GameView.unitW).toInt(),
-                (size * GameView.unitH).toInt(),
-                false
-            )
-            cBitmap.recycle()
-        }
+    init {
+        val size = positionComponent.size
+        val cBitmap = BitmapFactory.decodeResource(context.resources, _bitmapId)
+        _bitmap = Bitmap.createScaledBitmap(
+            cBitmap,
+            (size * GameView.unitW).toInt(),
+            (size * GameView.unitH).toInt(),
+            false
+        )
+        cBitmap.recycle()
     }
 
     // тут будут вычисляться новые координаты
@@ -57,8 +56,8 @@ class BitmapComponent(
         if(positionComponent != null)
         _bitmap?.let { canvas.drawBitmap(
             it,
-            positionComponent._x * GameView.unitW,
-            positionComponent._y * GameView.unitH,
+            positionComponent.x * GameView.unitW,
+            positionComponent.y * GameView.unitH,
             paint) }
     }
 

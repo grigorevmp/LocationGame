@@ -7,31 +7,33 @@ import com.mikhailgrigorev.game.game.GameView
 class PositionComponent( x: Float, y: Float, size: Float,
 ) : Component() {
 
-    var _x = x
+    var x: Float
         private set
-    var _y = y
+    var y: Float
         private set
-    var _size = size
+    var size: Float
         private set
-
-    var _rect: RectF = RectF(_x, _y, _x + _size, _y + _size)
+    var rect: RectF = RectF(x, y, x + size, y + size)
         private set
 
     init {
+        this.x = x
+        this.y = y
+        this.size = size
         update()
     }
 
     fun move(xDisplacement: Float, yDisplacement: Float) {
-        _x += xDisplacement
-        _y += yDisplacement
+        x += xDisplacement
+        y += yDisplacement
     }
 
     override fun update() {
-        _rect.set(
-            _x * GameView.unitW,
-            _y * GameView.unitH,
-            (_x + _size) * GameView.unitW,
-            (_y + _size) * GameView.unitH
+        rect.set(
+            x * GameView.unitW,
+            y * GameView.unitH,
+            (x + size) * GameView.unitW,
+            (y + size) * GameView.unitH
         )
     }
 }

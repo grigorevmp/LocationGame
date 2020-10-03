@@ -20,13 +20,14 @@ class Player(context: Context): Entity() {
             GameView.maxY - size - 1,
             size))
         bitmapComponent = this.addComponent(BitmapComponent(
+            positionComponent = positionComponent,
+            context = context,
             id = 0,
             name = "Player",
             desc = "Desc",
             bitmapId = R.drawable.player,
             group = "player"
         ))
-        bitmapComponent.init(context)
     }
 
     override fun update() {

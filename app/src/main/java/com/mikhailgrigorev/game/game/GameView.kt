@@ -68,12 +68,12 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
                 for(obj in gameEntities){
                     val positionComponent = obj.getComponent(PositionComponent::class.java)
                     val bitmapComponent = obj.getComponent(BitmapComponent::class.java)
-                    if (positionComponent!= null && positionComponent._rect.contains(x, y))
+                    if (positionComponent!= null && positionComponent.rect.contains(x, y))
                         Toast.makeText(context,
                             "You touch " +
                                     bitmapComponent!!._name +
                                 " at " +
-                                positionComponent._rect,
+                                positionComponent.rect,
                             Toast.LENGTH_SHORT)
                             .show()
                 }
