@@ -10,7 +10,7 @@ class BitmapComponent(
     name: String = "objectName",
     desc: String= "objectDesc",
     bitmapId: Int = 0,
-    bitmap : Bitmap? = null
+    group: String = "static"
 ) : Component() {
 
     // id
@@ -26,7 +26,10 @@ class BitmapComponent(
     var _bitmapId: Int = bitmapId
         private set
     // картинка
-    var _bitmap : Bitmap? = bitmap
+    var _bitmap : Bitmap? = null
+        private set
+    // классы
+    var _group : String = group
         private set
 
     // сжимаем картинку до нужных размеров
@@ -46,8 +49,7 @@ class BitmapComponent(
     }
 
     // тут будут вычисляться новые координаты
-    override fun update() {
-    }
+    override fun update() {}
 
     // рисуем картинку
     fun draw(paint: Paint?, canvas: Canvas) {

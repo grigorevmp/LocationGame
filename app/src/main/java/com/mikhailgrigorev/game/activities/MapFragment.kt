@@ -11,9 +11,6 @@ import com.mikhailgrigorev.game.R
 import com.mikhailgrigorev.game.game.GameView
 import kotlinx.android.synthetic.main.fragment_map.*
 
-/**
- * A simple [Fragment] subclass as the second destination in the navigation.
- */
 class MapFragment : Fragment() {
 
     override fun onCreateView(

@@ -15,15 +15,18 @@ class Player(context: Context): Entity() {
 
     init{
         val size = 5f
-        positionComponent = this.addComponent(PositionComponent(7f,GameView.maxY - size - 1, size))
+        positionComponent = this.addComponent(PositionComponent(
+            7f,
+            GameView.maxY - size - 1,
+            size))
         bitmapComponent = this.addComponent(BitmapComponent(
             id = 0,
             name = "Player",
             desc = "Desc",
-            bitmapId = R.drawable.ship
+            bitmapId = R.drawable.ship,
+            group = "player"
         ))
         bitmapComponent.init(context)
-
     }
 
     override fun update() {
