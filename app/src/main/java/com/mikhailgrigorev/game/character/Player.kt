@@ -1,7 +1,7 @@
 package com.mikhailgrigorev.game.character
 
 import android.content.Context
-import com.mikhailgrigorev.game.game.GameView
+import com.mikhailgrigorev.game.game.Game
 import com.mikhailgrigorev.game.R
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
@@ -17,7 +17,7 @@ class Player(context: Context): Entity() {
         val size = 3f
         positionComponent = this.addComponent(PositionComponent(
             7f,
-            GameView.maxY - size - 1,
+            Game.maxY - size - 1,
             size))
         bitmapComponent = this.addComponent(BitmapComponent(
             positionComponent = positionComponent,

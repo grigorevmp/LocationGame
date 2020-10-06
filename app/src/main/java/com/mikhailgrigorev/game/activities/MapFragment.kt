@@ -8,7 +8,7 @@ import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.mikhailgrigorev.game.R
-import com.mikhailgrigorev.game.game.GameView
+import com.mikhailgrigorev.game.game.Game
 import kotlinx.android.synthetic.main.fragment_map.*
 
 class MapFragment : Fragment() {
@@ -28,7 +28,7 @@ class MapFragment : Fragment() {
             findNavController().navigate(R.id.action_PlayFragment_to_FirstFragment)
         }
 
-        val gameView = GameView(this.context)
+        val gameView = Game(this.context)
         val gameLayout = gameLayout as LinearLayout // находим gameLayout
         gameLayout.addView(gameView) // и добавляем в него gameView
 

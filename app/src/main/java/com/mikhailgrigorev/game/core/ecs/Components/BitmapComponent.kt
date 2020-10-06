@@ -3,7 +3,7 @@ package com.mikhailgrigorev.game.core.ecs.Components
 import android.content.Context
 import android.graphics.*
 import com.mikhailgrigorev.game.core.ecs.Component
-import com.mikhailgrigorev.game.game.GameView
+import com.mikhailgrigorev.game.game.Game
 
 class BitmapComponent(
     positionComponent: PositionComponent,
@@ -40,8 +40,8 @@ class BitmapComponent(
         val cBitmap = BitmapFactory.decodeResource(context.resources, _bitmapId)
         _bitmap = Bitmap.createScaledBitmap(
             cBitmap,
-            (size * GameView.unitW).toInt(),
-            (size * GameView.unitH).toInt(),
+            (size * Game.unitW).toInt(),
+            (size * Game.unitH).toInt(),
             false
         )
         cBitmap.recycle()
@@ -56,8 +56,8 @@ class BitmapComponent(
         if(positionComponent != null)
         _bitmap?.let { canvas.drawBitmap(
             it,
-            positionComponent.x * GameView.unitW,
-            positionComponent.y * GameView.unitH,
+            positionComponent.x * Game.unitW,
+            positionComponent.y * Game.unitH,
             paint) }
     }
 

@@ -1,1 +1,0 @@
-2f 2f 10 0 Apple Store Description R.drawable.bulding "building"

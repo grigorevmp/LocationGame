@@ -13,11 +13,11 @@ import com.mikhailgrigorev.game.character.Player
 import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
-import com.mikhailgrigorev.game.loader.MapLoader
+import com.mikhailgrigorev.game.loader.BuildingsLoader
 import java.lang.Exception
 
 
-class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Callback {
+class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Callback {
 
     companion object{
         // sizes
@@ -28,7 +28,7 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
     }
 
     // map
-    var mapLoader: MapLoader? = null
+    var buildingsLoader: BuildingsLoader? = null
 
     // for storing game objects
     private var gameEntities = ArrayList<Entity>()
@@ -144,8 +144,8 @@ class GameView(context: Context?): SurfaceView(context), Runnable, SurfaceHolder
                 unitH = surfaceHolder.surfaceFrame.height() / maxY.toFloat()
                 // init objects
                 player = Player(context)
-                mapLoader = MapLoader(context)
-                for (obj in mapLoader!!.mapObjects){
+                buildingsLoader = BuildingsLoader(context)
+                for (obj in buildingsLoader!!.mapObjects){
                     gameEntities.add(obj)
                 }
                 gameEntities.add(player!!)

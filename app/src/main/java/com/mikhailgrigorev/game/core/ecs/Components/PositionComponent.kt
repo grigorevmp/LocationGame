@@ -2,7 +2,7 @@ package com.mikhailgrigorev.game.core.ecs.Components
 
 import android.graphics.RectF
 import com.mikhailgrigorev.game.core.ecs.Component
-import com.mikhailgrigorev.game.game.GameView
+import com.mikhailgrigorev.game.game.Game
 
 class PositionComponent( x: Float, y: Float, size: Float,
 ) : Component() {
@@ -30,10 +30,10 @@ class PositionComponent( x: Float, y: Float, size: Float,
 
     override fun update() {
         rect.set(
-            x * GameView.unitW,
-            y * GameView.unitH,
-            (x + size) * GameView.unitW,
-            (y + size) * GameView.unitH
+            x * Game.unitW,
+            y * Game.unitH,
+            (x + size) * Game.unitW,
+            (y + size) * Game.unitH
         )
     }
 }
