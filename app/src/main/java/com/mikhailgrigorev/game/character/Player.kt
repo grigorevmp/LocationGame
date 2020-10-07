@@ -7,26 +7,31 @@ import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
 
 import com.mikhailgrigorev.game.core.ecs.Entity
+import com.mikhailgrigorev.game.loader.PlayerLoader
 
 class Player(context: Context): Entity() {
+
     private var bitmapComponent: BitmapComponent
     private var positionComponent: PositionComponent
     private var speed: Float = 0.2.toFloat()
 
     init{
-        val size = 3f
+
+        val playerData = PlayerLoader(context)
+        speed = playerData.speed
+        val size = playerData.size
         positionComponent = this.addComponent(PositionComponent(
-            7f,
-            Game.maxY - size - 1,
+            playerData.x,
+            Game.maxY - size - playerData.yOffset,
             size))
         bitmapComponent = this.addComponent(BitmapComponent(
             positionComponent = positionComponent,
             context = context,
-            id = 0,
-            name = "Player",
-            desc = "Desc",
-            bitmapId = R.drawable.player,
-            group = "player"
+            id = playerData.id,
+            name = playerData.name,
+            desc = playerData.desc,
+            bitmapId = playerData.bitmapId,
+            group = playerData.group
         ))
     }
 
