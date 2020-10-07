@@ -29,7 +29,6 @@ class Building(context: Context,
 
     private var bitmapComponent: BitmapComponent
     private var positionComponent: PositionComponent
-    private var speed: Float = 0.2.toFloat()
 
     init{
         positionComponent = this.addComponent(PositionComponent(

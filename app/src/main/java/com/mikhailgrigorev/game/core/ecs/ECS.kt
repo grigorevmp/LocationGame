@@ -33,13 +33,6 @@ abstract class Component {
 open class Entity {
     private var _components : HashMap<Any, Component>
 
-    /** CONSTRUCTOR
-     * ->
-     * */
-    init {
-
-    }
-
     constructor(){
         _components = HashMap()
     }

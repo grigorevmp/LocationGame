@@ -28,7 +28,7 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
     }
 
     // map
-    var buildingsLoader: BuildingsLoader? = null
+    private var buildingsLoader: BuildingsLoader? = null
 
     // for storing game objects
     private var gameEntities = ArrayList<Entity>()

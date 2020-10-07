@@ -25,10 +25,10 @@ class BitmapComponent(
     var _desc: String = desc
         private set
     // id картинки
-    var _bitmapId: Int = bitmapId
+    private var _bitmapId: Int = bitmapId
         private set
     // картинка
-    var _bitmap : Bitmap? = null
+    private var _bitmap : Bitmap? = null
         private set
     // классы
     var _group : String = group

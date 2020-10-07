@@ -2,7 +2,6 @@ package com.mikhailgrigorev.game.character
 
 import android.content.Context
 import com.mikhailgrigorev.game.game.Game
-import com.mikhailgrigorev.game.R
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
 
@@ -16,7 +15,6 @@ class Player(context: Context): Entity() {
     private var speed: Float = 0.2.toFloat()
 
     init{
-
         val playerData = PlayerLoader(context)
         speed = playerData.speed
         val size = playerData.size
