@@ -2,19 +2,18 @@ package com.mikhailgrigorev.game.game
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.view.WindowManager
 import android.widget.Toast
+import com.mikhailgrigorev.game.R
 import com.mikhailgrigorev.game.character.Player
-import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
+import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.loader.BuildingsLoader
-import java.lang.Exception
 
 
 class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Callback {
@@ -65,16 +64,18 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
         val y = event.y
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                for(obj in gameEntities){
+                for (obj in gameEntities) {
                     val positionComponent = obj.getComponent(PositionComponent::class.java)
                     val bitmapComponent = obj.getComponent(BitmapComponent::class.java)
-                    if (positionComponent!= null && positionComponent.rect.contains(x, y))
-                        Toast.makeText(context,
+                    if (positionComponent != null && positionComponent.rect.contains(x, y))
+                        Toast.makeText(
+                            context,
                             "You touch " +
                                     bitmapComponent!!._name +
-                                " at " +
-                                positionComponent.rect,
-                            Toast.LENGTH_SHORT)
+                                    " at " +
+                                    positionComponent.rect,
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                 }
                 return true
@@ -83,7 +84,21 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
         return false
     }
 
+    private fun adjustWindowSize(){
+        /**
+         * State correct screen ratio to draw
+         */
+        val wm = context!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display = wm.defaultDisplay
+        val size = Point()
+        display.getSize(size)
+        maxY = maxX * size.y/size.x
+    }
+
     init{
+
+        adjustWindowSize()
+
         // init objects for drawing
         surfaceHolder.addCallback(this)
         paint = Paint()
@@ -120,7 +135,7 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
                 draw()
             }
             catch (e: Exception){
-                Toast.makeText(context, "Написать Мише, если это увидите", Toast.LENGTH_SHORT).show()
+               // Toast.makeText(context, "Написать Мише, если это увидите", Toast.LENGTH_SHORT).show()
             }
             threadControl()
         }
@@ -154,6 +169,7 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
             canvas = surfaceHolder.lockCanvas()
             // background
             canvas!!.drawColor(Color.BLACK)
+            canvas!!.drawBitmap(BitmapFactory.decodeResource(resources, R.drawable.map),0f,0f,null)
             // draw objects
             for(obj in gameEntities) {
                 obj.getComponent(BitmapComponent::class.java)?.draw(paint, canvas!!)
