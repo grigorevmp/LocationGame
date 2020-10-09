@@ -45,7 +45,6 @@ class MapFragment : Fragment() {
         gameLayout.addView(gameView) // и добавляем в него gameView
 
         forward.setOnClickListener {
-            gameView.step()
         }
     }
 

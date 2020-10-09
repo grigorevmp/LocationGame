@@ -101,6 +101,7 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
 
     init{
 
+        // Set drawing view
         adjustWindowSize()
 
         // init objects for drawing
@@ -132,6 +133,9 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
     }
 
     override fun run() {
+        /**
+         * Infinity cycle of game process
+         */
         while (gameRunning) {
             startTime = System.nanoTime()
             update()
@@ -145,17 +149,21 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
         }
     }
 
-    fun step(){
-        player?.stepUp()
-    }
-
     private fun update() {
+        /**
+         * Update Map
+         */
         if (!firstTime) {
             player?.update()
         }
     }
 
     private fun draw() {
+        /**
+         * Draws main objects
+         * @ firstTime - initialization
+         * @ canvas drawing square
+         */
         if (surfaceHolder.surface.isValid) {  //проверяем валидный ли surface
             if (firstTime) {
                 firstTime = false
@@ -189,6 +197,9 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
     }
 
     private fun threadControl() {
+        /**
+         * just... thread control
+         */
         timeMillis = (System.nanoTime() - startTime) / 1000000
         waitTime = targetTime - timeMillis
         try {
