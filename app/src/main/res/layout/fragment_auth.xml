@@ -7,23 +7,34 @@
     tools:context=".activities.AuthFragment">
 
     <TextView
-        android:id="@+id/infoText"
+        android:id="@+id/infoText2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="200dp"
         android:text="@string/auth_info"
-        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <ImageView
         android:id="@+id/menuBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/menu_back"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/arrow_left"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/infoText" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/menu_back" />
+
+    <TextView
+    android:id="@+id/header"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="40dp"
+    android:text="@string/auth_info"
+    android:textSize="20sp"
+    app:layout_constraintBottom_toBottomOf="@+id/menuBack"
+    app:layout_constraintStart_toEndOf="@+id/menuBack"
+    app:layout_constraintTop_toTopOf="@+id/menuBack" />
 </androidx.constraintlayout.widget.ConstraintLayout>

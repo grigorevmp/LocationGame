@@ -5,9 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.navigation.fragment.findNavController
 import com.mikhailgrigorev.game.R
+import kotlinx.android.synthetic.main.fragment_auth.*
 
 /**
  * Authorization Fragment
@@ -27,7 +27,7 @@ class AuthFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // AUTH TO MAIN
-        view.findViewById<Button>(R.id.menuBack).setOnClickListener {
+        menuBack.setOnClickListener {
             findNavController().navigate(R.id.action_AuthFragment_to_FirstFragment)
         }
     }

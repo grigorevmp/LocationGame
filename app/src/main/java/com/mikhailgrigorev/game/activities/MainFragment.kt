@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.mikhailgrigorev.game.R
+import kotlinx.android.synthetic.main.fragment_main.*
 
 /**
  * Main fragment
@@ -40,15 +41,15 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // MAIN - > PLAY
-        view.findViewById<Button>(R.id.menuPlay).setOnClickListener {
+        menuPlay.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_PlayFragment)
         }
         // MAIN - > AUTH
-        view.findViewById<Button>(R.id.menuAuth).setOnClickListener {
+        menuAuth.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_AuthFragment)
         }
         // MAIN - > SETTINGS
-        view.findViewById<Button>(R.id.menuSettings).setOnClickListener {
+        menuSettings.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SettingFragment)
         }
     }

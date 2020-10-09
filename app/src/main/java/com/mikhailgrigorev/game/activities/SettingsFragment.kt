@@ -4,11 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.mikhailgrigorev.game.R
+import kotlinx.android.synthetic.main.fragment_settings.*
 
 /**
  * Settings Fragment
@@ -28,7 +27,7 @@ class SettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // SETTINGS -> MAIN
-        view.findViewById<Button>(R.id.menuBack).setOnClickListener {
+        menuBack.setOnClickListener {
             findNavController().navigate(R.id.action_SettingsFragment_to_FirstFragment)
         }
     }
