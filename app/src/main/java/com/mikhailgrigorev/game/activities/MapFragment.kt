@@ -21,9 +21,6 @@ import kotlinx.android.synthetic.main.fragment_map.*
 
 class MapFragment : Fragment() {
 
-    // Old status bar color #DELETE
-    private var color: Int = 0
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,14 +29,14 @@ class MapFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         // Transparent status bar
-        requireActivity().window.decorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
-        color = requireActivity().window.statusBarColor
-        requireActivity().window.statusBarColor = Color.TRANSPARENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            requireActivity().window.decorView.systemUiVisibility = (
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+            requireActivity().window.statusBarColor = Color.TRANSPARENT
+        }
 
         super.onViewCreated(view, savedInstanceState)
 
@@ -63,7 +60,8 @@ class MapFragment : Fragment() {
         // Show status bar
         requireActivity().window.decorView.systemUiVisibility = (
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
-        requireActivity().window.statusBarColor = color
+        requireActivity().window.decorView.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
     }
 
 
