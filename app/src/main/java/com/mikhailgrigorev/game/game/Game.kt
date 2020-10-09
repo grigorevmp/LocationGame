@@ -9,11 +9,13 @@ import android.view.SurfaceView
 import android.view.WindowManager
 import android.widget.Toast
 import com.mikhailgrigorev.game.R
-import com.mikhailgrigorev.game.character.Player
+import com.mikhailgrigorev.game.entities.Player
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
 import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.loader.BuildingsLoader
+import com.mikhailgrigorev.game.loader.EnemiesLoader
+import com.mikhailgrigorev.game.loader.TotemsLoader
 
 
 class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Callback {
@@ -28,6 +30,8 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
 
     // map
     private var buildingsLoader: BuildingsLoader? = null
+    private var totemsLoader: TotemsLoader? = null
+    private var enemiesLoader: EnemiesLoader? = null
 
     // for storing game objects
     private var gameEntities = ArrayList<Entity>()
@@ -160,15 +164,20 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
                 // init objects
                 player = Player(context)
                 buildingsLoader = BuildingsLoader(context)
-                for (obj in buildingsLoader!!.mapObjects){
+                totemsLoader = TotemsLoader(context)
+                enemiesLoader = EnemiesLoader(context)
+                for (obj in buildingsLoader!!.mapObjects)
                     gameEntities.add(obj)
-                }
+                for (totem in totemsLoader!!.totems)
+                    gameEntities.add(totem)
+                for (enemy in enemiesLoader!!.enemies)
+                    gameEntities.add(enemy)
                 gameEntities.add(player!!)
             }
             // close canvas
             canvas = surfaceHolder.lockCanvas()
             // background
-            canvas!!.drawColor(Color.BLACK)
+            //canvas!!.drawColor(Color.BLACK)
             canvas!!.drawBitmap(BitmapFactory.decodeResource(resources, R.drawable.map),0f,0f,null)
             // draw objects
             for(obj in gameEntities) {

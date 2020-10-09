@@ -1,4 +1,4 @@
-package com.mikhailgrigorev.game.character
+package com.mikhailgrigorev.game.entities
 
 import android.content.Context
 import com.mikhailgrigorev.game.game.Game
