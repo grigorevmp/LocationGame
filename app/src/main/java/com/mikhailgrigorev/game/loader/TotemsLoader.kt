@@ -8,7 +8,7 @@ import com.mikhailgrigorev.game.map.Totem
 class TotemsLoader(context: Context) {
     /**
      * format: x,size,y,id,name,description,bitmapID,group
-     * sample: 10f,2f,-10,3,Office,Description,office,building
+     * sample: 4f,2f,-25,0,God,Description,grave,totem
      */
 
     var totems = ArrayList<Entity>()

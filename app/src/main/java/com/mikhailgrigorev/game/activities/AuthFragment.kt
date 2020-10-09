@@ -10,7 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.mikhailgrigorev.game.R
 
 /**
- * A simple [Fragment] subclass as the second destination in the navigation.
+ * Authorization Fragment
  */
 
 class AuthFragment : Fragment() {
@@ -26,6 +26,7 @@ class AuthFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // AUTH TO MAIN
         view.findViewById<Button>(R.id.menuBack).setOnClickListener {
             findNavController().navigate(R.id.action_AuthFragment_to_FirstFragment)
         }
