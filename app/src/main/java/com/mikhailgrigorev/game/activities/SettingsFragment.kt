@@ -32,14 +32,6 @@ class SettingsFragment : Fragment() {
             findNavController().navigate(R.id.action_SettingsFragment_to_FirstFragment)
         }
     }
-    override fun onResume() {
-        super.onResume()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
-    }
 
-    override fun onStop() {
-        super.onStop()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-    }
 
 }

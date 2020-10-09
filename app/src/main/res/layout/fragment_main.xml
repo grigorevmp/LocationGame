@@ -9,10 +9,10 @@
 
     <TextView
         android:id="@+id/gameName"
+        android:text="@string/logoDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="200dp"
-        android:text="@string/logoDescription"
         android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

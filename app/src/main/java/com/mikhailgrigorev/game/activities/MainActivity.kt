@@ -12,10 +12,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Adding toolbar
-        setSupportActionBar(findViewById(R.id.toolbar))
-        // Hiding toolbar
-        supportActionBar!!.hide()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -56,11 +56,6 @@ class MapFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        // Hide status bar
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-    }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onStop() {
