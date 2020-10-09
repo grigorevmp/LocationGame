@@ -28,7 +28,7 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
         var unitH = 0f
     }
 
-    // map
+    // map objects
     private var buildingsLoader: BuildingsLoader? = null
     private var totemsLoader: TotemsLoader? = null
     private var enemiesLoader: EnemiesLoader? = null
@@ -39,13 +39,15 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
     // for game control
     private var gameRunning = true
     private var firstTime = true
+    // FPS control
     private val targetFPS = 60 //fps
     private val targetTime = (1000 / targetFPS).toLong()
+
+    // thread control
     private var startTime: Long = 0
     private var timeMillis: Long = 0
     private var waitTime: Long = 0
 
-    // for thread control
     private var gameThread: Thread
 
     // for object drawing

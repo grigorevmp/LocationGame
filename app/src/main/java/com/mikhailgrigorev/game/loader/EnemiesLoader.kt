@@ -7,28 +7,33 @@ import com.mikhailgrigorev.game.game.Game
 
 class EnemiesLoader(context: Context) {
     /**
-     * format: x,size,y,id,name,description,bitmapID,group
-     * sample: 10f,2f,-10,3,Office,Description,office,building
+     * ENEMY CLASS
+     * format: ID, NAME, CLASS, DESCRIPTION, BITMAP
+     * 0,Skeleton,skeleton,Bones,devil
+     *
+     * ENEMY DATA
+     * format: X,SIZE,Y,ID
+     * sample: 17f,2f,-16,0
      */
 
     var enemies = ArrayList<Entity>()
         private set
 
     private val classesFileName = "MapData/Enemies/classes.csv"
-    private val locationFileName = "MapData/Enemies/data.csv"
+    private val dataFileName = "MapData/Enemies/data.csv"
 
     init{
 
-        // ID, NAME, CLASS, DESCRIPTION, BITMAP
+        // Data files
         val classesData = CSVReader(context, classesFileName).data
+        val data = CSVReader(context, dataFileName).data
 
+        // Load enemy classes
         val enemyClass = mutableMapOf<Int , List<String>>()
         for(enClass in classesData)
             enemyClass[enClass[0].toInt()] = listOf(enClass[1], enClass[2], enClass[3], enClass[4])
 
-        val data = CSVReader(context, locationFileName).data
-
-        //X,SIZE,Y,ID
+        // Load enemy data, link it with class and create Enemy
         for (enemy in data){
             val obj = Enemy(
                 context,

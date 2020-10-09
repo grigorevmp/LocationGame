@@ -18,7 +18,7 @@ abstract class Component {
 
     /**
     * Use to add component to parent entity
-    * @param Component object 
+    * @param /Component object
     * @return added Component
     */
     fun <_Component : Component> addComponent(component: _Component) : _Component {
@@ -42,7 +42,7 @@ open class Entity {
 
     /**
     * Use to add component
-    * @param ComponentClassName allocated Component object
+    * @param /ComponentClassName allocated Component object
     * @return added Component, can to not add a component if there is one, then the component has entity = null
     */
     fun <_Component : Component> addComponent(component: _Component) : _Component {
@@ -55,7 +55,7 @@ open class Entity {
 
     /**
     * Use to remove component
-    * @param Class ComponentClassName::class.java
+    * @param /Class ComponentClassName::class.java
     * @return removed Component or null if missing
     */   
     fun <_Component : Component> removeComponent(componentClass : Class<_Component>) : _Component? {
@@ -68,7 +68,7 @@ open class Entity {
 
     /**
     * Use to find out that component is available
-    * @param Class ComponentClassName::class.java
+    * @param /Class ComponentClassName::class.java
     * @return Availability of the component
     */    
     fun <_Component : Component> hasComponent(componentClass : Class<_Component>): Boolean {
@@ -77,7 +77,7 @@ open class Entity {
 
     /**
     * Use to get component
-    * @param ComponentClassName::class.java 
+    * @param /ComponentClassName::class.java
     * @return Component or null if missing
     */
     fun <_Component : Component> getComponent(componentClass : Class<_Component>): _Component? {

@@ -14,7 +14,7 @@
 ## Create instance and use
 `Kotlin`
 
-	var player = Player()`
+	var player = Player()
 	// adding component
 	player.addComponent(HealthComponent(100))	
 	// check for a component
