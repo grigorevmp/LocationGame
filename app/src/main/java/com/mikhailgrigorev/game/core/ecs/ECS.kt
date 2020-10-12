@@ -3,17 +3,14 @@
 package com.mikhailgrigorev.game.core.ecs
 
 abstract class Component {
-    private var _entity : Entity? = null
-
-    fun getEntity() : Entity? {
-        return _entity
-    }
+    var entity : Entity? = null
+        private set
 
     /**
     * Not for using
     */
     fun __setEntity(entity: Entity){
-        this._entity = entity
+        this.entity = entity
     }
 
     /**
@@ -22,7 +19,7 @@ abstract class Component {
     * @return added Component
     */
     fun <_Component : Component> addComponent(component: _Component) : _Component {
-        _entity?.addComponent(component)
+        entity?.addComponent(component)
         return component
     }
 
