@@ -2,8 +2,7 @@ package com.mikhailgrigorev.game.map
 
 
 import android.content.Context
-import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
-import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
+import com.mikhailgrigorev.game.core.ecs.Components.*
 
 import com.mikhailgrigorev.game.core.ecs.Entity
 
@@ -29,6 +28,7 @@ class Totem(context: Context,
 
     private var bitmapComponent: BitmapComponent
     private var positionComponent: PositionComponent
+    private var upgradeComponent: UpgradeComponent = UpgradeComponent()
 
     init{
         positionComponent = this.addComponent(PositionComponent(
@@ -45,11 +45,12 @@ class Totem(context: Context,
             bitmapId = bitmapId,
             group = group
         ))
+        upgradeComponent.addUpgrader(HealthComponent.HealthUpgrader())
+        upgradeComponent.addUpgrader(DamageComponent.DamageUpgrader())
+        upgradeComponent.addUpgrader(DefenceComponent.DefenceUpgrader())
     }
 
     override fun update() {
     }
-
-
 }
 

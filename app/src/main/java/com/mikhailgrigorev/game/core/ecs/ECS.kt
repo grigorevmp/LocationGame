@@ -3,6 +3,12 @@
 package com.mikhailgrigorev.game.core.ecs
 
 abstract class Component {
+
+    abstract class ComponentUpgrader<ImprovingComponent: Component>(improvingComponent: Class<ImprovingComponent>) : Component() {
+        var improvingComponent: Class<ImprovingComponent> = improvingComponent
+            private set
+    }
+
     var entity : Entity? = null
         private set
 
@@ -25,6 +31,7 @@ abstract class Component {
 
     open fun action() {}
     open fun update() {}
+    open fun upgrade(upgrader: Component.ComponentUpgrader<Component>) {}
 }
 
 open class Entity {
