@@ -32,6 +32,7 @@ class MainFragment : Fragment() {
                 requireActivity().window.decorView.systemUiVisibility =
                     View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             }
+
         }
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
@@ -39,6 +40,9 @@ class MainFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if(activity?.intent?.getStringExtra("Set")  == "Game")
+            findNavController().navigate(R.id.action_FirstFragment_to_PlayFragment)
 
         // MAIN - > PLAY
         menuPlay.setOnClickListener {

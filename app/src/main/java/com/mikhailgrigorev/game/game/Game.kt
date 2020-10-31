@@ -1,25 +1,31 @@
 package com.mikhailgrigorev.game.game
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
-import android.graphics.*
+import android.content.Intent
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Point
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.WindowManager
-import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import com.mikhailgrigorev.game.FightActivity
 import com.mikhailgrigorev.game.R
-import com.mikhailgrigorev.game.entities.Player
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
 import com.mikhailgrigorev.game.core.ecs.Entity
+import com.mikhailgrigorev.game.entities.Player
 import com.mikhailgrigorev.game.loader.BuildingsLoader
 import com.mikhailgrigorev.game.loader.EnemiesLoader
 import com.mikhailgrigorev.game.loader.TotemsLoader
 
 
 class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Callback {
-
+    private var mContext: Context? = context
     companion object{
         // sizes
         var maxX = 20
@@ -58,6 +64,53 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
     // character
     private var player: Player? = null
 
+    // When User cilcks on dialog button, call this method
+    private fun alertDialog(context: Context, obj: Entity) {
+        val positionComponent = obj.getComponent(PositionComponent::class.java)
+        val bitmapComponent = obj.getComponent(BitmapComponent::class.java)
+
+        var group = bitmapComponent!!._group
+        if (group in "0,Skeleton,skeleton,Bones,devil")
+            group = "enemy"
+
+        var positive = "Close"
+        when(group){
+            "building" -> positive = "Open"
+            "player" -> positive = "Inventory"
+            "totem" -> positive = "Buy"
+            "enemy" -> positive = "Fight"
+        }
+
+        //Instantiate builder variable
+        val builder = AlertDialog.Builder(context)
+
+        // set title
+        builder.setTitle(bitmapComponent._name)
+
+        //set content area
+        builder.setMessage("You touched ${positionComponent!!.rect}")
+
+        //set negative button
+        builder.setPositiveButton(
+            positive
+        ) { _, _ ->
+            if(group == "enemy"){
+                val intent = Intent(mContext, FightActivity::class.java)
+                val origin = mContext as Activity
+                origin.startActivity(intent)
+                origin.finish()
+            }
+        }
+
+        //set positive button
+        builder.setNegativeButton(
+            "Cancel"
+        ) { dialog, id ->
+            // User cancelled the dialog
+        }
+        builder.show()
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         /**
@@ -72,17 +125,9 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
             MotionEvent.ACTION_DOWN -> {
                 for (obj in gameEntities) {
                     val positionComponent = obj.getComponent(PositionComponent::class.java)
-                    val bitmapComponent = obj.getComponent(BitmapComponent::class.java)
-                    if (positionComponent != null && positionComponent.rect.contains(x, y))
-                        Toast.makeText(
-                            context,
-                            "You touch " +
-                                    bitmapComponent!!._name +
-                                    " at " +
-                                    positionComponent.rect,
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
+                    if (positionComponent != null && positionComponent.rect.contains(x, y)) {
+                        alertDialog(context, obj)
+                    }
                 }
                 return true
             }
@@ -111,7 +156,7 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
         paint = Paint()
 
         // Thread
-        gameThread = Thread(this, "Поток для примера")
+        gameThread = Thread(this, "GameThread")
         gameThread.start()
     }
 
@@ -188,7 +233,12 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
             canvas = surfaceHolder.lockCanvas()
             // background
             //canvas!!.drawColor(Color.BLACK)
-            canvas!!.drawBitmap(BitmapFactory.decodeResource(resources, R.drawable.map),0f,0f,null)
+            canvas!!.drawBitmap(
+                BitmapFactory.decodeResource(resources, R.drawable.map),
+                0f,
+                0f,
+                null
+            )
             // draw objects
             for(obj in gameEntities) {
                 obj.getComponent(BitmapComponent::class.java)?.draw(paint, canvas!!)

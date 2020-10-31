@@ -1,5 +1,6 @@
 package com.mikhailgrigorev.game.activities
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -64,6 +65,22 @@ class MapFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        val gameView = Game(this.context)
+        val gameLayout = gameLayout as LinearLayout // находим gameLayout
+        gameLayout.addView(gameView) // и добавляем в него gameView
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == 1){
+            val gameView = Game(this.context)
+            val gameLayout = gameLayout as LinearLayout // находим gameLayout
+            gameLayout.addView(gameView) // и добавляем в него gameView
+        }
+    }
 
 
 }
