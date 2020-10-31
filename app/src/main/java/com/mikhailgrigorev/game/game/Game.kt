@@ -4,14 +4,8 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Point
-import android.view.MotionEvent
-import android.view.SurfaceHolder
-import android.view.SurfaceView
-import android.view.WindowManager
+import android.graphics.*
+import android.view.*
 import androidx.appcompat.app.AlertDialog
 import com.mikhailgrigorev.game.FightActivity
 import com.mikhailgrigorev.game.R
@@ -139,11 +133,17 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
         /**
          * State correct screen ratio to draw
          */
+        val rectangle: Rect? = Rect()
+        val window: Window = (context as Activity).window
+        window.decorView.getWindowVisibleDisplayFrame(rectangle)
+        val statusBarHeight: Int = rectangle!!.top
+
+
         val wm = context!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val display = wm.defaultDisplay
         val size = Point()
         display.getSize(size)
-        maxY = maxX * size.y/size.x
+        maxY = maxX * (size.y + statusBarHeight)/size.x
     }
 
     init{
