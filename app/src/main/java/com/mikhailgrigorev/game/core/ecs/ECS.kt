@@ -3,17 +3,20 @@
 package com.mikhailgrigorev.game.core.ecs
 
 abstract class Component {
-    private var _entity : Entity? = null
 
-    fun getEntity() : Entity? {
-        return _entity
+    abstract class ComponentUpgrader<ImprovingComponent: Component>(improvingComponent: Class<ImprovingComponent>) : Component() {
+        var improvingComponent: Class<ImprovingComponent> = improvingComponent
+            private set
     }
+
+    var entity : Entity? = null
+        private set
 
     /**
     * Not for using
     */
     fun __setEntity(entity: Entity){
-        this._entity = entity
+        this.entity = entity
     }
 
     /**
@@ -22,12 +25,13 @@ abstract class Component {
     * @return added Component
     */
     fun <_Component : Component> addComponent(component: _Component) : _Component {
-        _entity?.addComponent(component)
+        entity?.addComponent(component)
         return component
     }
 
     open fun action() {}
     open fun update() {}
+    open fun upgrade(upgrader: Component.ComponentUpgrader<Component>) {}
 }
 
 open class Entity {

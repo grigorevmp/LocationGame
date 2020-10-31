@@ -52,7 +52,7 @@ class BitmapComponent(
 
     // рисуем картинку
     fun draw(paint: Paint?, canvas: Canvas) {
-        val positionComponent = this.getEntity()?.getComponent(PositionComponent::class.java)
+        val positionComponent = this.entity?.getComponent(PositionComponent::class.java)
         if(positionComponent != null)
         _bitmap?.let { canvas.drawBitmap(
             it,
