@@ -2,57 +2,93 @@ package com.mikhailgrigorev.game.core.fsm
 
 class UndefinedStateException : Throwable()
 
-class State <ArgumentsPack> (
+class State <Arguments> (
     private var executer: () -> Unit
 ) {
-    private var transitions = ArrayList<Transition<ArgumentsPack>>()
+    private class Action( private var action: ()-> Unit) {
+        fun invoke() {
+            action()
+        }
+    }
+
+    private var transitions = ArrayList<Transition<Arguments>>()
+
+    private var entryAction: Action? = null
+    private var exitAction: Action? = null
 
     fun execute() {
         executer()
     }
 
-    fun handle(argumentsPack: ArgumentsPack): State<ArgumentsPack> {
+    fun handle(arguments: Arguments): State<Arguments> {
         for (transition in transitions) {
-            val newState = transition.handle(argumentsPack)
-            if (newState != null) return newState
+            val newState = transition.handle(arguments)
+            if (newState != null) {
+                this.exit()
+                newState.entry()
+                return newState
+            }
         }
         return this
     }
 
-    fun addTransition(transition: Transition<ArgumentsPack>){
+    fun addTransition(transition: Transition<Arguments>) {
         transitions.add(transition)
     }
-}
 
+    fun setEntryAction(action: () -> Unit) {
+        entryAction = Action(action)
+    }
 
-class Transition <ArgumentsPack> (
-    private var states: ArrayList<State<ArgumentsPack>>,
-    private var handler: (ArgumentsPack, ArrayList<State<ArgumentsPack>>) -> State<ArgumentsPack>?
-) {
-    fun handle(argumentsPack: ArgumentsPack): State<ArgumentsPack>? {
-        return handler(argumentsPack, states)
+    fun clearEntryAction() {
+        entryAction = null
+    }
+
+    fun setExitAction(action: () -> Unit) {
+        exitAction = Action(action)
+    }
+
+    fun clearExitAction() {
+        exitAction = null
+    }
+
+    private fun entry(){
+        entryAction?.invoke()
+    }
+
+    private fun exit() {
+        exitAction?.invoke()
     }
 }
 
 
-class FSM <ArgumentsPack> {
-    private var states =  ArrayList<State<ArgumentsPack>>()
-    private var currentState: State<ArgumentsPack>? = null
+class Transition <Arguments> (
+    private var handler: (arguments: Arguments) -> State<Arguments>?
+) {
+    fun handle(arguments: Arguments): State<Arguments>? {
+        return handler(arguments)
+    }
+}
 
-    fun addState(state: State<ArgumentsPack>): State<ArgumentsPack> {
+
+class FSM <Arguments> {
+    private var states =  ArrayList<State<Arguments>>()
+    private var currentState: State<Arguments>? = null
+
+    fun addState(state: State<Arguments>): State<Arguments> {
         states.add(state)
         return state
     }
 
-    fun handle(argumentsPack: ArgumentsPack) {
-        currentState?.handle(argumentsPack) ?: throw UndefinedStateException()
+    fun handle(arguments: Arguments) {
+        currentState = currentState?.handle(arguments) ?: throw UndefinedStateException()
     }
 
     fun execute() {
         currentState?.execute() ?: throw UndefinedStateException()
     }
 
-    fun setCurrentState(state: State<ArgumentsPack>) {
+    fun setCurrentState(state: State<Arguments>) {
         currentState = state
     }
 }
