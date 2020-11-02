@@ -5,7 +5,7 @@
 ```
 ## Create FSM
 ```Kotlin
-	var fsm = FSM<Args>
+	var fsm = FSM<Args>()
 ```
 ## Create states
 ```Kotlin
