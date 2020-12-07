@@ -1,8 +1,10 @@
 package com.mikhailgrigorev.game.activities
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,8 +43,10 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if(activity?.intent?.getStringExtra("Set")  == "Game")
+        if(activity?.intent?.getStringExtra("Set")  == "Game") {
+            activity?.intent?.putExtra("Set", "none")
             findNavController().navigate(R.id.action_FirstFragment_to_PlayFragment)
+        }
 
         // MAIN - > PLAY
         menuPlay.setOnClickListener {
@@ -57,4 +61,6 @@ class MainFragment : Fragment() {
             findNavController().navigate(R.id.action_FirstFragment_to_SettingFragment)
         }
     }
+
+
 }

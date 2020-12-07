@@ -3,6 +3,7 @@ package com.mikhailgrigorev.game.entities
 
 import android.content.Context
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
+import com.mikhailgrigorev.game.core.ecs.Components.HealthComponent
 import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
 
 import com.mikhailgrigorev.game.core.ecs.Entity
@@ -29,6 +30,7 @@ class Enemy(context: Context,
 
     private var bitmapComponent: BitmapComponent
     private var positionComponent: PositionComponent
+    private var healthComponent: HealthComponent
 
     init{
         positionComponent = this.addComponent(PositionComponent(
@@ -44,6 +46,10 @@ class Enemy(context: Context,
             desc = desc,
             bitmapId = bitmapId,
             group = group
+        ))
+
+        healthComponent = this.addComponent(HealthComponent(
+            300
         ))
     }
 

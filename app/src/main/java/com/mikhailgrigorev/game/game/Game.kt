@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.*
+import android.os.Build
 import android.view.*
 import androidx.appcompat.app.AlertDialog
 import com.mikhailgrigorev.game.FightActivity
@@ -18,7 +19,7 @@ import com.mikhailgrigorev.game.loader.EnemiesLoader
 import com.mikhailgrigorev.game.loader.TotemsLoader
 
 
-class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Callback {
+class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView(context), Runnable, SurfaceHolder.Callback {
     private var mContext: Context? = context
     companion object{
         // sizes
@@ -90,6 +91,8 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
         ) { _, _ ->
             if(group == "enemy"){
                 val intent = Intent(mContext, FightActivity::class.java)
+                intent.putExtra("enemyId", bitmapComponent._id.toString())
+                println("Fighting with... @id#" + bitmapComponent._id.toString())
                 val origin = mContext as Activity
                 origin.startActivity(intent)
                 origin.finish()
@@ -133,17 +136,40 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
         /**
          * State correct screen ratio to draw
          */
-        val rectangle: Rect? = Rect()
+        val rectangle: Rect = Rect()
         val window: Window = (context as Activity).window
         window.decorView.getWindowVisibleDisplayFrame(rectangle)
-        val statusBarHeight: Int = rectangle!!.top
 
 
         val wm = context!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val display = wm.defaultDisplay
+
+
         val size = Point()
+
+        val display = wm.defaultDisplay!!
         display.getSize(size)
-        maxY = maxX * (size.y + statusBarHeight)/size.x
+
+        val outPoint = Point()
+        if (Build.VERSION.SDK_INT >= 19) {
+            // include navigation bar
+            display.getRealSize(outPoint)
+        } else {
+            // exclude navigation bar
+            display.getSize(outPoint)
+        }
+        if (outPoint.y > outPoint.x) {
+            size.y = outPoint.y
+            //mRealSizeWidth = outPoint.x
+        } else {
+            size.y = outPoint.x
+            //mRealSizeWidth = outPoint.y
+        }
+
+        println("mRealSizeHeight is... #${size.y}")
+        //println("mRealSizeWidth is... #$mRealSizeWidth")
+
+        maxY = maxX * size.y/size.x
+        println("maxYOld is... #$maxY")
     }
 
     init{
@@ -156,7 +182,7 @@ class Game(context: Context?): SurfaceView(context), Runnable, SurfaceHolder.Cal
         paint = Paint()
 
         // Thread
-        gameThread = Thread(this, "GameThread")
+        gameThread = Thread(this, gameThreadName)
         gameThread.start()
     }
 

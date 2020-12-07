@@ -3,6 +3,7 @@ package com.mikhailgrigorev.game.entities
 import android.content.Context
 import com.mikhailgrigorev.game.game.Game
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
+import com.mikhailgrigorev.game.core.ecs.Components.HealthComponent
 import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
 
 import com.mikhailgrigorev.game.core.ecs.Entity
@@ -12,6 +13,7 @@ class Player(context: Context): Entity() {
 
     private var bitmapComponent: BitmapComponent
     private var positionComponent: PositionComponent
+    private var healthComponent: HealthComponent
     private var speed: Float = 0.2.toFloat()
 
     init{
@@ -30,6 +32,9 @@ class Player(context: Context): Entity() {
             desc = playerData.desc,
             bitmapId = playerData.bitmapId,
             group = playerData.group
+        ))
+        healthComponent = this.addComponent(HealthComponent(
+            300
         ))
     }
 

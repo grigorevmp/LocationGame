@@ -56,6 +56,7 @@ class MapFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
+        gameLayout.removeAllViews()
         // Show status bar
         requireActivity().window.decorView.systemUiVisibility = (
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
@@ -66,10 +67,15 @@ class MapFragment : Fragment() {
     }
 
     override fun onResume() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            requireActivity().window.decorView.systemUiVisibility = (
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+            requireActivity().window.statusBarColor = Color.TRANSPARENT
+        }
         super.onResume()
-        val gameView = Game(this.context)
-        val gameLayout = gameLayout as LinearLayout // находим gameLayout
-        gameLayout.addView(gameView) // и добавляем в него gameView
+        val gameView2 = Game(this.context, "GameThread2")
+        gameLayout.addView(gameView2) // и добавляем в него gameView
 
     }
 
@@ -81,6 +87,8 @@ class MapFragment : Fragment() {
             gameLayout.addView(gameView) // и добавляем в него gameView
         }
     }
+
+
 
 
 }

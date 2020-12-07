@@ -6,16 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".FightActivity">
 
-    <TextView
-        android:id="@+id/infoText2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/auth_info"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageView
         android:id="@+id/menuBack"
         android:layout_width="wrap_content"
@@ -32,9 +22,61 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
-        android:text="Fighting"
+        android:text="@string/fighting"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/menuBack"
         app:layout_constraintStart_toEndOf="@+id/menuBack"
         app:layout_constraintTop_toTopOf="@+id/menuBack" />
+
+    <TextView
+        android:id="@+id/healthName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:text="Enemy HP:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header" />
+
+    <TextView
+        android:id="@+id/healthValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="@+id/healthName"
+        app:layout_constraintStart_toEndOf="@+id/healthName"
+        app:layout_constraintTop_toTopOf="@+id/healthName" />
+
+    <TextView
+        android:id="@+id/playerHealthText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Your HP:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/healthName" />
+
+    <TextView
+        android:id="@+id/playerHPValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="@+id/playerHealthText"
+        app:layout_constraintStart_toEndOf="@+id/playerHealthText"
+        app:layout_constraintTop_toTopOf="@+id/playerHealthText" />
+
+    <Button
+        android:id="@+id/fightButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="Fight"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

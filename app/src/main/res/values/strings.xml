@@ -36,6 +36,7 @@
 
     <string name="auth_info">Logging…</string>
     <string name="Forward">Forward</string>
+    <string name="fighting">Fighting</string>
 
 
 </resources>
