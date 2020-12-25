@@ -115,6 +115,7 @@ class FightActivity : AppCompatActivity() {
         choseState.addTransition(Transition { button ->
             if (button == ButtonType.Attack.ordinal) {
                 return@Transition choseAttackState
+
             }
             return@Transition null
         })
@@ -125,6 +126,8 @@ class FightActivity : AppCompatActivity() {
             }
             return@Transition null
         })
+
+        fightFSM.setCurrentState(choseState)
     }
 
     private fun findEnemy(enemyId: String): Enemy? {
