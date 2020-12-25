@@ -78,5 +78,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <Button
+        android:id="@+id/physicalAttackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PhysicalAttack"
+        tools:layout_editor_absoluteX="23dp"
+        tools:layout_editor_absoluteY="550dp" />
+
+    <Button
+        android:id="@+id/naturalAttackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NaturalAttack"
+        tools:layout_editor_absoluteX="257dp"
+        tools:layout_editor_absoluteY="554dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

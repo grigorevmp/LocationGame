@@ -6,13 +6,26 @@ import android.os.Bundle
 import android.view.KeyEvent
 import com.mikhailgrigorev.game.activities.MainActivity
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
+import com.mikhailgrigorev.game.core.ecs.Components.DamageComponent
 import com.mikhailgrigorev.game.core.ecs.Components.HealthComponent
+import com.mikhailgrigorev.game.core.fsm.FSM
+import com.mikhailgrigorev.game.core.fsm.State
+import com.mikhailgrigorev.game.core.fsm.Transition
 import com.mikhailgrigorev.game.entities.Enemy
 import com.mikhailgrigorev.game.entities.Player
 import com.mikhailgrigorev.game.loader.EnemiesLoader
 import kotlinx.android.synthetic.main.activity_fight.*
 
 class FightActivity : AppCompatActivity() {
+    enum class ButtonType {
+        None,
+        Attack,
+        PhysicalAttack,
+        NatureAttack;
+    }
+
+    var fightFSM = FSM<Int>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -56,9 +69,62 @@ class FightActivity : AppCompatActivity() {
         // listeners
 
         fightButton.setOnClickListener {
-            fight()
+            fightFSM.handle(ButtonType.Attack.ordinal)
+            fightFSM.execute()
         }
 
+        physicalAttackButton.setOnClickListener{
+            fightFSM.handle(ButtonType.PhysicalAttack.ordinal)
+            fightFSM.execute()
+            fightFSM.handle(ButtonType.None.ordinal)
+        }
+
+        naturalAttackButton.setOnClickListener {
+            fightFSM.handle(ButtonType.NatureAttack.ordinal)
+            fightFSM.execute()
+            fightFSM.handle(ButtonType.None.ordinal)
+        }
+
+        // Выбирает атаку
+        val choseState = fightFSM.addState(State {})
+
+        // Выбирает между физической и магической
+        val choseAttackState = fightFSM.addState(State {})
+
+        val attackState = fightFSM.addState(State {
+            val playerDamageComponent = player.getComponent(DamageComponent::class.java)
+            val playerHealthComponent = player.getComponent(HealthComponent::class.java)
+
+            val enemyDamageComponent = enemy.getComponent(DamageComponent::class.java)
+            val enemyHealthComponent = enemy.getComponent(HealthComponent::class.java)
+
+            if (playerDamageComponent != null && enemyHealthComponent != null &&
+                enemyDamageComponent != null && playerHealthComponent != null) {
+                enemyHealthComponent.applyDamage(playerDamageComponent)
+                playerHealthComponent.applyDamage(enemyDamageComponent)
+
+                updateAllHealthText(
+                    playerHealthComponent.healthPoints.toString(),
+                    enemyHealthComponent.healthPoints.toString()
+                )
+            }
+        })
+
+        attackState.addTransition(Transition { return@Transition choseState })
+
+        choseState.addTransition(Transition { button ->
+            if (button == ButtonType.Attack.ordinal) {
+                return@Transition choseAttackState
+            }
+            return@Transition null
+        })
+
+        choseAttackState.addTransition(Transition { button ->
+            if (button == ButtonType.PhysicalAttack.ordinal || button == ButtonType.NatureAttack.ordinal){
+                return@Transition attackState
+            }
+            return@Transition null
+        })
     }
 
     private fun findEnemy(enemyId: String): Enemy? {
