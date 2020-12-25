@@ -91,8 +91,18 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
         ) { _, _ ->
             if(group == "enemy"){
                 val intent = Intent(mContext, FightActivity::class.java)
-                intent.putExtra("enemyId", bitmapComponent._id.toString())
-                println("Fighting with... @id#" + bitmapComponent._id.toString())
+                val enemyMultiple = true
+                if(!enemyMultiple) {
+                    // One enemy sample
+                    intent.putExtra("enemyId", bitmapComponent._id.toString())
+                    println("Fighting with... @id#" + bitmapComponent._id.toString())
+                }
+                else {
+                    // Multiple
+                        val ids = "10,11,12,13"
+                    intent.putExtra("enemyMulId", ids)
+                    println("Fighting with... @id#" + ids)
+                }
                 val origin = mContext as Activity
                 origin.startActivity(intent)
                 origin.finish()
@@ -136,7 +146,7 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
         /**
          * State correct screen ratio to draw
          */
-        val rectangle: Rect = Rect()
+        val rectangle = Rect()
         val window: Window = (context as Activity).window
         window.decorView.getWindowVisibleDisplayFrame(rectangle)
 

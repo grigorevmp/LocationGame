@@ -1,9 +1,12 @@
 package com.mikhailgrigorev.game
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.View
+import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.mikhailgrigorev.game.activities.MainActivity
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.DamageComponent
@@ -15,6 +18,7 @@ import com.mikhailgrigorev.game.entities.Enemy
 import com.mikhailgrigorev.game.entities.Player
 import com.mikhailgrigorev.game.loader.EnemiesLoader
 import kotlinx.android.synthetic.main.activity_fight.*
+
 
 class FightActivity : AppCompatActivity() {
     enum class ButtonType {
@@ -34,6 +38,7 @@ class FightActivity : AppCompatActivity() {
 
         val player = Player(this)
         var enemy: Enemy? = null
+        val enemies: ArrayList<Enemy> = ArrayList()
 
         // AUTH TO MAIN
         menuBack.setOnClickListener {
@@ -50,20 +55,60 @@ class FightActivity : AppCompatActivity() {
             "-1"
         }
 
+        val enemyMulId = if(intent.getStringExtra("enemyMulId") != null) {
+            intent.getStringExtra("enemyMulId")
+        } else{
+            "-1"
+        }
 
-        enemy = findEnemy(enemyId)
 
+
+        if(enemyId != "-1" ){
+            enemy = findEnemy(enemyId)
+        }
+
+        if(enemyMulId != "-1" ){
+            val enemyStr = enemyMulId.split(',')
+            val enemyStrIter = enemyStr.iterator()
+            var i = 0
+            enemyStrIter.forEach {
+                findEnemy(it)?.let { it1 -> enemies.add(it1) }
+
+                val btnEnemy = Button(this)
+                btnEnemy.layoutParams = ConstraintLayout.LayoutParams(
+                    ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                    ConstraintLayout.LayoutParams.WRAP_CONTENT
+                )
+                btnEnemy.text = "Id${it}#${i}"
+                val index: Int = i
+                btnEnemy.id = i
+                btnEnemy.setOnClickListener {
+                    enemy = enemies[index]
+                    logEnemyIdText("Fighting with #${enemy!!.getComponent(BitmapComponent::class.java)!!._name}")
+                    currentId.text = enemy!!.getComponent(BitmapComponent::class.java)!!._id.toString()
+                    updateAllHealthText(
+                        player.getComponent(HealthComponent::class.java)!!.healthPoints.toString(),
+                        enemy!!.getComponent(HealthComponent::class.java)!!.healthPoints.toString()
+                    )
+                }
+                i++
+                chooseEnemyLayout.addView(btnEnemy)
+            }
+            enemy = enemies[0]
+        }
 
         // Exit if data not exists
-        if ((enemy == null) or (enemyId == "-1"))
-            exit()
+        if ((enemy == null) or ((enemyId == "-1") and (enemyMulId == "-1")))
+            exit(-1)
 
 
         logEnemyIdText("Fighting with #${enemy!!.getComponent(BitmapComponent::class.java)!!._name}")
-
+        currentId.text = enemy!!.getComponent(BitmapComponent::class.java)!!._id.toString()
         updateAllHealthText(
-            enemy.getComponent(HealthComponent::class.java)!!.healthPoints.toString(),
-            player.getComponent(HealthComponent::class.java)!!.healthPoints.toString())
+            player.getComponent(HealthComponent::class.java)!!.healthPoints.toString(),
+            enemy!!.getComponent(HealthComponent::class.java)!!.healthPoints.toString()
+
+        )
 
 
         // listeners
@@ -95,11 +140,12 @@ class FightActivity : AppCompatActivity() {
             val playerDamageComponent = player.getComponent(DamageComponent::class.java)
             val playerHealthComponent = player.getComponent(HealthComponent::class.java)
 
-            val enemyDamageComponent = enemy.getComponent(DamageComponent::class.java)
-            val enemyHealthComponent = enemy.getComponent(HealthComponent::class.java)
+            val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
+            val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
 
             if (playerDamageComponent != null && enemyHealthComponent != null &&
-                enemyDamageComponent != null && playerHealthComponent != null) {
+                enemyDamageComponent != null && playerHealthComponent != null
+            ) {
                 enemyHealthComponent.applyDamage(playerDamageComponent)
                 playerHealthComponent.applyDamage(enemyDamageComponent)
 
@@ -121,7 +167,7 @@ class FightActivity : AppCompatActivity() {
         })
 
         choseAttackState.addTransition(Transition { button ->
-            if (button == ButtonType.PhysicalAttack.ordinal || button == ButtonType.NatureAttack.ordinal){
+            if (button == ButtonType.PhysicalAttack.ordinal || button == ButtonType.NatureAttack.ordinal) {
                 return@Transition attackState
             }
             return@Transition null
