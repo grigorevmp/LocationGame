@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     tools:context=".FightActivity">
 
     <ImageView
@@ -74,7 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:text="Fight"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/escapeButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -84,6 +85,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:text="PhysicalAttack"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/fightButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -94,6 +96,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:text="NaturalAttack"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/physicalAttackButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -135,5 +138,35 @@
         app:layout_constraintStart_toEndOf="@+id/currentIdText"
         app:layout_constraintTop_toTopOf="@+id/currentIdText" />
 
+
+    <HorizontalScrollView
+        android:id="@+id/attackButtonsParent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/naturalAttackButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:id="@+id/attackButtonsLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <Button
+        android:id="@+id/escapeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="Escape"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

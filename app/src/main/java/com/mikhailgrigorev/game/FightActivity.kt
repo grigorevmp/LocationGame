@@ -3,7 +3,6 @@ package com.mikhailgrigorev.game
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
-import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -61,8 +60,6 @@ class FightActivity : AppCompatActivity() {
             "-1"
         }
 
-
-
         if(enemyId != "-1" ){
             enemy = findEnemy(enemyId)
         }
@@ -116,6 +113,11 @@ class FightActivity : AppCompatActivity() {
         fightButton.setOnClickListener {
             fightFSM.handle(ButtonType.Attack.ordinal)
             fightFSM.execute()
+            attackButtonsLayout.removeAllViews()
+            createWeaponButton()
+            createMagicButton()
+            createObjectsButton()
+            createBackToAttackButton()
         }
 
         physicalAttackButton.setOnClickListener{
@@ -174,6 +176,124 @@ class FightActivity : AppCompatActivity() {
         })
 
         fightFSM.setCurrentState(choseState)
+
+        escapeButton.setOnClickListener {
+            exit(2)
+        }
+
+    }
+
+    private fun createBackToAttackButton() {
+        val btnBackToAttack = Button(this)
+        btnBackToAttack.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        btnBackToAttack.text = "Back"
+        btnBackToAttack.setOnClickListener {
+            attackButtonsLayout.removeAllViews()
+        }
+        attackButtonsLayout.addView(btnBackToAttack)
+    }
+
+    private fun createObjectsButton() {
+        val btnObject = Button(this)
+        btnObject.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        btnObject.isFocusable = false
+        btnObject.isClickable = false
+        btnObject.isEnabled = false
+        btnObject.text = "Objects"
+        btnObject.setOnClickListener {
+            createAdditionalObjectButtons()
+        }
+        attackButtonsLayout.addView(btnObject)
+    }
+
+    private fun createAdditionalObjectButtons() {
+        // NO objects
+    }
+
+    private fun createMagicButton() {
+        val btnMagic = Button(this)
+        btnMagic.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        btnMagic.text = "Magic"
+        btnMagic.setOnClickListener {
+            createAdditionalMagicButtons()
+            createBackToMajorAttackButton()
+        }
+        attackButtonsLayout.addView(btnMagic)
+    }
+
+    private fun createAdditionalMagicButtons() {
+        attackButtonsLayout.removeAllViews()
+        val btnMagic = Button(this)
+        btnMagic.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        btnMagic.text = "Nature attack"
+        btnMagic.setOnClickListener {
+            fightFSM.handle(ButtonType.NatureAttack.ordinal)
+            fightFSM.execute()
+            fightFSM.handle(ButtonType.None.ordinal)
+        }
+        attackButtonsLayout.addView(btnMagic)
+
+    }
+
+    private fun createWeaponButton() {
+        val btnWeapon = Button(this)
+        btnWeapon.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        btnWeapon.text = "Weapon"
+        btnWeapon.setOnClickListener {
+            createAdditionalWeaponButtons()
+            createBackToMajorAttackButton()
+        }
+        attackButtonsLayout.addView(btnWeapon)
+    }
+
+    private fun createAdditionalWeaponButtons() {
+        attackButtonsLayout.removeAllViews()
+        val btnMagic = Button(this)
+        btnMagic.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        btnMagic.text = "Physical attack"
+        btnMagic.setOnClickListener {
+            fightFSM.handle(ButtonType.PhysicalAttack.ordinal)
+            fightFSM.execute()
+            fightFSM.handle(ButtonType.None.ordinal)
+        }
+        attackButtonsLayout.addView(btnMagic)
+
+    }
+
+    private fun createBackToMajorAttackButton() {
+        val btnBackToAttack = Button(this)
+        btnBackToAttack.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        btnBackToAttack.text = "Back"
+        btnBackToAttack.setOnClickListener {
+            attackButtonsLayout.removeAllViews()
+            createWeaponButton()
+            createMagicButton()
+            createObjectsButton()
+            createBackToAttackButton()
+        }
+        attackButtonsLayout.addView(btnBackToAttack)
+
     }
 
     private fun findEnemy(enemyId: String): Enemy? {

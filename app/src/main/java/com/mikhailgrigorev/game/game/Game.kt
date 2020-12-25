@@ -65,7 +65,7 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
         val bitmapComponent = obj.getComponent(BitmapComponent::class.java)
 
         var group = bitmapComponent!!._group
-        if (group in "0,Skeleton,skeleton,Bones,devil")
+        if (group in "0,Skeleton,skeleton,Bones,devil,13,Zombie,zombie,Bones,devil")
             group = "enemy"
 
         var positive = "Close"
