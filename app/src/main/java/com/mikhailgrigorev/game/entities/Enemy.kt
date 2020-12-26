@@ -12,10 +12,18 @@ class Enemy(context: Context,
             _y: Float,
             _size: Float,
             _id: Int,
+            _health: Int,
+            _damage: Int,
+            _defence: Int,
+            _cc: Int,
+            _cm: Float,
             _name: String,
             _desc: String,
             _bitmapId: Int,
-            _group: String
+            _group: String,
+            _naturalDamageValue: NatureForcesValues,
+            _naturalValueDef: NatureForcesValues,
+            _multiple: Int,
                ): Entity() {
 
     private var id = _id
@@ -26,6 +34,13 @@ class Enemy(context: Context,
     private var x = _x
     private var y = _y
     private var size = _size
+    private var health = _health
+    private var damage = _damage
+    private var defence = _defence
+    private var cc = _cc
+    private var cm = _cm
+    private val naturalDamageValue = _naturalDamageValue
+    private val naturalValueDef = _naturalValueDef
 
     private var bitmapComponent: BitmapComponent
     private var positionComponent: PositionComponent
@@ -33,6 +48,7 @@ class Enemy(context: Context,
     private var damageComponent: DamageComponent
     private var defenceComponent: DefenceComponent
     private var upgradeComponent: UpgradeComponent
+    private var multiple: Int = _multiple
     init{
         positionComponent = this.addComponent(PositionComponent(
             x,
@@ -46,21 +62,20 @@ class Enemy(context: Context,
             name = name,
             desc = desc,
             bitmapId = bitmapId,
-            group = group
+            group = group,
+            multiple = multiple
         ))
         healthComponent = this.addComponent(HealthComponent(
-            300
+            health
         ))
-        val naturalDamageValue = NatureForcesValues(5, 10, 20, 30)
         damageComponent = this.addComponent(
             DamageComponent(
-                10,naturalDamageValue,10,5f
+                damage,naturalDamageValue,cc,cm
             )
         )
-        val naturalValueDef = NatureForcesValues(0, 0, 0, 0)
         defenceComponent = this.addComponent(
             DefenceComponent(
-                0, naturalValueDef
+                defence, naturalValueDef
             )
         )
         upgradeComponent = this.addComponent(
