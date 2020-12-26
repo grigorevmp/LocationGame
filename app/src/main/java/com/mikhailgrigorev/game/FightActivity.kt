@@ -140,22 +140,58 @@ class FightActivity : AppCompatActivity() {
         val choseAttackState = fightFSM.addState(State {})
 
         val attackState = fightFSM.addState(State {
-            val playerDamageComponent = player.getComponent(DamageComponent::class.java)
-            val playerHealthComponent = player.getComponent(HealthComponent::class.java)
+            if (enemyMulId == "-1" ) {
+                val playerDamageComponent = player.getComponent(DamageComponent::class.java)
+                val playerHealthComponent = player.getComponent(HealthComponent::class.java)
 
-            val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
-            val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
+                val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
+                val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
 
-            if (playerDamageComponent != null && enemyHealthComponent != null &&
-                enemyDamageComponent != null && playerHealthComponent != null
-            ) {
-                enemyHealthComponent.applyDamage(playerDamageComponent)
-                playerHealthComponent.applyDamage(enemyDamageComponent)
+                if (playerDamageComponent != null && enemyHealthComponent != null &&
+                    enemyDamageComponent != null && playerHealthComponent != null
+                ) {
+                    enemyHealthComponent.applyDamage(playerDamageComponent)
+                    playerHealthComponent.applyDamage(enemyDamageComponent)
 
-                updateAllHealthText(
-                    playerHealthComponent.healthPoints.toString(),
-                    enemyHealthComponent.healthPoints.toString()
-                )
+                    updateAllHealthText(
+                        playerHealthComponent.healthPoints.toString(),
+                        enemyHealthComponent.healthPoints.toString()
+                    )
+                }
+            }
+            else{
+                val playerDamageComponent = player.getComponent(DamageComponent::class.java)
+                val playerHealthComponent = player.getComponent(HealthComponent::class.java)
+                val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
+                val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
+
+
+                if (playerDamageComponent != null && playerHealthComponent != null
+                ) {
+                    if ( enemyHealthComponent != null && enemyDamageComponent != null
+                    ) {
+                        enemyHealthComponent.applyDamage(playerDamageComponent)
+                        updateAllHealthText(
+                            playerHealthComponent.healthPoints.toString(),
+                            enemyHealthComponent.healthPoints.toString()
+                        )
+                    }
+
+                    val enemiesIterator = enemies.iterator()
+                    enemiesIterator.forEach {
+                        val enemyDamageComponentTmp = it.getComponent(DamageComponent::class.java)
+                        val enemyHealthComponentTmp = it.getComponent(HealthComponent::class.java)
+                        if ( enemyHealthComponentTmp != null && enemyDamageComponentTmp != null
+                        ) {
+                            playerHealthComponent.applyDamage(enemyDamageComponentTmp)
+                            updateAllHealthText(
+                                playerHealthComponent.healthPoints.toString(),
+                                enemyHealthComponent!!.healthPoints.toString()
+                            )
+                        }
+                    }
+
+                }
             }
         })
 
