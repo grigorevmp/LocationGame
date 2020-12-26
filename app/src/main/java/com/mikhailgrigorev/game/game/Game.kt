@@ -79,8 +79,12 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
         //Instantiate builder variable
         val builder = AlertDialog.Builder(context)
 
+        val enemyMultiple = bitmapComponent._multiple
         // set title
-        builder.setTitle(bitmapComponent._name)
+        if(enemyMultiple == 0)
+            builder.setTitle(bitmapComponent._name)
+        else
+            builder.setTitle("BIG MONSTER TOWER")
 
         //set content area
         builder.setMessage("You touched ${positionComponent!!.rect}")
@@ -91,17 +95,25 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
         ) { _, _ ->
             if(group == "enemy"){
                 val intent = Intent(mContext, FightActivity::class.java)
-                val enemyMultiple = true
-                if(!enemyMultiple) {
+                if(enemyMultiple == 0) {
                     // One enemy sample
                     intent.putExtra("enemyId", bitmapComponent._id.toString())
                     println("Fighting with... @id#" + bitmapComponent._id.toString())
                 }
                 else {
-                    // Multiple
-                        val ids = "10,11,12,13"
-                    intent.putExtra("enemyMulId", ids)
-                    println("Fighting with... @id#" + ids)
+                    var enemiesIds = ""
+                    enemiesLoader = EnemiesLoader(context)
+                    for (enemy in enemiesLoader!!.enemies){
+                        if((obj.getComponent(PositionComponent::class.java)!!.x == enemy.getComponent(PositionComponent::class.java)!!.x)
+                            and (obj.getComponent(PositionComponent::class.java)!!.y == enemy.getComponent(PositionComponent::class.java)!!.y)
+                        and (enemy.getComponent(BitmapComponent::class.java)!!._multiple == 1)){
+                            enemiesIds += enemy.getComponent(BitmapComponent::class.java)!!._id
+                            enemiesIds += ","
+                        }
+                    }
+                    enemiesIds = enemiesIds.substring(0, enemiesIds.length - 1)
+                    intent.putExtra("enemyMulId", enemiesIds)
+                    println("Fighting with... @id#$enemiesIds")
                 }
                 val origin = mContext as Activity
                 origin.startActivity(intent)
@@ -134,6 +146,7 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
                     val positionComponent = obj.getComponent(PositionComponent::class.java)
                     if (positionComponent != null && positionComponent.rect.contains(x, y)) {
                         alertDialog(context, obj)
+                        break
                     }
                 }
                 return true
@@ -270,7 +283,7 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
             // background
             //canvas!!.drawColor(Color.BLACK)
             canvas!!.drawBitmap(
-                BitmapFactory.decodeResource(resources, R.drawable.map),
+                BitmapFactory.decodeResource(resources, R.drawable.map2),
                 0f,
                 0f,
                 null

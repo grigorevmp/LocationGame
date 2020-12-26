@@ -1,9 +1,14 @@
 package com.mikhailgrigorev.game
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.mikhailgrigorev.game.activities.MainActivity
@@ -39,151 +44,226 @@ class FightActivity : AppCompatActivity() {
         var enemy: Enemy? = null
         val enemies: ArrayList<Enemy> = ArrayList()
 
-        // AUTH TO MAIN
-        menuBack.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("Set", "Game")
-            startActivity(intent)
-            finish()
-        }
-
-
+        // Get information about lone enemy
         val enemyId = if(intent.getStringExtra("enemyId") != null) {
             intent.getStringExtra("enemyId")
         } else{
             "-1"
         }
 
+        // Get information about multiple enemies
         val enemyMulId = if(intent.getStringExtra("enemyMulId") != null) {
             intent.getStringExtra("enemyMulId")
         } else{
             "-1"
         }
 
+        // Get lone enemy if exists
         if(enemyId != "-1" ){
-            enemy = findEnemy(enemyId)
+            enemy = findEnemyByID(enemyId)
+
+            // Create image button
+            val btnEnemy = ImageButton(this)
+            btnEnemy.layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            )
+            val index = 0
+            btnEnemy.id = enemyId.toInt()
+            btnEnemy.setImageResource(enemy!!.getComponent(BitmapComponent::class.java)!!._bitmapId)
+            btnEnemy.setBackgroundColor(Color.TRANSPARENT)
+            btnEnemy.scaleX = 1f
+            btnEnemy.scaleY = 1f
+            btnEnemy.setOnClickListener {
+                updateViewData(enemy, player)
+
+                val index2: Int =  btnEnemy.id
+                val buttonTest = findViewById<ImageButton>(index2)
+                buttonTest.scaleX = 1f
+                buttonTest.scaleY = 1f
+            }
+            val paramsLO: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            )
+            paramsLO.setMargins(30, 0, 30, 0)
+            chooseEnemyLayout.addView(btnEnemy, paramsLO)
         }
 
+        // Get multiple enemies if exist
         if(enemyMulId != "-1" ){
             val enemyStr = enemyMulId.split(',')
             val enemyStrIter = enemyStr.iterator()
             var i = 0
             enemyStrIter.forEach {
-                findEnemy(it)?.let { it1 -> enemies.add(it1) }
+                findEnemyByID(it)?.let { it1 -> enemies.add(it1) }
 
-                val btnEnemy = Button(this)
+                // Create image button
+                val btnEnemy = ImageButton(this)
                 btnEnemy.layoutParams = ConstraintLayout.LayoutParams(
                     ConstraintLayout.LayoutParams.WRAP_CONTENT,
                     ConstraintLayout.LayoutParams.WRAP_CONTENT
                 )
-                btnEnemy.text = "Id${it}#${i}"
                 val index: Int = i
-                btnEnemy.id = i
+                btnEnemy.id = it.toInt()
+                btnEnemy.setImageResource(enemies[index].getComponent(BitmapComponent::class.java)!!._bitmapId)
+                btnEnemy.setBackgroundColor(Color.TRANSPARENT)
+                btnEnemy.scaleX = 0.8f
+                btnEnemy.scaleY = 0.8f
+                if(i== 0){
+                    btnEnemy.scaleX = 1f
+                    btnEnemy.scaleY = 1f
+                }
                 btnEnemy.setOnClickListener {
                     enemy = enemies[index]
-                    logEnemyIdText("Fighting with #${enemy!!.getComponent(BitmapComponent::class.java)!!._name}")
-                    currentId.text = enemy!!.getComponent(BitmapComponent::class.java)!!._id.toString()
-                    updateAllHealthText(
-                        player.getComponent(HealthComponent::class.java)!!.healthPoints.toString(),
-                        enemy!!.getComponent(HealthComponent::class.java)!!.healthPoints.toString()
-                    )
+                    updateViewData(enemy, player)
+
+                    scaleAllButtons(enemies)
+                    val index2: Int =  btnEnemy.id
+                    val buttonTest = findViewById<ImageButton>(index2)
+                    buttonTest.scaleX = 1f
+                    buttonTest.scaleY = 1f
                 }
+                val paramsLO: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
+                    ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                    ConstraintLayout.LayoutParams.WRAP_CONTENT
+                )
+                paramsLO.setMargins(30, 0, 30, 0)
+                chooseEnemyLayout.addView(btnEnemy, paramsLO)
+
+
                 i++
-                chooseEnemyLayout.addView(btnEnemy)
             }
             enemy = enemies[0]
         }
 
-        // Exit if data not exists
+        // Exit if data doesn't not exist
         if ((enemy == null) or ((enemyId == "-1") and (enemyMulId == "-1")))
             exit(-1)
 
+        // Set info text
+        updateViewData(enemy, player)
 
-        logEnemyIdText("Fighting with #${enemy!!.getComponent(BitmapComponent::class.java)!!._name}")
-        currentId.text = enemy!!.getComponent(BitmapComponent::class.java)!!._id.toString()
-        updateAllHealthText(
-            player.getComponent(HealthComponent::class.java)!!.healthPoints.toString(),
-            enemy!!.getComponent(HealthComponent::class.java)!!.healthPoints.toString()
+        // Create attack button tree
+        createAttackButton()
 
-        )
-
-
-        // listeners
-
-        fightButton.setOnClickListener {
-            fightFSM.handle(ButtonType.Attack.ordinal)
-            fightFSM.execute()
-            attackButtonsLayout.removeAllViews()
-            createWeaponButton()
-            createMagicButton()
-            createObjectsButton()
-            createBackToAttackButton()
-        }
-
-        physicalAttackButton.setOnClickListener{
-            fightFSM.handle(ButtonType.PhysicalAttack.ordinal)
-            fightFSM.execute()
-            fightFSM.handle(ButtonType.None.ordinal)
-        }
-
-        naturalAttackButton.setOnClickListener {
-            fightFSM.handle(ButtonType.NatureAttack.ordinal)
-            fightFSM.execute()
-            fightFSM.handle(ButtonType.None.ordinal)
+        // Escape from the fight
+        escapeButton.setOnClickListener {
+            exit(2)
         }
 
         // Выбирает атаку
-        val choseState = fightFSM.addState(State {})
+        val chooseState = fightFSM.addState(State {})
 
         // Выбирает между физической и магической
-        val choseAttackState = fightFSM.addState(State {})
+        val chooseAttackState = fightFSM.addState(State {})
 
         val attackState = fightFSM.addState(State {
-            val playerDamageComponent = player.getComponent(DamageComponent::class.java)
-            val playerHealthComponent = player.getComponent(HealthComponent::class.java)
+            if (enemyMulId == "-1") {
+                val playerDamageComponent = player.getComponent(DamageComponent::class.java)
+                val playerHealthComponent = player.getComponent(HealthComponent::class.java)
 
-            val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
-            val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
+                val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
+                val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
 
-            if (playerDamageComponent != null && enemyHealthComponent != null &&
-                enemyDamageComponent != null && playerHealthComponent != null
-            ) {
-                enemyHealthComponent.applyDamage(playerDamageComponent)
-                playerHealthComponent.applyDamage(enemyDamageComponent)
+                if (playerDamageComponent != null && enemyHealthComponent != null &&
+                    enemyDamageComponent != null && playerHealthComponent != null
+                ) {
+                    enemyHealthComponent.applyDamage(playerDamageComponent)
+                    playerHealthComponent.applyDamage(enemyDamageComponent)
 
-                updateAllHealthText(
-                    playerHealthComponent.healthPoints.toString(),
-                    enemyHealthComponent.healthPoints.toString()
-                )
+                    setEnemyHealthText(enemyHealthComponent.healthPoints.toString(),
+                        enemy!!.getComponent(BitmapComponent::class.java)!!._id)
+                    setPlayerHealthText(playerHealthComponent.healthPoints.toString())
+                }
+            } else {
+                val playerDamageComponent = player.getComponent(DamageComponent::class.java)
+                val playerHealthComponent = player.getComponent(HealthComponent::class.java)
+                val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
+                val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
+
+
+                if (playerDamageComponent != null && playerHealthComponent != null
+                ) {
+                    if (enemyHealthComponent != null && enemyDamageComponent != null
+                    ) {
+                        enemyHealthComponent.applyDamage(playerDamageComponent)
+                        setEnemyHealthText(enemyHealthComponent.healthPoints.toString(),
+                            enemy!!.getComponent(BitmapComponent::class.java)!!._id)
+                    }
+
+                    val enemiesIterator = enemies.iterator()
+                    enemiesIterator.forEach {
+                        val enemyDamageComponentTmp = it.getComponent(DamageComponent::class.java)
+                        val enemyHealthComponentTmp = it.getComponent(HealthComponent::class.java)
+                        if (enemyHealthComponentTmp != null && enemyDamageComponentTmp != null
+                        ) {
+                            playerHealthComponent.applyDamage(enemyDamageComponentTmp)
+                            setPlayerHealthText(playerHealthComponent.healthPoints.toString())
+                        }
+                    }
+
+                }
             }
         })
 
-        attackState.addTransition(Transition { return@Transition choseState })
+        attackState.addTransition(Transition { return@Transition chooseState })
 
-        choseState.addTransition(Transition { button ->
+        chooseState.addTransition(Transition { button ->
             if (button == ButtonType.Attack.ordinal) {
-                return@Transition choseAttackState
+                return@Transition chooseAttackState
 
             }
             return@Transition null
         })
 
-        choseAttackState.addTransition(Transition { button ->
+        chooseAttackState.addTransition(Transition { button ->
             if (button == ButtonType.PhysicalAttack.ordinal || button == ButtonType.NatureAttack.ordinal) {
                 return@Transition attackState
             }
             return@Transition null
         })
 
-        fightFSM.setCurrentState(choseState)
+        fightFSM.setCurrentState(chooseState)
 
-        escapeButton.setOnClickListener {
-            exit(2)
+    }
+
+    private fun hideImageButtonById(id: Int) {
+        val buttonTest = findViewById<ImageButton>(id)
+        buttonTest.visibility = View.GONE
+    }
+
+    private fun showImageButtonById(id: Int) {
+        val buttonTest = findViewById<ImageButton>(id)
+        buttonTest.visibility = View.VISIBLE
+    }
+
+    private fun scaleAllButtons(enemies: ArrayList<Enemy>){
+        val iter = enemies.iterator()
+        iter.forEach { it3 ->
+            val id = it3.getComponent(BitmapComponent::class.java)!!._id
+            val buttonTest = findViewById<ImageButton>(id)
+            buttonTest.scaleX = 0.8f
+            buttonTest.scaleY = 0.8f
         }
 
     }
 
+    private fun updateViewData(enemy: Enemy?, player: Player) {
+        /*
+        Update visual info
+         */
+        logEnemyIdText("Fighting with #${enemy!!.getComponent(BitmapComponent::class.java)!!._name}")
+        currentId.text = enemy.getComponent(BitmapComponent::class.java)!!._id.toString()
+        setEnemyHealthText(enemy.getComponent(HealthComponent::class.java)!!.healthPoints.toString(),
+            enemy.getComponent(BitmapComponent::class.java)!!._id)
+        setPlayerHealthText(player.getComponent(HealthComponent::class.java)!!.healthPoints.toString())
+    }
+
     private fun createBackToAttackButton() {
+        /*
+        2 level: Back to 1 level
+         */
         val btnBackToAttack = Button(this)
         btnBackToAttack.layoutParams = ConstraintLayout.LayoutParams(
             ConstraintLayout.LayoutParams.WRAP_CONTENT,
@@ -191,12 +271,15 @@ class FightActivity : AppCompatActivity() {
         )
         btnBackToAttack.text = "Back"
         btnBackToAttack.setOnClickListener {
-            attackButtonsLayout.removeAllViews()
+            createAttackButton()
         }
         attackButtonsLayout.addView(btnBackToAttack)
     }
 
     private fun createObjectsButton() {
+        /*
+        2 level: create Physical attacking buttons
+         */
         val btnObject = Button(this)
         btnObject.layoutParams = ConstraintLayout.LayoutParams(
             ConstraintLayout.LayoutParams.WRAP_CONTENT,
@@ -213,10 +296,15 @@ class FightActivity : AppCompatActivity() {
     }
 
     private fun createAdditionalObjectButtons() {
-        // NO objects
+        /*
+        3 level: directly attack
+         */
     }
 
     private fun createMagicButton() {
+        /*
+        2 level: create Physical attacking buttons
+         */
         val btnMagic = Button(this)
         btnMagic.layoutParams = ConstraintLayout.LayoutParams(
             ConstraintLayout.LayoutParams.WRAP_CONTENT,
@@ -231,6 +319,9 @@ class FightActivity : AppCompatActivity() {
     }
 
     private fun createAdditionalMagicButtons() {
+        /*
+        3 level: directly attack
+         */
         attackButtonsLayout.removeAllViews()
         val btnMagic = Button(this)
         btnMagic.layoutParams = ConstraintLayout.LayoutParams(
@@ -242,12 +333,15 @@ class FightActivity : AppCompatActivity() {
             fightFSM.handle(ButtonType.NatureAttack.ordinal)
             fightFSM.execute()
             fightFSM.handle(ButtonType.None.ordinal)
+            createAttackButton()
         }
         attackButtonsLayout.addView(btnMagic)
-
     }
 
     private fun createWeaponButton() {
+        /*
+        2 level: create Physical attacking buttons
+         */
         val btnWeapon = Button(this)
         btnWeapon.layoutParams = ConstraintLayout.LayoutParams(
             ConstraintLayout.LayoutParams.WRAP_CONTENT,
@@ -262,6 +356,9 @@ class FightActivity : AppCompatActivity() {
     }
 
     private fun createAdditionalWeaponButtons() {
+        /*
+        3 level: directly attack
+         */
         attackButtonsLayout.removeAllViews()
         val btnMagic = Button(this)
         btnMagic.layoutParams = ConstraintLayout.LayoutParams(
@@ -273,12 +370,16 @@ class FightActivity : AppCompatActivity() {
             fightFSM.handle(ButtonType.PhysicalAttack.ordinal)
             fightFSM.execute()
             fightFSM.handle(ButtonType.None.ordinal)
+            createAttackButton()
         }
         attackButtonsLayout.addView(btnMagic)
 
     }
 
     private fun createBackToMajorAttackButton() {
+        /*
+        3 level: Back to 2 level button
+         */
         val btnBackToAttack = Button(this)
         btnBackToAttack.layoutParams = ConstraintLayout.LayoutParams(
             ConstraintLayout.LayoutParams.WRAP_CONTENT,
@@ -296,7 +397,34 @@ class FightActivity : AppCompatActivity() {
 
     }
 
-    private fun findEnemy(enemyId: String): Enemy? {
+    private fun createAttackButton() {
+        /*
+        1 level: Main attack button
+         */
+        attackButtonsLayout.removeAllViews()
+        val btnBackToAttack = Button(this)
+        btnBackToAttack.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        btnBackToAttack.text = "Attack"
+        btnBackToAttack.setOnClickListener {
+            fightFSM.handle(ButtonType.Attack.ordinal)
+            fightFSM.execute()
+            attackButtonsLayout.removeAllViews()
+            createWeaponButton()
+            createMagicButton()
+            createObjectsButton()
+            createBackToAttackButton()
+        }
+        attackButtonsLayout.addView(btnBackToAttack)
+
+    }
+
+    private fun findEnemyByID(enemyId: String): Enemy? {
+        /*
+        Find enemy by ID in files
+         */
         val enemiesLoader = EnemiesLoader(this)
         for (enemyIterator in enemiesLoader.enemies){
             if(enemyIterator.getComponent(BitmapComponent::class.java)!!._id.toString() == enemyId) {
@@ -307,38 +435,71 @@ class FightActivity : AppCompatActivity() {
     }
 
     private fun exit(errorCode: Int = -1){
+        /*
+        Left fight
+         */
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("Set", "Game")
+        intent.putExtra("Reason", errorCode)
         startActivity(intent)
         finish()
     }
 
 
     private fun logEnemyIdText(message: String){
+        /*
+        Set header "Fighting with..."
+         */
         header.text = message
     }
 
-    private fun updateAllHealthText(valuePlayer: String, valueEnemy: String){
-        if (valuePlayer.toInt() < 0)
+    private fun setPlayerHealthText(valuePlayer: String){
+    /*
+    Check correctness of player health values
+     */
+        if (valuePlayer.toInt() <= 0) {
             updatePlayerHealthText("0")
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("You lose")
+            builder.setMessage("You have been killed")
+            builder.setCancelable(false)
+            //set negative button
+            builder.setPositiveButton(
+                "Ok =("
+            ) { _, _ ->
+                exit(1)
+            }
+            builder.show()
+
+        }
         else
             updatePlayerHealthText(valuePlayer)
-        if (valuePlayer.toInt() < 0)
-            updateHealthText("0")
+    }
+
+    private fun setEnemyHealthText(valueEnemy: String, id: Int){
+        /*
+        Check correctness of enemy health values
+         */
+        if (valueEnemy.toInt() <= 0) {
+            updateEnemyHealthText("0")
+            hideImageButtonById(id)
+        }
         else
-            updateHealthText(valueEnemy)
+            updateEnemyHealthText(valueEnemy)
     }
 
     private fun updatePlayerHealthText(value: String){
+        /*
+        Set correct health values to player
+         */
         playerHPValue.text = value
     }
 
-    private fun updateHealthText(value: String){
+    private fun updateEnemyHealthText(value: String){
+        /*
+        Set correct health values to enemy
+         */
         healthValue.text = value
-    }
-
-    private fun fight(){
-
     }
 
 

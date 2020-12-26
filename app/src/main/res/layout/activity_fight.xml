@@ -7,27 +7,16 @@
     android:animateLayoutChanges="true"
     tools:context=".FightActivity">
 
-    <ImageView
-        android:id="@+id/menuBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="40dp"
-        android:src="@drawable/arrow_left"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/menu_back" />
-
     <TextView
         android:id="@+id/header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
         android:text="@string/fighting"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/menuBack"
-        app:layout_constraintStart_toEndOf="@+id/menuBack"
-        app:layout_constraintTop_toTopOf="@+id/menuBack" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/healthName"
@@ -75,6 +64,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:text="Fight"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/escapeButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -100,22 +90,25 @@
         app:layout_constraintBottom_toTopOf="@+id/physicalAttackButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
     <HorizontalScrollView
         android:id="@+id/scrollChooseEnemyLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/currentIdText">
-    <LinearLayout
-        android:id="@+id/chooseEnemyLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/chooseEnemyLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
 
 
-    </LinearLayout>
+        </LinearLayout>
     </HorizontalScrollView>
 
     <TextView
