@@ -12,7 +12,8 @@ class BitmapComponent(
     name: String = "objectName",
     desc: String= "objectDesc",
     bitmapId: Int = 0,
-    group: String = "static"
+    group: String = "static",
+    multiple: Int = 0
 ) : Component() {
 
     // id
@@ -25,10 +26,17 @@ class BitmapComponent(
     var _desc: String = desc
         private set
     // id картинки
-    private var _bitmapId: Int = bitmapId
-
+    var _bitmapId: Int = bitmapId
+        private set
+    // id картинки
+    var _bitmapMultiple: Bitmap? = null
+        private set
+    // группа персонажей
+    var _multiple: Int = multiple
+        private set
     // картинка
-    private var _bitmap : Bitmap? = null
+    var _bitmap : Bitmap? = null
+        private set
 
     // классы
     var _group : String = group
@@ -45,6 +53,14 @@ class BitmapComponent(
             false
         )
         cBitmap.recycle()
+        val cBitmapMul = BitmapFactory.decodeResource(context.resources, context.resources.getIdentifier("tower", "drawable", context.packageName))
+        _bitmapMultiple = Bitmap.createScaledBitmap(
+            cBitmapMul,
+            (size * Game.unitW).toInt(),
+            (size * Game.unitH).toInt(),
+            false
+        )
+        cBitmapMul.recycle()
     }
 
     // тут будут вычисляться новые координаты
@@ -54,11 +70,26 @@ class BitmapComponent(
     fun draw(paint: Paint?, canvas: Canvas) {
         val positionComponent = this.entity?.getComponent(PositionComponent::class.java)
         if(positionComponent != null)
-        _bitmap?.let { canvas.drawBitmap(
-            it,
-            positionComponent.x * Game.unitW,
-            positionComponent.y * Game.unitH,
-            paint) }
+            if(_multiple == 0) {
+                _bitmap?.let {
+                    canvas.drawBitmap(
+                        it,
+                        positionComponent.x * Game.unitW,
+                        positionComponent.y * Game.unitH,
+                        paint
+                    )
+                }
+            }
+        else{
+                _bitmapMultiple?.let {
+                    canvas.drawBitmap(
+                        it,
+                        positionComponent.x * Game.unitW,
+                        positionComponent.y * Game.unitH,
+                        paint
+                    )
+                }
+            }
     }
 
 }
