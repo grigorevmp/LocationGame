@@ -48,5 +48,6 @@ class EnemiesLoader(context: Context) {
             )
             enemies.add(obj)
         }
+
     }
 }
