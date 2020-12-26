@@ -109,7 +109,8 @@ class FightActivity : AppCompatActivity() {
 
 
         // listeners
-
+        createAttackButton()
+/*
         fightButton.setOnClickListener {
             fightFSM.handle(ButtonType.Attack.ordinal)
             fightFSM.execute()
@@ -131,7 +132,7 @@ class FightActivity : AppCompatActivity() {
             fightFSM.execute()
             fightFSM.handle(ButtonType.None.ordinal)
         }
-
+*/
         // Выбирает атаку
         val choseState = fightFSM.addState(State {})
 
@@ -191,7 +192,7 @@ class FightActivity : AppCompatActivity() {
         )
         btnBackToAttack.text = "Back"
         btnBackToAttack.setOnClickListener {
-            attackButtonsLayout.removeAllViews()
+            createAttackButton()
         }
         attackButtonsLayout.addView(btnBackToAttack)
     }
@@ -242,9 +243,9 @@ class FightActivity : AppCompatActivity() {
             fightFSM.handle(ButtonType.NatureAttack.ordinal)
             fightFSM.execute()
             fightFSM.handle(ButtonType.None.ordinal)
+            createAttackButton()
         }
         attackButtonsLayout.addView(btnMagic)
-
     }
 
     private fun createWeaponButton() {
@@ -273,6 +274,7 @@ class FightActivity : AppCompatActivity() {
             fightFSM.handle(ButtonType.PhysicalAttack.ordinal)
             fightFSM.execute()
             fightFSM.handle(ButtonType.None.ordinal)
+            createAttackButton()
         }
         attackButtonsLayout.addView(btnMagic)
 
@@ -286,6 +288,27 @@ class FightActivity : AppCompatActivity() {
         )
         btnBackToAttack.text = "Back"
         btnBackToAttack.setOnClickListener {
+            attackButtonsLayout.removeAllViews()
+            createWeaponButton()
+            createMagicButton()
+            createObjectsButton()
+            createBackToAttackButton()
+        }
+        attackButtonsLayout.addView(btnBackToAttack)
+
+    }
+
+    private fun createAttackButton() {
+        attackButtonsLayout.removeAllViews()
+        val btnBackToAttack = Button(this)
+        btnBackToAttack.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        btnBackToAttack.text = "Attack"
+        btnBackToAttack.setOnClickListener {
+            fightFSM.handle(ButtonType.Attack.ordinal)
+            fightFSM.execute()
             attackButtonsLayout.removeAllViews()
             createWeaponButton()
             createMagicButton()
