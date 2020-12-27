@@ -9,7 +9,6 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.service.autofill.Validators.not
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,9 +20,8 @@ import com.mikhailgrigorev.game.R
 import kotlinx.android.synthetic.main.fragment_marat.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 
 class MaratFragment : Fragment() {
@@ -50,7 +48,7 @@ class MaratFragment : Fragment() {
             Manifest.permission.ACCESS_FINE_LOCATION
         )
 
-        
+
         val l = this.fineLocationPermissionApproved()
 
         if (!l) {
@@ -63,16 +61,28 @@ class MaratFragment : Fragment() {
         val a : FragmentActivity? = getActivity()
         if (a != null) {
             Log.d("NULL", "Notnull")
-            val ctx: Context? = a?.getApplicationContext()
+            val ctx: Context? = a.getApplicationContext()
             Configuration.getInstance()
                 .load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
             Configuration.getInstance().setUserAgentValue(context?.getPackageName());
         }
-        val map:MapView? = mapView
+        val map:MapView = myMap
+
+        val view: View = inflater.inflate(R.layout.fragment_marat, container, false)
+        val map_ : MapView = view.findViewById<View>(R.id.myMap) as MapView
+        val mMap  = map_.getMapAsync()
+
+
+        map.setTileSource(TileSourceFactory.MAPNIK)
+        map.setBuiltInZoomControls(false);
+        map.setMultiTouchControls(true);
         Log.d("MAP", "YA TUT")
 
-        map?.setTileSource(TileSourceFactory.MAPNIK)
 
+        val mapController = map.getController()
+        mapController?.setZoom(9.5)
+        val startPoint = GeoPoint(54.8583, 54.2944)
+        mapController?.setCenter(startPoint)
 
         return inflater.inflate(R.layout.fragment_marat, container, false)
     }
