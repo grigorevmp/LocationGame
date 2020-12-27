@@ -8,7 +8,7 @@ import android.graphics.*
 import android.os.Build
 import android.view.*
 import androidx.appcompat.app.AlertDialog
-import com.mikhailgrigorev.game.FightActivity
+import com.mikhailgrigorev.game.activities.FightActivity
 import com.mikhailgrigorev.game.R
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
