@@ -38,6 +38,7 @@
     <string name="auth_info">Logging…</string>
     <string name="Forward">Forward</string>
     <string name="fighting">Fighting</string>
+    <string name="title_activity_map">Map</string>
 
 
 </resources>

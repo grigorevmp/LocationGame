@@ -61,7 +61,9 @@ class MainFragment : Fragment() {
         }
 
         menuMap.setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_maratFragment)
+           // findNavController().navigate(R.id.action_FirstFragment_to_maratFragment)
+            val intent = Intent(context, MapActivity::class.java)
+            startActivity(intent)
         }
 
     }
