@@ -6,27 +6,12 @@ import android.database.Cursor
 import android.util.Log
 import com.mikhailgrigorev.game.core.data.NatureForcesValues
 import com.mikhailgrigorev.game.core.ecs.Entity
+import com.mikhailgrigorev.game.databases.DBHelperFunctions
 import com.mikhailgrigorev.game.databases.EnemyDBHelper
 import com.mikhailgrigorev.game.entities.Enemy
 import com.mikhailgrigorev.game.game.Game
 
-
-fun getCount(id: Int, context: Context): Int {
-    var c: Cursor? = null
-    val db = EnemyDBHelper(context).readableDatabase
-    return try {
-        val query = "select * from enemies where _id = $id"
-        c = db.rawQuery(query, null)
-        if (c.moveToFirst()) {
-            1
-        } else 0
-    } finally {
-        c?.close()
-        db?.close()
-    }
-}
-
-class EnemiesLoader(context: Context) {
+class EnemiesLoader(context: Context, specialSpawn:Boolean = false) {
     /**
      * ENEMY CLASS
      * format: EnemyID, NAME, CLASS, DESCRIPTION, BITMAP_HEADER
@@ -58,38 +43,15 @@ class EnemiesLoader(context: Context) {
         val dataForFirstLoad = CSVReader(context, dataFileName).data
         val data = java.util.ArrayList<IntArray>()
 
-        // Database writing TEST
-        val dbHelper = EnemyDBHelper(context)
-        val database = dbHelper.writableDatabase
-        val contentValues = ContentValues()
-        for (enemy in dataForFirstLoad) {
-            contentValues.put(EnemyDBHelper.EnemyID, enemy[0].toInt())
-            contentValues.put(EnemyDBHelper.multiple, enemy[1].toInt())
-            contentValues.put(EnemyDBHelper.X, enemy[2].toInt())
-            contentValues.put(EnemyDBHelper.Y, enemy[3].toInt())
-            contentValues.put(EnemyDBHelper.SIZE, enemy[4].toInt())
-            contentValues.put(EnemyDBHelper.ID, enemy[5].toInt())
-            contentValues.put(EnemyDBHelper.HEALTH, enemy[6].toInt())
-            contentValues.put(EnemyDBHelper.DMG, enemy[7].toInt())
-            contentValues.put(EnemyDBHelper.AIR, enemy[8].toInt())
-            contentValues.put(EnemyDBHelper.WATER, enemy[9].toInt())
-            contentValues.put(EnemyDBHelper.EARTH, enemy[10].toInt())
-            contentValues.put(EnemyDBHelper.FIRE, enemy[11].toInt())
-            contentValues.put(EnemyDBHelper.CC, enemy[12].toInt())
-            contentValues.put(EnemyDBHelper.CM, enemy[13].toInt())
-            contentValues.put(EnemyDBHelper.DEFENCE, enemy[14].toInt())
-            contentValues.put(EnemyDBHelper.AIR2, enemy[15].toInt())
-            contentValues.put(EnemyDBHelper.WATER2, enemy[16].toInt())
-            contentValues.put(EnemyDBHelper.EARTH2, enemy[17].toInt())
-            contentValues.put(EnemyDBHelper.FIRE2, enemy[18].toInt())
-            contentValues.put(EnemyDBHelper.Special, 0)
-
-            if (getCount(enemy[5].toInt(), context) == 0) {
-                database.insert(EnemyDBHelper.TABLE_ENEMIES, null, contentValues)
+       // Database writing TEST
+       val dbHelper = EnemyDBHelper(context)
+       val database = dbHelper.writableDatabase
+       //val contentValues = ContentValues()
+        if(specialSpawn) {
+            for (enemy in dataForFirstLoad) {
+                DBHelperFunctions().spawnEnemy(context, enemy)
             }
         }
-
-
 
         // Database reading TEST
         val cursor: Cursor =
@@ -155,35 +117,35 @@ class EnemiesLoader(context: Context) {
         for (enemy in data){
             val obj = Enemy(
                 context,
-                _multiple = enemy[1].toInt(),
+                _multiple = enemy[1],
                 _x = enemy[2].toFloat(),
                 _y = Game.maxY + enemy[3].toFloat(),
                 _size = enemy[4].toFloat(),
-                _id = enemy[5].toInt(),
-                _name = enemyClass[enemy[0].toInt()]!![0],
-                _group = enemyClass[enemy[0].toInt()]!![1],
-                _desc = enemyClass[enemy[0].toInt()]!![2],
+                _id = enemy[5],
+                _name = enemyClass[enemy[0]]!![0],
+                _group = enemyClass[enemy[0]]!![1],
+                _desc = enemyClass[enemy[0]]!![2],
                 _bitmapId = context.resources.getIdentifier(
-                    enemyClass[enemy[0].toInt()]!![3],
+                    enemyClass[enemy[0]]!![3],
                     "drawable",
                     context.packageName
                 ),
-                _health = enemy[6].toInt(),
-                _damage = enemy[7].toInt(),
-                _cc = enemy[12].toInt(),
+                _health = enemy[6],
+                _damage = enemy[7],
+                _cc = enemy[12],
                 _cm = enemy[13].toFloat(),
-                _defence = enemy[14].toInt(),
+                _defence = enemy[14],
                 _naturalDamageValue = NatureForcesValues(
-                    enemy[8].toInt(),
-                    enemy[9].toInt(),
-                    enemy[10].toInt(),
-                    enemy[11].toInt()
+                    enemy[8],
+                    enemy[9],
+                    enemy[10],
+                    enemy[11]
                 ),
                 _naturalValueDef = NatureForcesValues(
-                    enemy[15].toInt(),
-                    enemy[16].toInt(),
-                    enemy[17].toInt(),
-                    enemy[18].toInt()
+                    enemy[15],
+                    enemy[16],
+                    enemy[17],
+                    enemy[18]
                 )
             )
             enemies.add(obj)

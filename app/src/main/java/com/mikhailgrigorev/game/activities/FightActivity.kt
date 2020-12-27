@@ -1,6 +1,5 @@
 package com.mikhailgrigorev.game.activities
 
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -20,8 +19,7 @@ import com.mikhailgrigorev.game.core.ecs.Components.HealthComponent
 import com.mikhailgrigorev.game.core.fsm.FSM
 import com.mikhailgrigorev.game.core.fsm.State
 import com.mikhailgrigorev.game.core.fsm.Transition
-import com.mikhailgrigorev.game.databases.EnemyDBHelper
-import com.mikhailgrigorev.game.databases.PlayerDBHelper
+import com.mikhailgrigorev.game.databases.DBHelperFunctions
 import com.mikhailgrigorev.game.entities.Enemy
 import com.mikhailgrigorev.game.entities.Player
 import com.mikhailgrigorev.game.loader.EnemiesLoader
@@ -38,6 +36,8 @@ class FightActivity : AppCompatActivity() {
 
     var fightFSM = FSM<Int>()
     var enemiesNum = 0
+    private var enemy: Enemy? = null
+    private val enemies: ArrayList<Enemy> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -46,8 +46,6 @@ class FightActivity : AppCompatActivity() {
         setContentView(R.layout.activity_fight)
 
         val player = Player(this)
-        var enemy: Enemy? = null
-        val enemies: ArrayList<Enemy> = ArrayList()
 
         // Get information about lone enemy
         val enemyId = if(intent.getStringExtra("enemyId") != null) {
@@ -155,6 +153,7 @@ class FightActivity : AppCompatActivity() {
 
         // Escape from the fight
         escapeButton.setOnClickListener {
+            setNewPlayerHealthToDatabase(this, player)
             exit(2)
         }
 
@@ -179,8 +178,8 @@ class FightActivity : AppCompatActivity() {
                     playerHealthComponent.applyDamage(enemyDamageComponent)
 
                     setEnemyHealthText(enemyHealthComponent.healthPoints.toString(),
-                        enemy!!.getComponent(BitmapComponent::class.java)!!._id, player, this)
-                    setPlayerHealthText(playerHealthComponent.healthPoints.toString())
+                        enemy!!.getComponent(BitmapComponent::class.java)!!._id, player,  this)
+                    setPlayerHealthText(playerHealthComponent.healthPoints.toString(), player, this)
                 }
             } else {
                 val playerDamageComponent = player.getComponent(DamageComponent::class.java)
@@ -195,7 +194,8 @@ class FightActivity : AppCompatActivity() {
                     ) {
                         enemyHealthComponent.applyDamage(playerDamageComponent)
                         setEnemyHealthText(enemyHealthComponent.healthPoints.toString(),
-                            enemy!!.getComponent(BitmapComponent::class.java)!!._id,player, this)
+                            enemy!!.getComponent(BitmapComponent::class.java)!!._id,player,
+                            this)
                     }
 
                     val enemiesIterator = enemies.iterator()
@@ -205,7 +205,7 @@ class FightActivity : AppCompatActivity() {
                         if (enemyHealthComponentTmp != null && enemyDamageComponentTmp != null
                         ) {
                             playerHealthComponent.applyDamage(enemyDamageComponentTmp)
-                            setPlayerHealthText(playerHealthComponent.healthPoints.toString())
+                            setPlayerHealthText(playerHealthComponent.healthPoints.toString(), player, this)
                         }
                     }
 
@@ -256,17 +256,12 @@ class FightActivity : AppCompatActivity() {
     }
 
     private fun setNewPlayerHealthToDatabase(context:Context, player: Player){
-        val dbHelper = PlayerDBHelper(context)
-        val database = dbHelper.writableDatabase
-        val playerId = player.getComponent(BitmapComponent::class.java)!!._id
-        val contentValues = ContentValues()
-
-        contentValues.put(EnemyDBHelper.HEALTH, player.getComponent(HealthComponent::class.java)!!.healthPoints)
-
-        database.update(PlayerDBHelper.TABLE_PLAYER, contentValues, "_id = $playerId", null)
-
+        DBHelperFunctions().setPlayerHealth(context, player)
     }
 
+    private fun deleteEnemyFromDatabase(context:Context, enemy: Enemy){
+        DBHelperFunctions().deleteEnemy(context, enemy)
+    }
 
     private fun updateViewData(enemy: Enemy?, player: Player, context:Context) {
         /*
@@ -276,7 +271,7 @@ class FightActivity : AppCompatActivity() {
         currentId.text = enemy.getComponent(BitmapComponent::class.java)!!._id.toString()
         setEnemyHealthText(enemy.getComponent(HealthComponent::class.java)!!.healthPoints.toString(),
             enemy.getComponent(BitmapComponent::class.java)!!._id, player, context)
-        setPlayerHealthText(player.getComponent(HealthComponent::class.java)!!.healthPoints.toString())
+        setPlayerHealthText(player.getComponent(HealthComponent::class.java)!!.healthPoints.toString(), player, context)
     }
 
     private fun createBackToAttackButton() {
@@ -472,7 +467,7 @@ class FightActivity : AppCompatActivity() {
         header.text = message
     }
 
-    private fun setPlayerHealthText(valuePlayer: String){
+    private fun setPlayerHealthText(valuePlayer: String, player:Player, context: Context){
     /*
     Check correctness of player health values
      */
@@ -486,6 +481,7 @@ class FightActivity : AppCompatActivity() {
             builder.setPositiveButton(
                 "Ok =("
             ) { _, _ ->
+                setNewPlayerHealthToDatabase(context, player)
                 exit(1)
             }
             builder.show()
@@ -500,6 +496,7 @@ class FightActivity : AppCompatActivity() {
          */
         if (valueEnemy.toInt() <= 0) {
             updateEnemyHealthText("0")
+            deleteEnemyFromDatabase(context, enemy!!)
             hideImageButtonById(id)
             enemiesNum -= 1
             if(enemiesNum == 0){
@@ -515,6 +512,14 @@ class FightActivity : AppCompatActivity() {
                     exit(1)
                 }
                 builder.show()
+            }
+            else{
+                enemy = enemies[0]
+                updateViewData(enemy, player, this)
+                val index2: Int = enemies[0].getComponent(BitmapComponent::class.java)!!._id
+                val buttonTest = findViewById<ImageButton>(index2)
+                buttonTest.scaleX = 1f
+                buttonTest.scaleY = 1f
             }
         }
         else

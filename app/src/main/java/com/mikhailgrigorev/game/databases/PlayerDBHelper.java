@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class PlayerDBHelper extends SQLiteOpenHelper{
 
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "playerDb";
     public static final String TABLE_PLAYER = "player";
 
@@ -16,6 +16,7 @@ public class PlayerDBHelper extends SQLiteOpenHelper{
     public static final String SIZE = "size";
     public static final String ID = "_id";
     public static final String HEALTH = "health";
+    public static final String MAXHEALTH = "maxhealth";
     public static final String DMG = "damage";
     public static final String AIR = "airdam";
     public static final String WATER = "waterdam";
@@ -49,6 +50,7 @@ public class PlayerDBHelper extends SQLiteOpenHelper{
                 + SIZE + " integer,"
                 + ID + " integer primary key,"
                 + HEALTH + " integer,"
+                + MAXHEALTH + " integer,"
                 + DMG + " integer,"
                 + AIR + " integer,"
                 + WATER + " integer,"
@@ -73,7 +75,10 @@ public class PlayerDBHelper extends SQLiteOpenHelper{
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("drop table if exists " + TABLE_PLAYER);
-        onCreate(db);
+        if (newVersion > oldVersion) {
+            db.execSQL("ALTER TABLE player ADD COLUMN maxhealth INTEGER DEFAULT 300");
+        }
+        //db.execSQL("drop table if exists " + TABLE_PLAYER);
+        //onCreate(db);
     }
 }

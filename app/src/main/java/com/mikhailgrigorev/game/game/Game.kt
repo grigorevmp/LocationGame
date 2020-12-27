@@ -13,6 +13,7 @@ import com.mikhailgrigorev.game.R
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
 import com.mikhailgrigorev.game.core.ecs.Entity
+import com.mikhailgrigorev.game.databases.DBHelperFunctions
 import com.mikhailgrigorev.game.entities.Player
 import com.mikhailgrigorev.game.loader.BuildingsLoader
 import com.mikhailgrigorev.game.loader.EnemiesLoader
@@ -70,8 +71,8 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
 
         var positive = "Close"
         when(group){
-            "building" -> positive = "Open"
-            "player" -> positive = "Inventory"
+            "building" -> positive = "Respawn enemies"
+            "player" -> positive = "Heal yourself"
             "totem" -> positive = "Buy"
             "enemy" -> positive = "Fight"
         }
@@ -93,31 +94,40 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
         builder.setPositiveButton(
             positive
         ) { _, _ ->
-            if(group == "enemy"){
-                val intent = Intent(mContext, FightActivity::class.java)
-                if(enemyMultiple == 0) {
-                    // One enemy sample
-                    intent.putExtra("enemyId", bitmapComponent._id.toString())
-                    println("Fighting with... @id#" + bitmapComponent._id.toString())
-                }
-                else {
-                    var enemiesIds = ""
-                    enemiesLoader = EnemiesLoader(context)
-                    for (enemy in enemiesLoader!!.enemies){
-                        if((obj.getComponent(PositionComponent::class.java)!!.x == enemy.getComponent(PositionComponent::class.java)!!.x)
-                            and (obj.getComponent(PositionComponent::class.java)!!.y == enemy.getComponent(PositionComponent::class.java)!!.y)
-                        and (enemy.getComponent(BitmapComponent::class.java)!!._multiple == 1)){
-                            enemiesIds += enemy.getComponent(BitmapComponent::class.java)!!._id
-                            enemiesIds += ","
+            when (group) {
+                "enemy" -> {
+                    val intent = Intent(mContext, FightActivity::class.java)
+                    if(enemyMultiple == 0) {
+                        // One enemy sample
+                        intent.putExtra("enemyId", bitmapComponent._id.toString())
+                        println("Fighting with... @id#" + bitmapComponent._id.toString())
+                    } else {
+                        var enemiesIds = ""
+                        enemiesLoader = EnemiesLoader(context)
+                        for (enemy in enemiesLoader!!.enemies){
+                            if((obj.getComponent(PositionComponent::class.java)!!.x == enemy.getComponent(PositionComponent::class.java)!!.x)
+                                and (obj.getComponent(PositionComponent::class.java)!!.y == enemy.getComponent(PositionComponent::class.java)!!.y)
+                                and (enemy.getComponent(BitmapComponent::class.java)!!._multiple == 1)){
+                                enemiesIds += enemy.getComponent(BitmapComponent::class.java)!!._id
+                                enemiesIds += ","
+                            }
                         }
+                        enemiesIds = enemiesIds.substring(0, enemiesIds.length - 1)
+                        intent.putExtra("enemyMulId", enemiesIds)
+                        println("Fighting with... @id#$enemiesIds")
                     }
-                    enemiesIds = enemiesIds.substring(0, enemiesIds.length - 1)
-                    intent.putExtra("enemyMulId", enemiesIds)
-                    println("Fighting with... @id#$enemiesIds")
+                    val origin = mContext as Activity
+                    origin.startActivity(intent)
+                    origin.finish()
                 }
-                val origin = mContext as Activity
-                origin.startActivity(intent)
-                origin.finish()
+                "player" -> {
+                    DBHelperFunctions().restorePlayerHealth(context, player!!)
+                }
+                "building" -> {
+                    enemiesLoader = EnemiesLoader(context, true)
+                    for (enemy in enemiesLoader!!.enemies)
+                        gameEntities.add(enemy)
+                }
             }
         }
 

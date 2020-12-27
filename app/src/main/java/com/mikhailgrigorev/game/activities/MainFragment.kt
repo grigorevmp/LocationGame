@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.mikhailgrigorev.game.MapsActivity
 import com.mikhailgrigorev.game.R
 import kotlinx.android.synthetic.main.fragment_main.*
 
@@ -62,7 +63,7 @@ class MainFragment : Fragment() {
 
         menuMap.setOnClickListener {
            // findNavController().navigate(R.id.action_FirstFragment_to_maratFragment)
-            val intent = Intent(context, MapActivity::class.java)
+            val intent = Intent(context, MapsActivity::class.java)
             startActivity(intent)
         }
 

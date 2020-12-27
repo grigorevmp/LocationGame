@@ -44,7 +44,7 @@ class Player(context: Context): Entity() {
             group = playerData.group
         ))
         healthComponent = this.addComponent(HealthComponent(
-            playerData.health
+            playerData.health, playerData.maxhealth
         ))
         damageComponent = this.addComponent(
             DamageComponent(

@@ -60,6 +60,8 @@ class PlayerLoader(context: Context) {
         private set
     var cm = 0f
         private set
+    var maxhealth = 0
+        private set
     var naturalDamageValue: NatureForcesValues = NatureForcesValues(0,0,0,0)
         private set
     var naturalValueDef: NatureForcesValues = NatureForcesValues(0,0,0,0)
@@ -97,6 +99,7 @@ class PlayerLoader(context: Context) {
         contentValues.put(PlayerDBHelper.FIRE2      ,       dataForFirstLoad[0][21].toInt())
         contentValues.put(PlayerDBHelper.Special    ,       0)
         contentValues.put(PlayerDBHelper.Manna      ,       0)
+        contentValues.put(PlayerDBHelper.MAXHEALTH  ,       dataForFirstLoad[0][22].toInt())
 
         if (getCountPlayer(dataForFirstLoad[0][3].toInt(), context) == 0) {
             database.insert(PlayerDBHelper.TABLE_PLAYER, null, contentValues)
@@ -129,6 +132,7 @@ class PlayerLoader(context: Context) {
             val indexWATER2    : Int  = cursor.getColumnIndex(PlayerDBHelper.WATER2    )
             val indexEARTH2    : Int  = cursor.getColumnIndex(PlayerDBHelper.EARTH2    )
             val indexFIRE2     : Int  = cursor.getColumnIndex(PlayerDBHelper.FIRE2     )
+            val indexMAXHEALTH : Int  = cursor.getColumnIndex(PlayerDBHelper.MAXHEALTH     )
             do {
                 data.add(
                     arrayOf(
@@ -152,8 +156,9 @@ class PlayerLoader(context: Context) {
                         cursor.getString(indexFIRE      ),
                         cursor.getString(indexAIR2      ),
                         cursor.getString(indexWATER2    ),
-                        cursor.getString(indexEARTH2      ),
-                        cursor.getString(indexFIRE2    ),
+                        cursor.getString(indexEARTH2    ),
+                        cursor.getString(indexFIRE2     ),
+                        cursor.getString(indexMAXHEALTH ),
                     )
                 )
             } while (cursor.moveToNext())
@@ -179,7 +184,7 @@ class PlayerLoader(context: Context) {
         cm = player[13].toFloat()
         naturalDamageValue = NatureForcesValues( player[14].toInt(), player[15].toInt(), player[16].toInt(),player[17].toInt())
         naturalValueDef = NatureForcesValues( player[18].toInt(), player[19].toInt(), player[20].toInt(),player[21].toInt())
-
+        maxhealth = player[22].toInt()
     }
 
 }
