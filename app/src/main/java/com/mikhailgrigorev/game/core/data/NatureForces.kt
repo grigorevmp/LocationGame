@@ -1,4 +1,4 @@
-package com.mikhailgrigorev.game.core.ecs.Components.Data
+package com.mikhailgrigorev.game.core.data
 
 enum class NatureForces {
     Air,

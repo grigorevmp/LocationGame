@@ -2,6 +2,8 @@
 
 package com.mikhailgrigorev.game.core.ecs
 
+import kotlin.reflect.KClass
+
 abstract class Component {
 
     abstract class ComponentUpgrader<ImprovingComponent: Component>(improvingComponent: Class<ImprovingComponent>) : Component() {

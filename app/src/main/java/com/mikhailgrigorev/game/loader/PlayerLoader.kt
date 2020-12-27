@@ -1,8 +1,27 @@
 package com.mikhailgrigorev.game.loader
 
+import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
+import android.util.Log
 import com.mikhailgrigorev.game.R
-import com.mikhailgrigorev.game.core.ecs.Components.Data.NatureForcesValues
+import com.mikhailgrigorev.game.core.data.NatureForcesValues
+import com.mikhailgrigorev.game.databases.PlayerDBHelper
+
+fun getCountPlayer(id: Int, context: Context): Int {
+    var c: Cursor? = null
+    val db = PlayerDBHelper(context).readableDatabase
+    return try {
+        val query = "select * from player where _id = $id"
+        c = db.rawQuery(query, null)
+        if (c.moveToFirst()) {
+            1
+        } else 0
+    } finally {
+        c?.close()
+        db?.close()
+    }
+}
 
 class PlayerLoader(context: Context) {
     /**
@@ -47,7 +66,101 @@ class PlayerLoader(context: Context) {
         private set
     init{
 
-        val data = CSVReader(context, fileName).data
+        val dataForFirstLoad = CSVReader(context, fileName).data
+        val data = java.util.ArrayList<Array<String>>()
+
+        val dbHelper = PlayerDBHelper(context)
+        val database = dbHelper.writableDatabase
+        val contentValues = ContentValues()
+
+        contentValues.put(PlayerDBHelper.SIZE       ,       dataForFirstLoad[0][0].toInt())
+        contentValues.put(PlayerDBHelper.X          ,       dataForFirstLoad[0][1].toInt())
+        contentValues.put(PlayerDBHelper.Y          ,       dataForFirstLoad[0][2].toInt())
+        contentValues.put(PlayerDBHelper.ID         ,       dataForFirstLoad[0][3].toInt())
+        contentValues.put(PlayerDBHelper.KEY_NAME   ,       dataForFirstLoad[0][4])
+        contentValues.put(PlayerDBHelper.KEY_DESC   ,       dataForFirstLoad[0][5])
+        contentValues.put(PlayerDBHelper.KEY_BITMAP ,       dataForFirstLoad[0][6])
+        contentValues.put(PlayerDBHelper.KEY_GROUP  ,       dataForFirstLoad[0][7])
+        contentValues.put(PlayerDBHelper.Speed      ,       dataForFirstLoad[0][8].toInt())
+        contentValues.put(PlayerDBHelper.HEALTH     ,       dataForFirstLoad[0][9].toInt())
+        contentValues.put(PlayerDBHelper.DMG        ,       dataForFirstLoad[0][10].toInt())
+        contentValues.put(PlayerDBHelper.DEFENCE    ,       dataForFirstLoad[0][11].toInt())
+        contentValues.put(PlayerDBHelper.CC         ,       dataForFirstLoad[0][12].toInt())
+        contentValues.put(PlayerDBHelper.CM         ,       dataForFirstLoad[0][13].toInt())
+        contentValues.put(PlayerDBHelper.AIR        ,       dataForFirstLoad[0][14].toInt())
+        contentValues.put(PlayerDBHelper.WATER      ,       dataForFirstLoad[0][15].toInt())
+        contentValues.put(PlayerDBHelper.EARTH      ,       dataForFirstLoad[0][16].toInt())
+        contentValues.put(PlayerDBHelper.FIRE       ,       dataForFirstLoad[0][17].toInt())
+        contentValues.put(PlayerDBHelper.AIR2       ,       dataForFirstLoad[0][18].toInt())
+        contentValues.put(PlayerDBHelper.WATER2     ,       dataForFirstLoad[0][19].toInt())
+        contentValues.put(PlayerDBHelper.EARTH2     ,       dataForFirstLoad[0][20].toInt())
+        contentValues.put(PlayerDBHelper.FIRE2      ,       dataForFirstLoad[0][21].toInt())
+        contentValues.put(PlayerDBHelper.Special    ,       0)
+        contentValues.put(PlayerDBHelper.Manna      ,       0)
+
+        if (getCountPlayer(dataForFirstLoad[0][3].toInt(), context) == 0) {
+            database.insert(PlayerDBHelper.TABLE_PLAYER, null, contentValues)
+        }
+
+        // Database reading TEST
+        val cursor: Cursor =
+            database.query(PlayerDBHelper.TABLE_PLAYER, null, null, null, null, null, null)
+
+        if (cursor.moveToFirst()) {
+            val indexSIZE      : Int  = cursor.getColumnIndex(PlayerDBHelper.SIZE      )
+            val indexX         : Int  = cursor.getColumnIndex(PlayerDBHelper.X         )
+            val indexY         : Int  = cursor.getColumnIndex(PlayerDBHelper.Y         )
+            val indexID        : Int  = cursor.getColumnIndex(PlayerDBHelper.ID        )
+            val indexKEY_NAME  : Int  = cursor.getColumnIndex(PlayerDBHelper.KEY_NAME  )
+            val indexKEY_DESC  : Int  = cursor.getColumnIndex(PlayerDBHelper.KEY_DESC  )
+            val indexKEY_BITMAP: Int  = cursor.getColumnIndex(PlayerDBHelper.KEY_BITMAP)
+            val indexKEY_GROUP : Int  = cursor.getColumnIndex(PlayerDBHelper.KEY_GROUP )
+            val indexSpeed     : Int  = cursor.getColumnIndex(PlayerDBHelper.Speed     )
+            val indexHEALTH    : Int  = cursor.getColumnIndex(PlayerDBHelper.HEALTH    )
+            val indexDMG       : Int  = cursor.getColumnIndex(PlayerDBHelper.DMG       )
+            val indexDEFENCE   : Int  = cursor.getColumnIndex(PlayerDBHelper.DEFENCE   )
+            val indexCC        : Int  = cursor.getColumnIndex(PlayerDBHelper.CC        )
+            val indexCM        : Int  = cursor.getColumnIndex(PlayerDBHelper.CM        )
+            val indexAIR       : Int  = cursor.getColumnIndex(PlayerDBHelper.AIR       )
+            val indexWATER     : Int  = cursor.getColumnIndex(PlayerDBHelper.WATER     )
+            val indexEARTH     : Int  = cursor.getColumnIndex(PlayerDBHelper.EARTH     )
+            val indexFIRE      : Int  = cursor.getColumnIndex(PlayerDBHelper.FIRE      )
+            val indexAIR2      : Int  = cursor.getColumnIndex(PlayerDBHelper.AIR2      )
+            val indexWATER2    : Int  = cursor.getColumnIndex(PlayerDBHelper.WATER2    )
+            val indexEARTH2    : Int  = cursor.getColumnIndex(PlayerDBHelper.EARTH2    )
+            val indexFIRE2     : Int  = cursor.getColumnIndex(PlayerDBHelper.FIRE2     )
+            do {
+                data.add(
+                    arrayOf(
+                        cursor.getString(indexSIZE      ),
+                        cursor.getString(indexX         ),
+                        cursor.getString(indexY         ),
+                        cursor.getString(indexID        ),
+                        cursor.getString(indexKEY_NAME  ),
+                        cursor.getString(indexKEY_DESC  ),
+                        cursor.getString(indexKEY_BITMAP),
+                        cursor.getString(indexKEY_GROUP ),
+                        cursor.getString(indexSpeed     ),
+                        cursor.getString(indexHEALTH    ),
+                        cursor.getString(indexDMG       ),
+                        cursor.getString(indexDEFENCE   ),
+                        cursor.getString(indexCC        ),
+                        cursor.getString(indexCM        ),
+                        cursor.getString(indexAIR       ),
+                        cursor.getString(indexWATER     ),
+                        cursor.getString(indexEARTH     ),
+                        cursor.getString(indexFIRE      ),
+                        cursor.getString(indexAIR2      ),
+                        cursor.getString(indexWATER2    ),
+                        cursor.getString(indexEARTH2      ),
+                        cursor.getString(indexFIRE2    ),
+                    )
+                )
+            } while (cursor.moveToNext())
+        } else Log.d("mLog", "0 rows")
+
+        cursor.close()
+
         val player = data[0]
         size = player[0].toFloat()
         x =  player[1].toFloat()
@@ -64,8 +177,8 @@ class PlayerLoader(context: Context) {
 
         cc = player[12].toInt()
         cm = player[13].toFloat()
-        naturalDamageValue = NatureForcesValues( player[13].toInt(), player[14].toInt(), player[15].toInt(),player[16].toInt())
-        naturalValueDef = NatureForcesValues( player[17].toInt(), player[18].toInt(), player[19].toInt(),player[20].toInt())
+        naturalDamageValue = NatureForcesValues( player[14].toInt(), player[15].toInt(), player[16].toInt(),player[17].toInt())
+        naturalValueDef = NatureForcesValues( player[18].toInt(), player[19].toInt(), player[20].toInt(),player[21].toInt())
 
     }
 

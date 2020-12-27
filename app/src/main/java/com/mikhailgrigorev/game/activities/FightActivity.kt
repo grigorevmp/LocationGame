@@ -1,5 +1,7 @@
-package com.mikhailgrigorev.game
+package com.mikhailgrigorev.game.activities
 
+import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -11,13 +13,15 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.mikhailgrigorev.game.activities.MainActivity
+import com.mikhailgrigorev.game.R
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.DamageComponent
 import com.mikhailgrigorev.game.core.ecs.Components.HealthComponent
 import com.mikhailgrigorev.game.core.fsm.FSM
 import com.mikhailgrigorev.game.core.fsm.State
 import com.mikhailgrigorev.game.core.fsm.Transition
+import com.mikhailgrigorev.game.databases.EnemyDBHelper
+import com.mikhailgrigorev.game.databases.PlayerDBHelper
 import com.mikhailgrigorev.game.entities.Enemy
 import com.mikhailgrigorev.game.entities.Player
 import com.mikhailgrigorev.game.loader.EnemiesLoader
@@ -33,6 +37,7 @@ class FightActivity : AppCompatActivity() {
     }
 
     var fightFSM = FSM<Int>()
+    var enemiesNum = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -60,6 +65,7 @@ class FightActivity : AppCompatActivity() {
 
         // Get lone enemy if exists
         if(enemyId != "-1" ){
+            enemiesNum += 1
             enemy = findEnemyByID(enemyId)
 
             // Create image button
@@ -68,14 +74,13 @@ class FightActivity : AppCompatActivity() {
                 ConstraintLayout.LayoutParams.WRAP_CONTENT,
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
             )
-            val index = 0
             btnEnemy.id = enemyId.toInt()
             btnEnemy.setImageResource(enemy!!.getComponent(BitmapComponent::class.java)!!._bitmapId)
             btnEnemy.setBackgroundColor(Color.TRANSPARENT)
             btnEnemy.scaleX = 1f
             btnEnemy.scaleY = 1f
             btnEnemy.setOnClickListener {
-                updateViewData(enemy, player)
+                updateViewData(enemy, player, this)
 
                 val index2: Int =  btnEnemy.id
                 val buttonTest = findViewById<ImageButton>(index2)
@@ -96,6 +101,7 @@ class FightActivity : AppCompatActivity() {
             val enemyStrIter = enemyStr.iterator()
             var i = 0
             enemyStrIter.forEach {
+                enemiesNum += 1
                 findEnemyByID(it)?.let { it1 -> enemies.add(it1) }
 
                 // Create image button
@@ -116,7 +122,7 @@ class FightActivity : AppCompatActivity() {
                 }
                 btnEnemy.setOnClickListener {
                     enemy = enemies[index]
-                    updateViewData(enemy, player)
+                    updateViewData(enemy, player, this)
 
                     scaleAllButtons(enemies)
                     val index2: Int =  btnEnemy.id
@@ -142,7 +148,7 @@ class FightActivity : AppCompatActivity() {
             exit(-1)
 
         // Set info text
-        updateViewData(enemy, player)
+        updateViewData(enemy, player, this)
 
         // Create attack button tree
         createAttackButton()
@@ -173,7 +179,7 @@ class FightActivity : AppCompatActivity() {
                     playerHealthComponent.applyDamage(enemyDamageComponent)
 
                     setEnemyHealthText(enemyHealthComponent.healthPoints.toString(),
-                        enemy!!.getComponent(BitmapComponent::class.java)!!._id)
+                        enemy!!.getComponent(BitmapComponent::class.java)!!._id, player, this)
                     setPlayerHealthText(playerHealthComponent.healthPoints.toString())
                 }
             } else {
@@ -189,7 +195,7 @@ class FightActivity : AppCompatActivity() {
                     ) {
                         enemyHealthComponent.applyDamage(playerDamageComponent)
                         setEnemyHealthText(enemyHealthComponent.healthPoints.toString(),
-                            enemy!!.getComponent(BitmapComponent::class.java)!!._id)
+                            enemy!!.getComponent(BitmapComponent::class.java)!!._id,player, this)
                     }
 
                     val enemiesIterator = enemies.iterator()
@@ -249,14 +255,27 @@ class FightActivity : AppCompatActivity() {
 
     }
 
-    private fun updateViewData(enemy: Enemy?, player: Player) {
+    private fun setNewPlayerHealthToDatabase(context:Context, player: Player){
+        val dbHelper = PlayerDBHelper(context)
+        val database = dbHelper.writableDatabase
+        val playerId = player.getComponent(BitmapComponent::class.java)!!._id
+        val contentValues = ContentValues()
+
+        contentValues.put(EnemyDBHelper.HEALTH, player.getComponent(HealthComponent::class.java)!!.healthPoints)
+
+        database.update(PlayerDBHelper.TABLE_PLAYER, contentValues, "_id = $playerId", null)
+
+    }
+
+
+    private fun updateViewData(enemy: Enemy?, player: Player, context:Context) {
         /*
         Update visual info
          */
         logEnemyIdText("Fighting with #${enemy!!.getComponent(BitmapComponent::class.java)!!._name}")
         currentId.text = enemy.getComponent(BitmapComponent::class.java)!!._id.toString()
         setEnemyHealthText(enemy.getComponent(HealthComponent::class.java)!!.healthPoints.toString(),
-            enemy.getComponent(BitmapComponent::class.java)!!._id)
+            enemy.getComponent(BitmapComponent::class.java)!!._id, player, context)
         setPlayerHealthText(player.getComponent(HealthComponent::class.java)!!.healthPoints.toString())
     }
 
@@ -470,19 +489,33 @@ class FightActivity : AppCompatActivity() {
                 exit(1)
             }
             builder.show()
-
         }
         else
             updatePlayerHealthText(valuePlayer)
     }
 
-    private fun setEnemyHealthText(valueEnemy: String, id: Int){
+    private fun setEnemyHealthText(valueEnemy: String, id: Int, player:Player, context: Context){
         /*
         Check correctness of enemy health values
          */
         if (valueEnemy.toInt() <= 0) {
             updateEnemyHealthText("0")
             hideImageButtonById(id)
+            enemiesNum -= 1
+            if(enemiesNum == 0){
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle("You win")
+                builder.setMessage("You killed all enemies")
+                builder.setCancelable(false)
+                //set negative button
+                builder.setPositiveButton(
+                    "Cool =>"
+                ) { _, _ ->
+                    setNewPlayerHealthToDatabase(context, player)
+                    exit(1)
+                }
+                builder.show()
+            }
         }
         else
             updateEnemyHealthText(valueEnemy)

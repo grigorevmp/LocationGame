@@ -3,7 +3,7 @@ package com.mikhailgrigorev.game.entities
 
 import android.content.Context
 import com.mikhailgrigorev.game.core.ecs.Components.*
-import com.mikhailgrigorev.game.core.ecs.Components.Data.NatureForcesValues
+import com.mikhailgrigorev.game.core.data.NatureForcesValues
 
 import com.mikhailgrigorev.game.core.ecs.Entity
 

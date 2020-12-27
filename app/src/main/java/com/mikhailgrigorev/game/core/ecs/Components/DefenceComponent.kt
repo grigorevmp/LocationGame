@@ -1,9 +1,8 @@
 package com.mikhailgrigorev.game.core.ecs.Components
 
 import com.mikhailgrigorev.game.core.ecs.Component
-import com.mikhailgrigorev.game.core.ecs.Components.Data.NatureForces
-import com.mikhailgrigorev.game.core.ecs.Components.Data.NatureForcesValues
-import java.lang.annotation.Native
+import com.mikhailgrigorev.game.core.data.NatureForces
+import com.mikhailgrigorev.game.core.data.NatureForcesValues
 import kotlin.random.Random
 
 class DefenceComponent(

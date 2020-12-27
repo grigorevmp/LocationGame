@@ -1,8 +1,9 @@
 package com.mikhailgrigorev.game.core.ecs.Components
 
 import com.mikhailgrigorev.game.core.ecs.Component
-import com.mikhailgrigorev.game.core.ecs.Components.Data.NatureForces
-import com.mikhailgrigorev.game.core.ecs.Components.Data.NatureForcesValues
+import com.mikhailgrigorev.game.core.data.NatureForces
+import com.mikhailgrigorev.game.core.data.NatureForcesValues
+import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquipmentComponent
 import kotlin.random.Random
 
 class DamageComponent(
@@ -45,11 +46,22 @@ class DamageComponent(
         var newHealthPoints = healthComponent.healthPoints
         var applyingPhysicalDamage = 0
         var applyingForcesDamage = 0
+        val weapon = healthComponent.entity?.getComponent(EquipmentComponent::class.java)?.weapon
         val defenceComponent = healthComponent.entity?.getComponent(DefenceComponent::class.java)
         if (defenceComponent != null) {
             applyingPhysicalDamage = physicalDamage - defenceComponent.physicalDefence
             for (i in 0 until NatureForces.count) {
                 applyingForcesDamage += natureForcesDamageArray[i] - defenceComponent.natureForcesDefence[i]
+            }
+            if (weapon != null){
+                applyingPhysicalDamage += (weapon.damage - defenceComponent.physicalDefence)
+            }
+        }
+        else {
+            applyingPhysicalDamage = physicalDamage
+            if (weapon != null){ applyingPhysicalDamage += weapon.damage }
+            for (i in 0 until NatureForces.count) {
+                applyingForcesDamage += natureForcesDamageArray[i]
             }
         }
 

@@ -2,10 +2,15 @@ package com.mikhailgrigorev.game.entities
 
 import android.content.Context
 import com.mikhailgrigorev.game.core.ecs.Components.*
+import com.mikhailgrigorev.game.core.data.InventoryComponent
 import com.mikhailgrigorev.game.game.Game
-import com.mikhailgrigorev.game.core.ecs.Components.Data.NatureForcesValues
+import com.mikhailgrigorev.game.core.data.NatureForcesValues
+import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquipmentComponent
+import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
+import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.weapon.Weapon
 
 import com.mikhailgrigorev.game.core.ecs.Entity
+import com.mikhailgrigorev.game.entities.sprit.Spirit
 import com.mikhailgrigorev.game.loader.PlayerLoader
 
 class Player(context: Context): Entity() {
@@ -16,6 +21,9 @@ class Player(context: Context): Entity() {
     private var damageComponent: DamageComponent
     private var defenceComponent: DefenceComponent
     private var upgradeComponent: UpgradeComponent
+    private var equipmentComponent: EquipmentComponent
+    private var inventoryComponent: InventoryComponent
+    private var spirit: Spirit
     private var speed: Float = 0.2.toFloat()
 
     init{
@@ -43,6 +51,17 @@ class Player(context: Context): Entity() {
                 playerData.damage,playerData.naturalDamageValue,playerData.cc,playerData.cm
             )
         )
+
+        val naturalValueDef = NatureForcesValues(0, 0, 0, 0)
+        defenceComponent = this.addComponent(DefenceComponent(0, naturalValueDef))
+        upgradeComponent = this.addComponent(UpgradeComponent())
+
+        inventoryComponent = this.addComponent(InventoryComponent())
+        inventoryComponent.addItem(Item(5,"Ring",1))
+
+        equipmentComponent = EquipmentComponent(
+            Weapon(10, "Sword", 15)
+        )
         defenceComponent = this.addComponent(
             DefenceComponent(
                 playerData.defence, playerData.naturalValueDef
@@ -52,6 +71,8 @@ class Player(context: Context): Entity() {
             UpgradeComponent(
             )
         )
+
+        spirit = this.addComponent(Spirit())
     }
 
     override fun update() {
