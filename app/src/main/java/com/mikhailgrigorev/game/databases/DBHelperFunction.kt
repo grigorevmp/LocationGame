@@ -3,6 +3,7 @@ package com.mikhailgrigorev.game.databases
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.HealthComponent
 import com.mikhailgrigorev.game.entities.Enemy
@@ -27,15 +28,18 @@ class DBHelperFunctions {
     //-------------------------------------------------------
     //-------------------------------------------------------
     fun restorePlayerHealth(context: Context, player: Player){
-        val maxPlayerHealth = player.getComponent(HealthComponent::class.java)!!.maxHealthPoints
-        player.getComponent(HealthComponent::class.java)!!.setHealthPointsValue(maxPlayerHealth)
+        val playerHealthComponent = player.getComponent(HealthComponent::class.java)
+        playerHealthComponent!!.upgrade(HealthComponent.HealthUpgrader(
+            playerHealthComponent.maxHealthPoints - playerHealthComponent.healthPoints,
+            0
+        ) as Component.ComponentUpgrader<Component>)
 
         val dbHelper = PlayerDBHelper(context)
         val database = dbHelper.writableDatabase
         val playerId = player.getComponent(BitmapComponent::class.java)!!._id
         val contentValues = ContentValues()
 
-        contentValues.put(EnemyDBHelper.HEALTH, player.getComponent(HealthComponent::class.java)!!.healthPoints)
+        contentValues.put(EnemyDBHelper.HEALTH, playerHealthComponent.healthPoints)
         database.update(PlayerDBHelper.TABLE_PLAYER, contentValues, "_id = $playerId", null)
     }
     //-------------------------------------------------------

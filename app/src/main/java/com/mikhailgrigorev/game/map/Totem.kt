@@ -28,7 +28,7 @@ class Totem(context: Context,
 
     private var bitmapComponent: BitmapComponent
     private var positionComponent: PositionComponent
-    private var upgradeComponent: UpgradeComponent = UpgradeComponent()
+    private var upgradeComponent: UpgradeComponent
 
     init{
         positionComponent = this.addComponent(PositionComponent(
@@ -45,9 +45,12 @@ class Totem(context: Context,
             bitmapId = bitmapId,
             group = group
         ))
-        upgradeComponent.addUpgrader(HealthComponent.HealthUpgrader())
-        upgradeComponent.addUpgrader(DamageComponent.DamageUpgrader())
-        upgradeComponent.addUpgrader(DefenceComponent.DefenceUpgrader())
+        upgradeComponent = this.addComponent(UpgradeComponent())
+        upgradeComponent.addUpgrader(HealthComponent.HealthUpgrader(
+            0,
+            10
+        ))
+
     }
 
     override fun update() {
