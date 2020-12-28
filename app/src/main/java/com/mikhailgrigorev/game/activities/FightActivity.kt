@@ -6,10 +6,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -39,6 +36,7 @@ class FightActivity : AppCompatActivity() {
     var enemiesNum = 0
     private var enemy: Enemy? = null
     private val enemies: ArrayList<Enemy> = ArrayList()
+    private val enemiesNums: ArrayList<Int> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -62,12 +60,48 @@ class FightActivity : AppCompatActivity() {
             "-1"
         }
 
+
+        // PLAYER ICONS TEST BLOCK
+        // --------------------------------------------------------
+        // --------------------------------------------------------
+        val prgPlayer = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal)
+        prgPlayer.id = player.getComponent(BitmapComponent::class.java)!!._id * 100
+        choosePlayerLayout.addView(prgPlayer)
+
+        val btnPlayer = ImageButton(this)
+        btnPlayer.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        btnPlayer.id = player.getComponent(BitmapComponent::class.java)!!._id
+        btnPlayer.setImageResource(player.getComponent(BitmapComponent::class.java)!!._bitmapId)
+        btnPlayer.setBackgroundColor(Color.TRANSPARENT)
+        btnPlayer.setOnClickListener {
+        }
+        val paramsLO: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        paramsLO.setMargins(30, 0, 30, 0)
+        choosePlayerLayout.addView(btnPlayer, paramsLO)
+        // --------------------------------------------------------
+        // --------------------------------------------------------
+
+
+
         // Get lone enemy if exists
         if(enemyId != "-1" ){
             enemiesNum += 1
             enemy = findEnemyByID(enemyId)
 
             // Create image button
+            val prgPEnemy = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal)
+            prgPEnemy.id = enemy!!.getComponent(BitmapComponent::class.java)!!._id * 100
+            val maxHealth = enemy!!.getComponent(HealthComponent::class.java)!!.maxHealthPoints
+            prgPEnemy.max = maxHealth
+            prgPEnemy.progress = maxHealth
+            chooseEnemyLayout.addView(prgPEnemy)
+
             val btnEnemy = ImageButton(this)
             btnEnemy.layoutParams = ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.WRAP_CONTENT,
@@ -102,14 +136,21 @@ class FightActivity : AppCompatActivity() {
             enemyStrIter.forEach {
                 enemiesNum += 1
                 findEnemyByID(it)?.let { it1 -> enemies.add(it1) }
+                enemiesNums.add(i)
 
+                val index: Int = i
+                val prgPEnemy = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal)
+                prgPEnemy.id = it.toInt() * 100
+                val maxHealth = enemies[index].getComponent(HealthComponent::class.java)!!.maxHealthPoints
+                prgPEnemy.max = maxHealth
+                prgPEnemy.progress = maxHealth
+                chooseEnemyLayout.addView(prgPEnemy)
                 // Create image button
                 val btnEnemy = ImageButton(this)
                 btnEnemy.layoutParams = ConstraintLayout.LayoutParams(
                     ConstraintLayout.LayoutParams.WRAP_CONTENT,
                     ConstraintLayout.LayoutParams.WRAP_CONTENT
                 )
-                val index: Int = i
                 btnEnemy.id = it.toInt()
                 btnEnemy.setImageResource(enemies[index].getComponent(BitmapComponent::class.java)!!._bitmapId)
                 btnEnemy.setBackgroundColor(Color.TRANSPARENT)
@@ -277,11 +318,15 @@ class FightActivity : AppCompatActivity() {
     private fun hideImageButtonById(id: Int) {
         val buttonTest = findViewById<ImageButton>(id)
         buttonTest.visibility = View.GONE
+        val prgTest = findViewById<ProgressBar>(id*100)
+        prgTest.visibility = View.GONE
     }
 
     private fun showImageButtonById(id: Int) {
         val buttonTest = findViewById<ImageButton>(id)
         buttonTest.visibility = View.VISIBLE
+        val prgTest = findViewById<ProgressBar>(id*100)
+        prgTest.visibility = View.VISIBLE
     }
 
     private fun scaleAllButtons(enemies: ArrayList<Enemy>){
@@ -307,7 +352,7 @@ class FightActivity : AppCompatActivity() {
         /*
         Update visual info
          */
-        logEnemyIdText("Fighting with #${enemy!!.getComponent(BitmapComponent::class.java)!!._name}")
+        logEnemyIdText("Fighting with ${enemy!!.getComponent(BitmapComponent::class.java)!!._name}")
         currentId.text = enemy.getComponent(BitmapComponent::class.java)!!._id.toString()
         setEnemyHealthText(enemy.getComponent(HealthComponent::class.java)!!.healthPoints.toString(),
             enemy.getComponent(BitmapComponent::class.java)!!._id, player, context)
@@ -512,7 +557,13 @@ class FightActivity : AppCompatActivity() {
     Check correctness of player health values
      */
         if (valuePlayer.toInt() <= 0) {
-            updatePlayerHealthText("0")
+            val maxHealth = player.getComponent(HealthComponent::class.java)!!.maxHealthPoints
+            val progressAbove = findViewById<ProgressBar>(player.getComponent(BitmapComponent::class.java)!!._id*100)
+            progressAbove.max = maxHealth
+            progressAbove.progress = valuePlayer.toInt()
+            playerHealthProgress.max = maxHealth
+            playerHealthProgress.progress = 0
+            updatePlayerHealthText("0/$maxHealth")
             val builder = AlertDialog.Builder(this)
             builder.setTitle("You lose")
             builder.setMessage("You have been killed")
@@ -526,8 +577,15 @@ class FightActivity : AppCompatActivity() {
             }
             builder.show()
         }
-        else
-            updatePlayerHealthText(valuePlayer)
+        else {
+            val maxHealth = player.getComponent(HealthComponent::class.java)!!.maxHealthPoints
+            val progressAbove = findViewById<ProgressBar>(player.getComponent(BitmapComponent::class.java)!!._id*100)
+            progressAbove.max = maxHealth
+            progressAbove.progress = valuePlayer.toInt()
+            playerHealthProgress.max = maxHealth
+            playerHealthProgress.progress = valuePlayer.toInt()
+            updatePlayerHealthText("$valuePlayer/$maxHealth")
+        }
     }
 
     private fun setEnemyHealthText(valueEnemy: String, id: Int, player:Player, context: Context){
@@ -535,7 +593,13 @@ class FightActivity : AppCompatActivity() {
         Check correctness of enemy health values
          */
         if (valueEnemy.toInt() <= 0) {
-            updateEnemyHealthText("0")
+            val maxHealth = enemy!!.getComponent(HealthComponent::class.java)!!.maxHealthPoints
+            val progressAbove = findViewById<ProgressBar>(id*100)
+            progressAbove.max = maxHealth
+            progressAbove.progress = valueEnemy.toInt()
+            enemyHealthProgress.max = maxHealth
+            enemyHealthProgress.progress = valueEnemy.toInt()
+            updateEnemyHealthText("0/$maxHealth")
             deleteEnemyFromDatabase(context, enemy!!)
             hideImageButtonById(id)
             enemiesNum -= 1
@@ -554,7 +618,9 @@ class FightActivity : AppCompatActivity() {
                 builder.show()
             }
             else{
-                enemy = enemies[0]
+                //enemies.remove(enemy)
+                enemiesNums.remove((enemies.indexOf(enemy)))
+                enemy = enemies[enemiesNums[0]]
                 updateViewData(enemy, player, this)
                 val index2: Int = enemies[0].getComponent(BitmapComponent::class.java)!!._id
                 val buttonTest = findViewById<ImageButton>(index2)
@@ -562,8 +628,15 @@ class FightActivity : AppCompatActivity() {
                 buttonTest.scaleY = 1f
             }
         }
-        else
-            updateEnemyHealthText(valueEnemy)
+        else {
+            val maxHealth = enemy!!.getComponent(HealthComponent::class.java)!!.maxHealthPoints
+            val progressAbove = findViewById<ProgressBar>(id*100)
+            progressAbove.max = maxHealth
+            progressAbove.progress = valueEnemy.toInt()
+            enemyHealthProgress.max = maxHealth
+            enemyHealthProgress.progress = valueEnemy.toInt()
+            updateEnemyHealthText("$valueEnemy/$maxHealth")
+        }
     }
 
     private fun updatePlayerHealthText(value: String){
