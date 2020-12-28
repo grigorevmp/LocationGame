@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -153,8 +154,46 @@ class FightActivity : AppCompatActivity() {
 
         // Escape from the fight
         escapeButton.setOnClickListener {
-            setNewPlayerHealthToDatabase(this, player)
-            exit(2)
+            val rnds = (0..10).random()
+            if(rnds > 5) {
+                setNewPlayerHealthToDatabase(this, player)
+                exit(2)
+            }
+            else{
+                Toast.makeText(this, "You tried to escape, but monster stopped you", Toast.LENGTH_SHORT).show()
+                if (enemyMulId == "-1") {
+                    val playerDamageComponent = player.getComponent(DamageComponent::class.java)
+                    val playerHealthComponent = player.getComponent(HealthComponent::class.java)
+
+                    val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
+                    val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
+
+                    if (playerDamageComponent != null && enemyHealthComponent != null &&
+                        enemyDamageComponent != null && playerHealthComponent != null
+                    ) {
+                        playerHealthComponent.applyDamage(enemyDamageComponent)
+                        setPlayerHealthText(playerHealthComponent.healthPoints.toString(), player, this)
+                    }
+                } else {
+                    val playerDamageComponent = player.getComponent(DamageComponent::class.java)
+                    val playerHealthComponent = player.getComponent(HealthComponent::class.java)
+                    if (playerDamageComponent != null && playerHealthComponent != null
+                    ) {
+                        val enemiesIterator = enemies.iterator()
+                        enemiesIterator.forEach {
+                            val enemyDamageComponentTmp = it.getComponent(DamageComponent::class.java)
+                            val enemyHealthComponentTmp = it.getComponent(HealthComponent::class.java)
+                            if (enemyHealthComponentTmp != null && enemyDamageComponentTmp != null
+                            ) {
+                                playerHealthComponent.applyDamage(enemyDamageComponentTmp)
+                                setPlayerHealthText(playerHealthComponent.healthPoints.toString(), player, this)
+                            }
+                        }
+
+                    }
+                }
+                setNewPlayerHealthToDatabase(this, player)
+            }
         }
 
         // Выбирает атаку
@@ -181,6 +220,7 @@ class FightActivity : AppCompatActivity() {
                         enemy!!.getComponent(BitmapComponent::class.java)!!._id, player,  this)
                     setPlayerHealthText(playerHealthComponent.healthPoints.toString(), player, this)
                 }
+                setNewPlayerHealthToDatabase(this, player)
             } else {
                 val playerDamageComponent = player.getComponent(DamageComponent::class.java)
                 val playerHealthComponent = player.getComponent(HealthComponent::class.java)
@@ -208,7 +248,7 @@ class FightActivity : AppCompatActivity() {
                             setPlayerHealthText(playerHealthComponent.healthPoints.toString(), player, this)
                         }
                     }
-
+                    setNewPlayerHealthToDatabase(this, player)
                 }
             }
         })
