@@ -8,10 +8,8 @@ import android.content.Intent
 import android.graphics.*
 import android.os.Build
 import android.view.*
-import android.widget.Button
-import android.widget.GridLayout
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.recyclerview.widget.GridLayoutManager
 import com.mikhailgrigorev.game.R
 import com.mikhailgrigorev.game.activities.FightActivity
 import com.mikhailgrigorev.game.core.ecs.Components.*
@@ -215,6 +213,131 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
                     dialog.dismiss()
                 }
                 dialog.show()
+            }
+        }
+        if(group=="totem") {
+            // TEST NEW UI FOR TOTEM
+            builder.setNeutralButton(
+                "NEW TEST UI"
+            ) { _, _ ->
+
+                val dialog = Dialog(context)
+                val width = (resources.displayMetrics.widthPixels * 0.70).toInt()
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                dialog.setCancelable(false)
+                dialog.setContentView(R.layout.totem_dialog)
+
+                // Set size
+                val mainLayout = dialog.findViewById(R.id.mainLayout) as LinearLayout
+                val params: ViewGroup.LayoutParams = mainLayout.layoutParams
+                params.width = width
+                mainLayout.layoutParams = params
+
+                val btnClose = dialog.findViewById(R.id.close) as Button
+                btnClose.setOnClickListener {
+                    dialog.dismiss()
+                }
+                val btnOk = dialog.findViewById(R.id.ok) as Button
+                btnOk.setOnClickListener {
+                    val totemComponent = obj.getComponent(TotemComponent::class.java)!!
+                    val upgradeComponent = UpgradeComponent()
+                    upgradeComponent.addUpgrader(
+                        HealthComponent.HealthUpgrader(
+                            0,
+                            totemComponent.health
+                        )
+                    )
+                    upgradeComponent.upgrade(context, player as Entity)
+                }
+
+                val imageView = dialog.findViewById(R.id.image) as ImageView
+                imageView.setBackgroundResource(obj.getComponent(BitmapComponent::class.java)!!._bitmapId)
+
+                val nameTotem = dialog.findViewById(R.id.name) as TextView
+                nameTotem.text = obj.getComponent(BitmapComponent::class.java)!!._name
+                val descriptionTotem = dialog.findViewById(R.id.description) as TextView
+                descriptionTotem.text = obj.getComponent(BitmapComponent::class.java)!!._desc
+                val subTextTotem = dialog.findViewById(R.id.subText) as TextView
+                subTextTotem.text = "Trust your luck"
+
+
+
+                dialog.show()
+
+
+
+            }
+        }
+        if(group=="enemy") {
+            // TEST NEW UI FOR TOTEM
+            builder.setNeutralButton(
+                "NEW TEST UI"
+            ) { _, _ ->
+
+                val dialog = Dialog(context)
+                val width = (resources.displayMetrics.widthPixels * 0.70).toInt()
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                dialog.setCancelable(false)
+                dialog.setContentView(R.layout.enemy_dialog)
+
+                // Set size
+                val mainLayout = dialog.findViewById(R.id.mainLayout) as LinearLayout
+                val params: ViewGroup.LayoutParams = mainLayout.layoutParams
+                params.width = width
+                mainLayout.layoutParams = params
+
+                val btnClose = dialog.findViewById(R.id.close) as Button
+                btnClose.setOnClickListener {
+                    dialog.dismiss()
+                }
+                val btnOk = dialog.findViewById(R.id.ok) as Button
+                btnOk.setOnClickListener {
+                    val intent = Intent(mContext, FightActivity::class.java)
+                    if (enemyMultiple == 0) {
+                        // One enemy sample
+                        intent.putExtra("enemyId", bitmapComponent._id.toString())
+                        println("Fighting with... @id#" + bitmapComponent._id.toString())
+                    } else {
+                        var enemiesIds = ""
+                        enemiesLoader = EnemiesLoader(context)
+                        for (enemy in enemiesLoader!!.enemies) {
+                            if ((obj.getComponent(PositionComponent::class.java)!!.x == enemy.getComponent(
+                                    PositionComponent::class.java
+                                )!!.x)
+                                and (obj.getComponent(PositionComponent::class.java)!!.y == enemy.getComponent(
+                                    PositionComponent::class.java
+                                )!!.y)
+                                and (enemy.getComponent(BitmapComponent::class.java)!!._multiple == 1)
+                            ) {
+                                enemiesIds += enemy.getComponent(BitmapComponent::class.java)!!._id
+                                enemiesIds += ","
+                            }
+                        }
+                        enemiesIds = enemiesIds.substring(0, enemiesIds.length - 1)
+                        intent.putExtra("enemyMulId", enemiesIds)
+                        println("Fighting with... @id#$enemiesIds")
+                    }
+                    val origin = mContext as Activity
+                    origin.startActivity(intent)
+                    origin.finish()
+                }
+
+                val imageView = dialog.findViewById(R.id.image) as ImageView
+                imageView.setBackgroundResource(obj.getComponent(BitmapComponent::class.java)!!._bitmapId)
+
+                val nameTotem = dialog.findViewById(R.id.name) as TextView
+                nameTotem.text = obj.getComponent(BitmapComponent::class.java)!!._name
+                val descriptionTotem = dialog.findViewById(R.id.description) as TextView
+                descriptionTotem.text = obj.getComponent(BitmapComponent::class.java)!!._desc
+                val subTextTotem = dialog.findViewById(R.id.subText) as TextView
+                subTextTotem.text = "Fight or Run"
+
+
+
+                dialog.show()
+
+
+
             }
         }
         builder.show()
