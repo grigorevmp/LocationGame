@@ -1,5 +1,6 @@
 package com.mikhailgrigorev.game.core.ecs.Components
 
+import android.content.Context
 import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.core.data.NatureForces
 import com.mikhailgrigorev.game.core.data.NatureForcesValues
@@ -37,7 +38,7 @@ class DefenceComponent(
         }
     }
 
-    override fun upgrade(upgrader: ComponentUpgrader<Component>) {
+    override fun upgrade(context: Context, upgrader: ComponentUpgrader<Component>) {
         val defenceUpgrader = upgrader as DefenceUpgrader
         this.physicalDefence += defenceUpgrader.physicalDefence
         for (i in 0 until NatureForces.count){

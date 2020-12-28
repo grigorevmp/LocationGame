@@ -1,5 +1,6 @@
 package com.mikhailgrigorev.game.core.ecs.Components
 
+import android.content.Context
 import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.core.ecs.Entity
 
@@ -10,8 +11,9 @@ class UpgradeComponent : Component() {
         this.upgraders.add(upgrader)
     }
 
-    fun upgrade(entity: Entity){
-        for (upgrader in this.upgraders)
-            entity.getComponent(upgrader.improvingComponent)?.upgrade(upgrader as ComponentUpgrader<Component>)
+    fun upgrade(context: Context,entity: Entity){
+        for (upgrader in this.upgraders) {
+            entity.getComponent(upgrader.improvingComponent)?.upgrade(context, upgrader as ComponentUpgrader<Component>)
+        }
     }
 }

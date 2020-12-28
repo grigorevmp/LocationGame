@@ -29,18 +29,18 @@ class DBHelperFunctions {
     //-------------------------------------------------------
     fun restorePlayerHealth(context: Context, player: Player){
         val playerHealthComponent = player.getComponent(HealthComponent::class.java)
-        playerHealthComponent!!.upgrade(HealthComponent.HealthUpgrader(
+        playerHealthComponent!!.upgrade(context, HealthComponent.HealthUpgrader(
             playerHealthComponent.maxHealthPoints - playerHealthComponent.healthPoints,
             0
         ) as Component.ComponentUpgrader<Component>)
 
-        val dbHelper = PlayerDBHelper(context)
-        val database = dbHelper.writableDatabase
-        val playerId = player.getComponent(BitmapComponent::class.java)!!._id
-        val contentValues = ContentValues()
+        //val dbHelper = PlayerDBHelper(context)
+        //val database = dbHelper.writableDatabase
+        //val playerId = player.getComponent(BitmapComponent::class.java)!!._id
+        //val contentValues = ContentValues()
 
-        contentValues.put(EnemyDBHelper.HEALTH, playerHealthComponent.healthPoints)
-        database.update(PlayerDBHelper.TABLE_PLAYER, contentValues, "_id = $playerId", null)
+        //contentValues.put(EnemyDBHelper.HEALTH, playerHealthComponent.healthPoints)
+        //database.update(PlayerDBHelper.TABLE_PLAYER, contentValues, "_id = $playerId", null)
     }
     //-------------------------------------------------------
     //-------------------------------------------------------
@@ -76,13 +76,14 @@ class DBHelperFunctions {
          }
     }
 
-    fun setPlayerHealth(context: Context, player: Player){
+    fun setPlayerHealth(context: Context, player: Player) {
         val dbHelper = PlayerDBHelper(context)
         val database = dbHelper.writableDatabase
         val playerId = player.getComponent(BitmapComponent::class.java)!!._id
         val contentValues = ContentValues()
 
-        contentValues.put(EnemyDBHelper.HEALTH, player.getComponent(HealthComponent::class.java)!!.healthPoints)
+        contentValues.put(PlayerDBHelper.HEALTH, player.getComponent(HealthComponent::class.java)!!.healthPoints)
+        contentValues.put(PlayerDBHelper.MAXHEALTH, player.getComponent(HealthComponent::class.java)!!.maxHealthPoints)
         database.update(PlayerDBHelper.TABLE_PLAYER, contentValues, "_id = $playerId", null)
     }
 

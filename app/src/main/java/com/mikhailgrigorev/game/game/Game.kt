@@ -11,13 +11,16 @@ import androidx.appcompat.app.AlertDialog
 import com.mikhailgrigorev.game.activities.FightActivity
 import com.mikhailgrigorev.game.R
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
+import com.mikhailgrigorev.game.core.ecs.Components.HealthComponent
 import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
+import com.mikhailgrigorev.game.core.ecs.Components.UpgradeComponent
 import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.databases.DBHelperFunctions
 import com.mikhailgrigorev.game.entities.Player
 import com.mikhailgrigorev.game.loader.BuildingsLoader
 import com.mikhailgrigorev.game.loader.EnemiesLoader
 import com.mikhailgrigorev.game.loader.TotemsLoader
+import com.mikhailgrigorev.game.map.Totem
 
 
 class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView(context), Runnable, SurfaceHolder.Callback {
@@ -130,6 +133,13 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
                 }
                 "totem" -> {
                     // On 'BUY' button
+                    val upgradeComponent = UpgradeComponent()
+                    upgradeComponent.addUpgrader(
+                        HealthComponent.HealthUpgrader(
+                        100000,
+                        100000
+                    ))
+                    upgradeComponent.upgrade(context, player as Entity)
                 }
             }
         }
