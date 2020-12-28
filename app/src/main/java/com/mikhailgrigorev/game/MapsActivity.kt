@@ -1,18 +1,25 @@
 package com.mikhailgrigorev.game
 
+import android.content.pm.PackageManager
+import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import androidx.core.content.ContextCompat
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
+import android.Manifest
+import androidx.core.app.ActivityCompat
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private lateinit var mMap: GoogleMap
+    private lateinit var map: GoogleMap
+    private val TAG = MapsActivity::class.java.simpleName
+    private val REQUEST_LOCATION_PERMISSION = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,11 +40,87 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * installed Google Play services and returned to the app.
      */
     override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
+        map = googleMap
 
         // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        val home = LatLng(54.11, 54.11)
+        val pos = LatLng(53.97952, 38.19016)
+
+        val zoomLevel = 17f
+        map.addMarker(
+            MarkerOptions()
+                .position(home)
+                .title("Marker in my home")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+        )
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(home, zoomLevel))
+        val overlaySize = 200f
+        val smileOverlay = GroundOverlayOptions()
+            .image(BitmapDescriptorFactory.fromResource(R.drawable.smile))
+            .position(pos, overlaySize)
+        map.addGroundOverlay(smileOverlay)
+
+        setPoiClick(map)
+        setMapStyle(map)
+
+        enableMyLocation()
+    }
+
+    fun setPoiClick (map: GoogleMap){
+        map.setOnPoiClickListener{ poi ->
+            val poiMarker = map.addMarker(
+                MarkerOptions()
+                    .position(poi.latLng)
+                    .title(poi.name)
+            )
+            poiMarker.showInfoWindow()
+        }
+    }
+
+    fun setMapStyle (map:GoogleMap){
+        try {
+            val success = map.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    this,
+                    R.raw.map_style
+                )
+            )
+            if (!success){
+                Log.e(TAG, "Style parsing failed")
+            }
+        } catch (e: Resources.NotFoundException){
+            Log.e(TAG, "Can't find style. Error: ", e)
+        }
+    }
+
+    private fun isPermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun enableMyLocation(){
+        if (isPermissionGranted()){
+            map.isMyLocationEnabled = true
+        }
+        else{
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_LOCATION_PERMISSION
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == REQUEST_LOCATION_PERMISSION){
+            if (grantResults.contains(PackageManager.PERMISSION_GRANTED)){
+                enableMyLocation()
+            }
+        }
     }
 }
