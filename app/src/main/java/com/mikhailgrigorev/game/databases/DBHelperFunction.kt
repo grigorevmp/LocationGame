@@ -34,13 +34,6 @@ class DBHelperFunctions {
             0
         ) as Component.ComponentUpgrader<Component>)
 
-        //val dbHelper = PlayerDBHelper(context)
-        //val database = dbHelper.writableDatabase
-        //val playerId = player.getComponent(BitmapComponent::class.java)!!._id
-        //val contentValues = ContentValues()
-
-        //contentValues.put(EnemyDBHelper.HEALTH, playerHealthComponent.healthPoints)
-        //database.update(PlayerDBHelper.TABLE_PLAYER, contentValues, "_id = $playerId", null)
     }
     //-------------------------------------------------------
     //-------------------------------------------------------

@@ -2,14 +2,18 @@ package com.mikhailgrigorev.game.game
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.*
 import android.os.Build
 import android.view.*
+import android.widget.Button
+import android.widget.GridLayout
 import androidx.appcompat.app.AlertDialog
-import com.mikhailgrigorev.game.activities.FightActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import com.mikhailgrigorev.game.R
+import com.mikhailgrigorev.game.activities.FightActivity
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.HealthComponent
 import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
@@ -20,10 +24,9 @@ import com.mikhailgrigorev.game.entities.Player
 import com.mikhailgrigorev.game.loader.BuildingsLoader
 import com.mikhailgrigorev.game.loader.EnemiesLoader
 import com.mikhailgrigorev.game.loader.TotemsLoader
-import com.mikhailgrigorev.game.map.Totem
 
 
-class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView(context), Runnable, SurfaceHolder.Callback {
+class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceView(context), Runnable, SurfaceHolder.Callback {
     private var mContext: Context? = context
     companion object{
         // sizes
@@ -73,7 +76,7 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
             group = "enemy"
 
         var positive = "Close"
-        when(group){
+        when (group) {
             "building" -> positive = "Respawn enemies"
             "player" -> positive = "Heal yourself"
             "totem" -> positive = "Buy"
@@ -85,7 +88,7 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
 
         val enemyMultiple = bitmapComponent._multiple
         // set title
-        if(enemyMultiple == 0)
+        if (enemyMultiple == 0)
             builder.setTitle(bitmapComponent._name)
         else
             builder.setTitle("BIG MONSTER TOWER")
@@ -100,17 +103,22 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
             when (group) {
                 "enemy" -> {
                     val intent = Intent(mContext, FightActivity::class.java)
-                    if(enemyMultiple == 0) {
+                    if (enemyMultiple == 0) {
                         // One enemy sample
                         intent.putExtra("enemyId", bitmapComponent._id.toString())
                         println("Fighting with... @id#" + bitmapComponent._id.toString())
                     } else {
                         var enemiesIds = ""
                         enemiesLoader = EnemiesLoader(context)
-                        for (enemy in enemiesLoader!!.enemies){
-                            if((obj.getComponent(PositionComponent::class.java)!!.x == enemy.getComponent(PositionComponent::class.java)!!.x)
-                                and (obj.getComponent(PositionComponent::class.java)!!.y == enemy.getComponent(PositionComponent::class.java)!!.y)
-                                and (enemy.getComponent(BitmapComponent::class.java)!!._multiple == 1)){
+                        for (enemy in enemiesLoader!!.enemies) {
+                            if ((obj.getComponent(PositionComponent::class.java)!!.x == enemy.getComponent(
+                                    PositionComponent::class.java
+                                )!!.x)
+                                and (obj.getComponent(PositionComponent::class.java)!!.y == enemy.getComponent(
+                                    PositionComponent::class.java
+                                )!!.y)
+                                and (enemy.getComponent(BitmapComponent::class.java)!!._multiple == 1)
+                            ) {
                                 enemiesIds += enemy.getComponent(BitmapComponent::class.java)!!._id
                                 enemiesIds += ","
                             }
@@ -136,9 +144,10 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
                     val upgradeComponent = UpgradeComponent()
                     upgradeComponent.addUpgrader(
                         HealthComponent.HealthUpgrader(
-                        100000,
-                        100000
-                    ))
+                            100000,
+                            100000
+                        )
+                    )
                     upgradeComponent.upgrade(context, player as Entity)
                 }
             }
@@ -149,6 +158,66 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
             "Cancel"
         ) { dialog, id ->
             // User cancelled the dialog
+        }
+
+        if (group == "player") {
+            builder.setNeutralButton(
+                "Inventory"
+            ) { _, _ ->
+                val dialog = Dialog(context)
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                dialog.setCancelable(false)
+                dialog.setContentView(R.layout.inventory)
+                //val body = dialog.findViewById(R.id.body) as TextView
+                //body.text = title
+                //val noBtn = dialog.findViewById(R.id.noBtn) as TextView
+                //noBtn.setOnClickListener { dialog.dismiss() }
+
+                val mainLayout = dialog.findViewById(R.id.mainLayout) as GridLayout
+
+                val yesBtn = dialog.findViewById(R.id.yesBtn) as Button
+
+                // Ячейки
+                val button = dialog.findViewById(R.id.button) as Button
+                val button1 = dialog.findViewById(R.id.button2) as Button
+                val button2 = dialog.findViewById(R.id.button3) as Button
+                val button3 = dialog.findViewById(R.id.button4) as Button
+
+                // --------------------------
+                val newButton = Button(context)
+                val param = GridLayout.LayoutParams()
+                param.columnSpec = GridLayout.spec(0)
+                param.rowSpec = GridLayout.spec(3)
+                newButton.layoutParams = param
+                newButton.text = "NewItem"
+                mainLayout.addView(newButton)
+                // --------------------------
+
+                // Выбросить
+                val button5 = dialog.findViewById(R.id.button5) as Button
+                val button6 = dialog.findViewById(R.id.button6) as Button
+                val button7 = dialog.findViewById(R.id.button7) as Button
+                val button8 = dialog.findViewById(R.id.button8) as Button
+
+
+
+                button.text = "Name"
+                button.setOnClickListener {
+                    button5.visibility = View.VISIBLE
+                }
+
+                // Выбросить предмет
+                button5.setOnClickListener {
+                    button.visibility = View.GONE
+                    button5.visibility = View.GONE
+                }
+
+
+                yesBtn.setOnClickListener {
+                    dialog.dismiss()
+                }
+                dialog.show()
+            }
         }
         builder.show()
     }
