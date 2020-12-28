@@ -14,10 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mikhailgrigorev.game.R
 import com.mikhailgrigorev.game.activities.FightActivity
-import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
-import com.mikhailgrigorev.game.core.ecs.Components.HealthComponent
-import com.mikhailgrigorev.game.core.ecs.Components.PositionComponent
-import com.mikhailgrigorev.game.core.ecs.Components.UpgradeComponent
+import com.mikhailgrigorev.game.core.ecs.Components.*
 import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.databases.DBHelperFunctions
 import com.mikhailgrigorev.game.entities.Player
@@ -141,11 +138,12 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
                 }
                 "totem" -> {
                     // On 'BUY' button
+                    val totemComponent = obj.getComponent(TotemComponent::class.java)!!
                     val upgradeComponent = UpgradeComponent()
                     upgradeComponent.addUpgrader(
                         HealthComponent.HealthUpgrader(
-                            100000,
-                            100000
+                            0,
+                            totemComponent.health
                         )
                     )
                     upgradeComponent.upgrade(context, player as Entity)

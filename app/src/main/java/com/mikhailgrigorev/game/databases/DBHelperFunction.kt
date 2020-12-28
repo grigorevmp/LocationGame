@@ -23,6 +23,18 @@ class DBHelperFunctions {
             db?.close()
         }
     }
+    private fun isTotemExists(id: Int, context: Context): Boolean {
+        var c: Cursor? = null
+        val db = TotemDBHelper(context).readableDatabase
+        return try {
+            val query = "select * from totem where _id = $id"
+            c = db.rawQuery(query, null)
+            c.moveToFirst()
+        } finally {
+            c?.close()
+            db?.close()
+        }
+    }
 
     // "FUNCTIONS FOR TEST" BLOCK
     //-------------------------------------------------------
@@ -69,6 +81,42 @@ class DBHelperFunctions {
          }
     }
 
+    fun spawnTotems(context: Context, totem: List<String>){
+        val dbHelper = TotemDBHelper(context)
+        val database = dbHelper.writableDatabase
+        val contentValues = ContentValues()
+
+
+        contentValues.put(TotemDBHelper.X, totem[0].toInt())
+        contentValues.put(TotemDBHelper.SIZE, totem[1].toInt())
+        contentValues.put(TotemDBHelper.Y, totem[2].toInt())
+        contentValues.put(TotemDBHelper.ID, totem[3].toInt())
+        contentValues.put(TotemDBHelper.ENEMYID, totem[4].toInt())
+        contentValues.put(TotemDBHelper.HEALTH, totem[5].toInt())
+        contentValues.put(TotemDBHelper.DMG, totem[6].toInt())
+        contentValues.put(TotemDBHelper.AIR, totem[7].toInt())
+        contentValues.put(TotemDBHelper.WATER, totem[8].toInt())
+        contentValues.put(TotemDBHelper.EARTH, totem[10].toInt())
+        contentValues.put(TotemDBHelper.FIRE, totem[9].toInt())
+        contentValues.put(TotemDBHelper.DEFENCE, totem[11].toInt())
+        contentValues.put(TotemDBHelper.AIR2, totem[12].toInt())
+        contentValues.put(TotemDBHelper.WATER2, totem[13].toInt())
+        contentValues.put(TotemDBHelper.EARTH2, totem[15].toInt())
+        contentValues.put(TotemDBHelper.FIRE2, totem[14].toInt())
+
+        if (!isTotemExists(totem[3].toInt(), context)) {
+            database.insert(TotemDBHelper.TABLE_TOTEM, null, contentValues)
+        }
+    }
+    fun setEnemyHealth(context: Context, enemy: Enemy) {
+        val dbHelper = EnemyDBHelper(context)
+        val database = dbHelper.writableDatabase
+        val enemyId = enemy.getComponent(BitmapComponent::class.java)!!._id
+        val contentValues = ContentValues()
+
+        contentValues.put(EnemyDBHelper.HEALTH, enemy.getComponent(HealthComponent::class.java)!!.healthPoints)
+        database.update(EnemyDBHelper.TABLE_ENEMIES, contentValues, "_id = $enemyId", null)
+    }
     fun setPlayerHealth(context: Context, player: Player) {
         val dbHelper = PlayerDBHelper(context)
         val database = dbHelper.writableDatabase
