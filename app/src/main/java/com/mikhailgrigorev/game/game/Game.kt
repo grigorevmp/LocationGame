@@ -128,6 +128,9 @@ class Game(context: Context?, gameThreadName: String= "GameThread"): SurfaceView
                     for (enemy in enemiesLoader!!.enemies)
                         gameEntities.add(enemy)
                 }
+                "totem" -> {
+                    // On 'BUY' button
+                }
             }
         }
 
