@@ -84,6 +84,9 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         //imageView.setBackgroundResource(obj.getComponent(BitmapComponent::class.java)!!._bitmapId)
 
         val nameEnemy = dialog.findViewById(R.id.name) as TextView
+        val enemiesIds = DBHelperFunctions().loadEnemyIDByXY(context,
+            obj.getComponent(PositionComponent::class.java)!!.x.toInt(),
+            obj.getComponent(PositionComponent::class.java)!!.y.toInt())
 
         if (enemyMultiple == 0) {
             val image = ImageView(context)
@@ -94,14 +97,8 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         else{
             nameEnemy.text = "Group of monsters"
             for (enemy in enemiesLoader!!.enemies) {
-                if ((obj.getComponent(PositionComponent::class.java)!!.x == enemy.getComponent(
-                        PositionComponent::class.java
-                    )!!.x)
-                    and (obj.getComponent(PositionComponent::class.java)!!.y == enemy.getComponent(
-                        PositionComponent::class.java
-                    )!!.y)
-                    and (enemy.getComponent(BitmapComponent::class.java)!!._multiple == 1)
-                ) {
+                if (enemy.getComponent(BitmapComponent::class.java)!!._id.toString() in enemiesIds)
+                {
                     val image = ImageView(context)
                     image.setBackgroundResource(enemy.getComponent(BitmapComponent::class.java)!!._bitmapId)
                     imageHandler.addView(image)
@@ -113,6 +110,9 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         btnClose.setOnClickListener {
             dialog.dismiss()
         }
+
+
+
         val btnOk = dialog.findViewById(R.id.ok) as Button
         btnOk.setOnClickListener {
             val intent = Intent(mContext, FightActivity::class.java)
@@ -121,22 +121,6 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
                 intent.putExtra("enemyId", bitmapComponent._id.toString())
                 println("Fighting with... @id#" + bitmapComponent._id.toString())
             } else {
-                var enemiesIds = ""
-                enemiesLoader = EnemiesLoader(context)
-                for (enemy in enemiesLoader!!.enemies) {
-                    if ((obj.getComponent(PositionComponent::class.java)!!.x == enemy.getComponent(
-                            PositionComponent::class.java
-                        )!!.x)
-                        and (obj.getComponent(PositionComponent::class.java)!!.y == enemy.getComponent(
-                            PositionComponent::class.java
-                        )!!.y)
-                        and (enemy.getComponent(BitmapComponent::class.java)!!._multiple == 1)
-                    ) {
-                        enemiesIds += enemy.getComponent(BitmapComponent::class.java)!!._id
-                        enemiesIds += ","
-                    }
-                }
-                enemiesIds = enemiesIds.substring(0, enemiesIds.length - 1)
                 intent.putExtra("enemyMulId", enemiesIds)
                 println("Fighting with... @id#$enemiesIds")
             }

@@ -3,11 +3,13 @@ package com.mikhailgrigorev.game.databases
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.util.Log
 import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.HealthComponent
 import com.mikhailgrigorev.game.entities.Enemy
 import com.mikhailgrigorev.game.entities.Player
+import com.mikhailgrigorev.game.game.Game
 
 class DBHelperFunctions {
 
@@ -41,14 +43,37 @@ class DBHelperFunctions {
     //-------------------------------------------------------
     fun restorePlayerHealth(context: Context, player: Player){
         val playerHealthComponent = player.getComponent(HealthComponent::class.java)
-        playerHealthComponent!!.upgrade(context, HealthComponent.HealthUpgrader(
-            playerHealthComponent.maxHealthPoints - playerHealthComponent.healthPoints,
-            0
-        ) as Component.ComponentUpgrader<Component>)
+        playerHealthComponent!!.upgrade(
+            context, HealthComponent.HealthUpgrader(
+                playerHealthComponent.maxHealthPoints - playerHealthComponent.healthPoints,
+                0
+            ) as Component.ComponentUpgrader<Component>
+        )
 
     }
     //-------------------------------------------------------
     //-------------------------------------------------------
+
+    fun loadEnemyIDByXY(context: Context, x: Int, y: Int): String {
+        val dbHelper = EnemyDBHelper(context)
+        val database = dbHelper.writableDatabase
+
+        val query = "select * from enemies where x = $x AND y = ${-Game.maxY +y}"
+        val cursor = database.rawQuery(query, null)
+
+        var enemiesIds = ""
+
+        if (cursor.moveToFirst()) {
+            val indexEnemyID   : Int  = cursor.getColumnIndex(EnemyDBHelper.ID)
+            do {
+                enemiesIds += cursor.getInt(indexEnemyID)
+                enemiesIds += ","
+            } while (cursor.moveToNext())
+        } else Log.d("mLog", "0 rows")
+        enemiesIds = enemiesIds.substring(0, enemiesIds.length - 1)
+        cursor.close()
+        return enemiesIds
+    }
 
     fun spawnEnemy(context: Context, enemy: List<String>){
         val dbHelper = EnemyDBHelper(context)
@@ -114,7 +139,10 @@ class DBHelperFunctions {
         val enemyId = enemy.getComponent(BitmapComponent::class.java)!!._id
         val contentValues = ContentValues()
 
-        contentValues.put(EnemyDBHelper.HEALTH, enemy.getComponent(HealthComponent::class.java)!!.healthPoints)
+        contentValues.put(
+            EnemyDBHelper.HEALTH,
+            enemy.getComponent(HealthComponent::class.java)!!.healthPoints
+        )
         database.update(EnemyDBHelper.TABLE_ENEMIES, contentValues, "_id = $enemyId", null)
     }
     fun setPlayerHealth(context: Context, player: Player) {
@@ -123,8 +151,14 @@ class DBHelperFunctions {
         val playerId = player.getComponent(BitmapComponent::class.java)!!._id
         val contentValues = ContentValues()
 
-        contentValues.put(PlayerDBHelper.HEALTH, player.getComponent(HealthComponent::class.java)!!.healthPoints)
-        contentValues.put(PlayerDBHelper.MAXHEALTH, player.getComponent(HealthComponent::class.java)!!.maxHealthPoints)
+        contentValues.put(
+            PlayerDBHelper.HEALTH,
+            player.getComponent(HealthComponent::class.java)!!.healthPoints
+        )
+        contentValues.put(
+            PlayerDBHelper.MAXHEALTH,
+            player.getComponent(HealthComponent::class.java)!!.maxHealthPoints
+        )
         database.update(PlayerDBHelper.TABLE_PLAYER, contentValues, "_id = $playerId", null)
     }
 

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
 import android.widget.*
@@ -84,6 +85,11 @@ class FightActivity : AppCompatActivity() {
         )
         paramsLO.setMargins(30, 0, 30, 0)
         choosePlayerLayout.addView(btnPlayer, paramsLO)
+
+        val textView = TextView(this)
+        textView.text = player.getComponent(BitmapComponent::class.java)!!._name
+        textView.gravity = Gravity.CENTER
+        choosePlayerLayout.addView(textView)
         // --------------------------------------------------------
         // --------------------------------------------------------
 
