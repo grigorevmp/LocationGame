@@ -8,9 +8,10 @@ class HealthComponent(
     maxHealthPoints: Int = healthPoints
 ) : Component() {
 
-    class HealthUpgrader : Component.ComponentUpgrader<HealthComponent>(HealthComponent::class.java) {
-        val value = Random.nextInt(0,100)
-    }
+    class HealthUpgrader(
+        var healthPoints: Int,
+        var maxHealthPoints: Int
+    ) : Component.ComponentUpgrader<HealthComponent>(HealthComponent::class.java) {}
 
     var healthPoints : Int
         private set
@@ -27,35 +28,10 @@ class HealthComponent(
         this.healthPoints = damageComponent(this)
     }
 
-    // "FUNCTIONS FOR TEST" BLOCK
-    //-------------------------------------------------------
-    //-------------------------------------------------------
-    fun setHealthPointsValue(value: Int) {
-        if (this.healthPoints + value < this.maxHealthPoints)
-            this.healthPoints = value
-        else
-            this.healthPoints = this.maxHealthPoints
-    }
-
-    fun addHealthPointsValue(value: Int) {
-        if (this.healthPoints + value < this.maxHealthPoints)
-            this.healthPoints += value
-        else
-            this.healthPoints = this.maxHealthPoints
-    }
-
-    fun setMaxHealthPointsValue(value: Int) {
-        this.maxHealthPoints = value
-    }
-
-    fun addMaxHealthPointsValue(value: Int) {
-        this.maxHealthPoints += value
-    }
-    //-------------------------------------------------------
-    //-------------------------------------------------------
-
     override fun upgrade(upgrader: ComponentUpgrader<Component>) {
         val healthUpgrader = upgrader as HealthUpgrader
-        this.maxHealthPoints += healthUpgrader.value
+        this.maxHealthPoints += healthUpgrader.maxHealthPoints
+        this.healthPoints += healthUpgrader.healthPoints
+        if (this.healthPoints > this.maxHealthPoints) this.healthPoints = this.maxHealthPoints
     }
 }

@@ -13,15 +13,24 @@ class DamageComponent(
     criticalMultiplier: Float
 ): Component() {
 
-    class DamageUpgrader : Component.ComponentUpgrader<DamageComponent>(DamageComponent::class.java) {
-        val physicalDamage = Random.nextInt(0,10)
-        val natureForcesDamageArray = Array<Int>(NatureForces.count) { Random.nextInt(0,10)}
+    class DamageUpgrader(
+        val physicalDamage: Int,
+        natureForcesDamage: NatureForcesValues
+    ) : Component.ComponentUpgrader<DamageComponent>(DamageComponent::class.java) {
+        var natureForcesDamage = Array<Int>(NatureForces.count) {0}
+            private set
+
+        init {
+            for (i in 0 until NatureForces.count){
+                this.natureForcesDamage[i] = natureForcesDamage.natureForcesValues[i]
+            }
+        }
     }
 
     var physicalDamage: Int
         private set
 
-    var natureForcesDamageArray = Array<Int>(NatureForces.count) {0}
+    var natureForcesDamage = Array<Int>(NatureForces.count) {0}
 
     var criticalChancePercent: Int
         private set
@@ -38,7 +47,7 @@ class DamageComponent(
         this.criticalMultiplier = criticalMultiplier
 
         for (i in 0 until NatureForces.count){
-            natureForcesDamageArray[i] = natureForcesDamage.natureForcesValues[i]
+            this.natureForcesDamage[i] = natureForcesDamage.natureForcesValues[i]
         }
     }
 
@@ -51,7 +60,7 @@ class DamageComponent(
         if (defenceComponent != null) {
             applyingPhysicalDamage = physicalDamage - defenceComponent.physicalDefence
             for (i in 0 until NatureForces.count) {
-                applyingForcesDamage += natureForcesDamageArray[i] - defenceComponent.natureForcesDefence[i]
+                applyingForcesDamage += natureForcesDamage[i] - defenceComponent.natureForcesDefence[i]
             }
             if (weapon != null){
                 applyingPhysicalDamage += (weapon.damage - defenceComponent.physicalDefence)
@@ -61,7 +70,7 @@ class DamageComponent(
             applyingPhysicalDamage = physicalDamage
             if (weapon != null){ applyingPhysicalDamage += weapon.damage }
             for (i in 0 until NatureForces.count) {
-                applyingForcesDamage += natureForcesDamageArray[i]
+                applyingForcesDamage += natureForcesDamage[i]
             }
         }
 
@@ -79,7 +88,7 @@ class DamageComponent(
         val damageUpgrader = upgrader as DamageUpgrader
         this.physicalDamage += damageUpgrader.physicalDamage
         for (i in 0 until NatureForces.count){
-            this.natureForcesDamageArray[i] += damageUpgrader.natureForcesDamageArray[i]
+            this.natureForcesDamage[i] += damageUpgrader.natureForcesDamage[i]
         }
     }
 }

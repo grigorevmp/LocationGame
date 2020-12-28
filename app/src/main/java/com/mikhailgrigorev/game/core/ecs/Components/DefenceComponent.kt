@@ -10,9 +10,18 @@ class DefenceComponent(
     natureForcesDefence: NatureForcesValues
 ) : Component(){
 
-    class DefenceUpgrader : Component.ComponentUpgrader<DefenceComponent>(DefenceComponent::class.java) {
-        val physicalDefence = Random.nextInt(0,10)
-        val natureForcesDefenceArray = Array<Int>(NatureForces.count) { Random.nextInt(0,10)}
+    class DefenceUpgrader(
+        val physicalDefence: Int,
+        natureForcesDefence: NatureForcesValues
+    ) : Component.ComponentUpgrader<DefenceComponent>(DefenceComponent::class.java) {
+        var natureForcesDefence = Array<Int>(NatureForces.count) {0}
+            private set
+
+        init {
+            for (i in 0 until NatureForces.count){
+                this.natureForcesDefence[i] = natureForcesDefence.natureForcesValues[i]
+            }
+        }
     }
 
     var physicalDefence: Int
@@ -32,7 +41,7 @@ class DefenceComponent(
         val defenceUpgrader = upgrader as DefenceUpgrader
         this.physicalDefence += defenceUpgrader.physicalDefence
         for (i in 0 until NatureForces.count){
-            this.natureForcesDefence[i] += defenceUpgrader.natureForcesDefenceArray[i]
+            this.natureForcesDefence[i] += defenceUpgrader.natureForcesDefence[i]
         }
     }
 }
