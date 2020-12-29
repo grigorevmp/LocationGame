@@ -57,7 +57,7 @@ class Player(context: Context): Entity() {
         upgradeComponent = this.addComponent(UpgradeComponent())
 
         inventoryComponent = this.addComponent(InventoryComponent())
-        inventoryComponent.addItem(Item(5,"Ring",1))
+        inventoryComponent.addItem(Item(9,"Ring",1))
 
         equipmentComponent = EquipmentComponent(
             Weapon(10, "Sword", 15)

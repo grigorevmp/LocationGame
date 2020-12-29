@@ -12,7 +12,16 @@ class InventoryComponent : Component() {
         else{ inventoryItem.add(item.count) }
     }
 
+    fun dropItemById(id: Int) {
+        items.remove(id)
+    }
+
+
     fun takeItem (item: Item) : Item? {
         return items[item.id]
+    }
+
+    fun getAllItems() : MutableCollection<Item> {
+        return items.values
     }
 }
