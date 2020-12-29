@@ -172,14 +172,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         }
         val btnOk = dialog.findViewById(R.id.ok) as Button
         btnOk.setOnClickListener {
-            val totemComponent = obj.getComponent(TotemComponent::class.java)!!
-            val upgradeComponent = UpgradeComponent()
-            upgradeComponent.addUpgrader(
-                HealthComponent.HealthUpgrader(
-                    0,
-                    totemComponent.health
-                )
-            )
+            val upgradeComponent = obj.getComponent(UpgradeComponent::class.java)!!
             upgradeComponent.upgrade(context, player as Entity)
         }
 
