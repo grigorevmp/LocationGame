@@ -40,7 +40,7 @@ class EnemiesLoader(context: Context, specialSpawn:Boolean = false) {
         // Data files
         val classesData = CSVReader(context, classesFileName).data
         val dataForFirstLoad = CSVReader(context, dataFileName).data
-        val data = java.util.ArrayList<IntArray>()
+        val data = java.util.ArrayList<Array<String>>()
 
        // Database writing TEST
        val dbHelper = EnemyDBHelper(context)
@@ -77,29 +77,33 @@ class EnemiesLoader(context: Context, specialSpawn:Boolean = false) {
             val indexEARTH2    : Int  = cursor.getColumnIndex(EnemyDBHelper.EARTH2)
             val indexFIRE2     : Int  = cursor.getColumnIndex(EnemyDBHelper.FIRE2)
             val indexSpecial   : Int  = cursor.getColumnIndex(EnemyDBHelper.Special)
+            val indexITEMS     : Int  = cursor.getColumnIndex(EnemyDBHelper.ITEMS)
+            val indexITEMSNUM  : Int  = cursor.getColumnIndex(EnemyDBHelper.ITEMSNUM)
             do {
                 data.add(
-                    intArrayOf(
-                        cursor.getInt(indexEnemyID),
-                        cursor.getInt(indexmultiple),
-                        cursor.getInt(indexX),
-                        cursor.getInt(indexY),
-                        cursor.getInt(indexSIZE),
-                        cursor.getInt(indexID),
-                        cursor.getInt(indexHEALTH),
-                        cursor.getInt(indexDMG),
-                        cursor.getInt(indexAIR),
-                        cursor.getInt(indexWATER),
-                        cursor.getInt(indexEARTH),
-                        cursor.getInt(indexFIRE),
-                        cursor.getInt(indexCC),
-                        cursor.getInt(indexCM),
-                        cursor.getInt(indexDEFENCE),
-                        cursor.getInt(indexAIR2),
-                        cursor.getInt(indexWATER2),
-                        cursor.getInt(indexEARTH2),
-                        cursor.getInt(indexFIRE2),
-                        cursor.getInt(indexSpecial)
+                    arrayOf(
+                        cursor.getString(indexEnemyID),
+                        cursor.getString(indexmultiple),
+                        cursor.getString(indexX),
+                        cursor.getString(indexY),
+                        cursor.getString(indexSIZE),
+                        cursor.getString(indexID),
+                        cursor.getString(indexHEALTH),
+                        cursor.getString(indexDMG),
+                        cursor.getString(indexAIR),
+                        cursor.getString(indexWATER),
+                        cursor.getString(indexEARTH),
+                        cursor.getString(indexFIRE),
+                        cursor.getString(indexCC),
+                        cursor.getString(indexCM),
+                        cursor.getString(indexDEFENCE),
+                        cursor.getString(indexAIR2),
+                        cursor.getString(indexWATER2),
+                        cursor.getString(indexEARTH2),
+                        cursor.getString(indexFIRE2),
+                        cursor.getString(indexITEMS),
+                        cursor.getString(indexITEMSNUM),
+                        cursor.getString(indexSpecial)
                     )
                 )
             } while (cursor.moveToNext())
@@ -116,36 +120,38 @@ class EnemiesLoader(context: Context, specialSpawn:Boolean = false) {
         for (enemy in data){
             val obj = Enemy(
                 context,
-                _multiple = enemy[1],
+                _multiple = enemy[1].toInt(),
                 _x = enemy[2].toFloat(),
                 _y = Game.maxY + enemy[3].toFloat(),
                 _size = enemy[4].toFloat(),
-                _id = enemy[5],
-                _name = enemyClass[enemy[0]]!![0],
-                _group = enemyClass[enemy[0]]!![1],
-                _desc = enemyClass[enemy[0]]!![2],
+                _id = enemy[5].toInt(),
+                _name = enemyClass[enemy[0].toInt()]!![0],
+                _group = enemyClass[enemy[0].toInt()]!![1],
+                _desc = enemyClass[enemy[0].toInt()]!![2],
                 _bitmapId = context.resources.getIdentifier(
-                    enemyClass[enemy[0]]!![3],
+                    enemyClass[enemy[0].toInt()]!![3],
                     "drawable",
                     context.packageName
                 ),
-                _health = enemy[6],
-                _damage = enemy[7],
-                _cc = enemy[12],
+                _health = enemy[6].toInt(),
+                _damage = enemy[7].toInt(),
+                _cc = enemy[12].toInt(),
                 _cm = enemy[13].toFloat(),
-                _defence = enemy[14],
+                _defence = enemy[14].toInt(),
                 _naturalDamageValue = NatureForcesValues(
-                    enemy[8],
-                    enemy[9],
-                    enemy[10],
-                    enemy[11]
+                    enemy[8].toInt(),
+                    enemy[9].toInt(),
+                    enemy[10].toInt(),
+                    enemy[11].toInt()
                 ),
                 _naturalValueDef = NatureForcesValues(
-                    enemy[15],
-                    enemy[16],
-                    enemy[17],
-                    enemy[18]
-                )
+                    enemy[15].toInt(),
+                    enemy[16].toInt(),
+                    enemy[17].toInt(),
+                    enemy[18].toInt()
+                ),
+                items = enemy[19],
+                itemsNum = enemy[20]
             )
             enemies.add(obj)
         }

@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class EnemyDBHelper extends SQLiteOpenHelper{
 
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "enemiesDb";
     public static final String TABLE_ENEMIES = "enemies";
 
@@ -30,6 +30,8 @@ public class EnemyDBHelper extends SQLiteOpenHelper{
     public static final String EARTH2 = "earthdef";
     public static final String FIRE2 = "firedef";
     public static final String Special = "special";
+    public static final String ITEMS = "dropItems";
+    public static final String ITEMSNUM = "dropItemsNum";
 
     public EnemyDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -57,14 +59,18 @@ public class EnemyDBHelper extends SQLiteOpenHelper{
                 + WATER2 + " integer,"
                 + EARTH2 + " integer,"
                 + FIRE2 + " integer,"
-                + Special + " integer"
+                + Special + " integer,"
+                + ITEMS + " text,"
+                + ITEMSNUM + " text"
                 + ")");
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("drop table if exists " + TABLE_ENEMIES);
-        onCreate(db);
+        if (newVersion > oldVersion) {
+            db.execSQL("ALTER TABLE enemies ADD COLUMN dropItems TEXT DEFAULT '1'");
+            db.execSQL("ALTER TABLE enemies ADD COLUMN dropItemsNum TEXT DEFAULT '1'");
+        }
     }
 }

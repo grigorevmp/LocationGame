@@ -3,7 +3,7 @@ package com.mikhailgrigorev.game.loader
 import android.content.Context
 import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.game.Game
-import com.mikhailgrigorev.game.map.Building
+import com.mikhailgrigorev.game.entities.Building
 
 class BuildingsLoader(context: Context) {
     /**

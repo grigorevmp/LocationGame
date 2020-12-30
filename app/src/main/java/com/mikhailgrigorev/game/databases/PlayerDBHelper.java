@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class PlayerDBHelper extends SQLiteOpenHelper{
 
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "playerDb";
     public static final String TABLE_PLAYER = "player";
 
@@ -30,7 +30,8 @@ public class PlayerDBHelper extends SQLiteOpenHelper{
     public static final String EARTH2 = "earthdef";
     public static final String FIRE2 = "firedef";
     public static final String Special = "special";
-    public static final String Manna = "manna";
+    public static final String MANNA = "manna";
+    public static final String MANNAMAX = "mannamax";
 
     public static final String KEY_NAME = "name";
     public static final String KEY_GROUP = "_group";
@@ -68,15 +69,19 @@ public class PlayerDBHelper extends SQLiteOpenHelper{
                 + KEY_GROUP + " text,"
                 + KEY_DESC + " text,"
                 + KEY_BITMAP + " text,"
-                + Manna + " integer"
+                + MANNA + " integer,"
+                + MANNAMAX + " integer"
                 + ")");
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE player ADD COLUMN playerMannaValue INTEGER DEFAULT 300");
+        }
         if (newVersion > oldVersion) {
-            db.execSQL("ALTER TABLE player ADD COLUMN maxhealth INTEGER DEFAULT 300");
+            db.execSQL("ALTER TABLE player ADD COLUMN mannamax INTEGER DEFAULT 300");
         }
         //db.execSQL("drop table if exists " + TABLE_PLAYER);
         //onCreate(db);

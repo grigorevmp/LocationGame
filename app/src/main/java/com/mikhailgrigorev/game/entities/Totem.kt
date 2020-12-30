@@ -1,7 +1,8 @@
-package com.mikhailgrigorev.game.map
+package com.mikhailgrigorev.game.entities
 
 
 import android.content.Context
+import com.mikhailgrigorev.game.core.data.NatureForcesValues
 import com.mikhailgrigorev.game.core.ecs.Components.*
 
 import com.mikhailgrigorev.game.core.ecs.Entity
@@ -15,18 +16,25 @@ class Totem(context: Context,
             desc: String,
             bitmapId: Int,
             group: String,
-            maxHealth: Int,
-            damage: Int,
-            damageAir: Int,
-            damageWater: Int,
-            damageFire: Int,
-            damageEarth: Int,
-            defence: Int,
-            defenceAir: Int,
-            defenceWater: Int,
-            defenceEarth: Int,
-            defenceFire: Int,
+            val maxHealth: Int,
+            val damage: Int,
+            val damageAir: Int,
+            val damageWater: Int,
+            val damageFire: Int,
+            val damageEarth: Int,
+            val defence: Int,
+            val defenceAir: Int,
+            val defenceWater: Int,
+            val defenceEarth: Int,
+            val defenceFire: Int,
+            items: String,
+            itemsNum: String
                ): Entity() {
+
+    var items = items
+        private set
+    var itemsNum = itemsNum
+        private set
 
     private var bitmapComponent: BitmapComponent
     private var positionComponent: PositionComponent = this.addComponent(PositionComponent(
@@ -50,6 +58,14 @@ class Totem(context: Context,
         upgradeComponent.addUpgrader(HealthComponent.HealthUpgrader(
             healthPoints = 0,
             maxHealthPoints = maxHealth
+        ))
+        upgradeComponent.addUpgrader(DamageComponent.DamageUpgrader(
+            damage,
+            NatureForcesValues(damageAir,damageWater,damageEarth,damageFire)
+        ))
+        upgradeComponent.addUpgrader(DefenceComponent.DefenceUpgrader(
+            defence,
+            NatureForcesValues(defenceAir,defenceWater,defenceEarth,defenceFire)
         ))
 
     }

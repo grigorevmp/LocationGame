@@ -1,4 +1,4 @@
-package com.mikhailgrigorev.game.map
+package com.mikhailgrigorev.game.entities
 
 
 import android.content.Context

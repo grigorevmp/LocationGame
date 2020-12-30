@@ -60,6 +60,12 @@
     <string name="currentId">CurrentID</string>
     <string name="player">Player</string>
     <string name="inventory">Inventory</string>
+    <string name="respawn_enemies">Respawn enemies</string>
+    <string name="get_all_possible_items">Get all possible items</string>
+    <string name="set_health_to_3000">Set health to...</string>
+    <string name="need_to_sacrifice">Need to Sacrifice</string>
+    <string name="possible_drop">Possible drop</string>
+    <string name="dungeon">Monster dungeon</string>
 
 
 </resources>

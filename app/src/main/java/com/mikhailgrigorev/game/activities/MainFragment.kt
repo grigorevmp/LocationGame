@@ -57,7 +57,9 @@ class MainFragment : Fragment() {
         }
         // MAIN - > SETTINGS
         menuSettings.setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_SettingFragment)
+            //findNavController().navigate(R.id.action_FirstFragment_to_SettingFragment)
+            val intent = Intent(context, Settings::class.java)
+            startActivity(intent)
         }
 
         menuMap.setOnClickListener {

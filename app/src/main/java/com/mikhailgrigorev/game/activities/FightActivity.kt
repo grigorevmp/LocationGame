@@ -1,8 +1,11 @@
 package com.mikhailgrigorev.game.activities
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.view.Gravity
 import android.view.KeyEvent
@@ -39,6 +42,7 @@ class FightActivity : AppCompatActivity() {
     private val enemies: ArrayList<Enemy> = ArrayList()
     private val enemiesNums: ArrayList<Int> = ArrayList()
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -65,8 +69,9 @@ class FightActivity : AppCompatActivity() {
         // PLAYER ICONS TEST BLOCK
         // --------------------------------------------------------
         // --------------------------------------------------------
+        val playerBitMap = player.getComponent(BitmapComponent::class.java)!!
         val prgPlayer = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal)
-        prgPlayer.id = player.getComponent(BitmapComponent::class.java)!!._id * 100
+        prgPlayer.id = playerBitMap._id * 100
         choosePlayerLayout.addView(prgPlayer)
 
         val btnPlayer = ImageButton(this)
@@ -74,8 +79,8 @@ class FightActivity : AppCompatActivity() {
             ConstraintLayout.LayoutParams.WRAP_CONTENT,
             ConstraintLayout.LayoutParams.WRAP_CONTENT
         )
-        btnPlayer.id = player.getComponent(BitmapComponent::class.java)!!._id
-        btnPlayer.setImageResource(player.getComponent(BitmapComponent::class.java)!!._bitmapId)
+        btnPlayer.id = playerBitMap._id
+        btnPlayer.setImageResource(playerBitMap._bitmapId)
         btnPlayer.setBackgroundColor(Color.TRANSPARENT)
         btnPlayer.setOnClickListener {
         }
@@ -87,12 +92,22 @@ class FightActivity : AppCompatActivity() {
         choosePlayerLayout.addView(btnPlayer, paramsLO)
 
         val textView = TextView(this)
-        textView.text = player.getComponent(BitmapComponent::class.java)!!._name
+        textView.text = playerBitMap._name
         textView.gravity = Gravity.CENTER
         choosePlayerLayout.addView(textView)
         // --------------------------------------------------------
         // --------------------------------------------------------
 
+
+        // SET MANNA IN PROGRESS NOW
+        // --------------------------------------------------------
+        // --------------------------------------------------------
+        playerMannaProgress.max = player.mannaMax
+        playerMannaProgress.progress = player.manna
+        playerMannaValue.text = "${player.manna}/${player.mannaMax}"
+
+        // --------------------------------------------------------
+        // --------------------------------------------------------
 
         // Get lone enemy if exists
         if(enemyId != "-1" ){

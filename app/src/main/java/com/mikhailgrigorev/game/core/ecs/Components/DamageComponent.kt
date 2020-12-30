@@ -8,7 +8,7 @@ import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquipmentComponent
 import kotlin.random.Random
 
 class DamageComponent(
-    private var physicalDamage: Int,
+    physicalDamage: Int,
     natureForcesDamage: NatureForcesValues,
     private var criticalChancePercent: Int,
     private var criticalMultiplier: Float
@@ -28,7 +28,11 @@ class DamageComponent(
         }
     }
 
-    private var natureForcesDamage = Array(NatureForces.count) {0}
+    var physicalDamage = physicalDamage
+        private set
+
+    var natureForcesDamage = Array(NatureForces.count) {0}
+        private set
 
     private var isLastCritical: Boolean = false
 

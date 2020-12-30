@@ -24,7 +24,14 @@ class Enemy(context: Context,
             _naturalDamageValue: NatureForcesValues,
             _naturalValueDef: NatureForcesValues,
             _multiple: Int,
-               ): Entity() {
+            items: String,
+            itemsNum: String
+): Entity() {
+
+    var items = items
+        private set
+    var itemsNum = itemsNum
+        private set
 
     private var id = _id
     private var name = _name

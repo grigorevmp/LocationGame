@@ -18,7 +18,7 @@ class ItemsDB {
             var c: Cursor? = null
             val db = AllItemsDBHelper(context).readableDatabase
             return try {
-                val query = "select * from items where _id = $id"
+                val query = "select * from all_items where _id = $id"
                 c = db.rawQuery(query, null)
                 c.moveToFirst()
             } finally {
@@ -40,10 +40,10 @@ class ItemsDB {
             contentValues.put(AllItemsDBHelper.ID, item[0].toInt())
             contentValues.put(AllItemsDBHelper.NAME, item[1])
             contentValues.put(AllItemsDBHelper.DESC, item[2])
-            contentValues.put(AllItemsDBHelper.TYPE, item[4].toInt())
+            contentValues.put(AllItemsDBHelper.TYPE, item[3].toInt())
 
             if (!isItemExists(item[0].toInt(), context)) {
-                database.insert(ItemsDBHelper.TABLE_ITEMS, null, contentValues)
+                database.insert(AllItemsDBHelper.TABLE_All_ITEMS, null, contentValues)
             }
         }
 
@@ -51,7 +51,7 @@ class ItemsDB {
             val dbHelper = AllItemsDBHelper(context)
             val database = dbHelper.writableDatabase
 
-            val query = "select * from enemies where _id = $id"
+            val query = "select * from all_items where _id = $id"
             val cursor = database.rawQuery(query, null)
 
             var enemiesIds = ""
@@ -65,7 +65,9 @@ class ItemsDB {
                     item = Item(
                         cursor.getInt(indexEnemyID),
                         cursor.getString(indexEnemyNAME),
-                        1,)
+                        1,
+                        cursor.getInt(indexEnemyTYPE)
+                    )
                 } while (cursor.moveToNext())
             } else Log.d("mLog", "0 rows")
             cursor.close()

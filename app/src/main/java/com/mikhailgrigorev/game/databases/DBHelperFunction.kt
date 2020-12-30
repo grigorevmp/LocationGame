@@ -73,8 +73,8 @@ class DBHelperFunctions {
                     0
                 ) as Component.ComponentUpgrader<Component>
             )
-
         }
+
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
@@ -128,6 +128,8 @@ class DBHelperFunctions {
             contentValues.put(EnemyDBHelper.WATER2, enemy[16].toInt())
             contentValues.put(EnemyDBHelper.EARTH2, enemy[17].toInt())
             contentValues.put(EnemyDBHelper.FIRE2, enemy[18].toInt())
+            contentValues.put(EnemyDBHelper.ITEMS, enemy[19].toInt())
+            contentValues.put(EnemyDBHelper.ITEMSNUM, enemy[20].toInt())
             contentValues.put(EnemyDBHelper.Special, 0)
 
             if (!isEnemyExists(enemy[5].toInt(), context)) {
@@ -245,6 +247,8 @@ class DBHelperFunctions {
             contentValues.put(TotemDBHelper.WATER2, totem[13].toInt())
             contentValues.put(TotemDBHelper.EARTH2, totem[15].toInt())
             contentValues.put(TotemDBHelper.FIRE2, totem[14].toInt())
+            contentValues.put(TotemDBHelper.ITEMS, totem[16].toInt())
+            contentValues.put(TotemDBHelper.ITEMSNUM, totem[17].toInt())
 
             if (!isTotemExists(totem[3].toInt(), context)) {
                 database.insert(TotemDBHelper.TABLE_TOTEM, null, contentValues)

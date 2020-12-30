@@ -26,8 +26,17 @@ class Player(context: Context): Entity() {
     private var spirit: Spirit
     private var speed: Float = 0.2.toFloat()
 
+    var manna: Int = 0
+        private set
+
+    var mannaMax: Int = 0
+        private set
+
     init{
         val playerData = PlayerLoader(context)
+        //manna = playerData.manna
+        manna = 20
+        mannaMax = playerData.mannamax
         speed = playerData.speed
         val size = playerData.size
         positionComponent = this.addComponent(PositionComponent(

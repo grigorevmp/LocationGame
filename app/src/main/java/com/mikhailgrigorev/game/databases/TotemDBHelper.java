@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class TotemDBHelper extends SQLiteOpenHelper{
 
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "totemDb";
     public static final String TABLE_TOTEM = "totem";
 
@@ -26,6 +26,8 @@ public class TotemDBHelper extends SQLiteOpenHelper{
     public static final String WATER2 = "waterdef";
     public static final String EARTH2 = "earthdef";
     public static final String FIRE2 = "firedef";
+    public static final String ITEMS = "allitems";
+    public static final String ITEMSNUM = "itemsnum";
 
 
     public TotemDBHelper(Context context) {
@@ -50,14 +52,18 @@ public class TotemDBHelper extends SQLiteOpenHelper{
                 + AIR2 + " integer,"
                 + WATER2 + " integer,"
                 + EARTH2 + " integer,"
-                + FIRE2 + " integer"
+                + FIRE2 + " integer,"
+                + ITEMS + " text,"
+                + ITEMSNUM + " text"
                 + ")");
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("drop table if exists " + TABLE_TOTEM);
-        onCreate(db);
+        if (newVersion > oldVersion) {
+            db.execSQL("ALTER TABLE totem ADD COLUMN allitems TEXT DEFAULT '1'");
+            db.execSQL("ALTER TABLE totem ADD COLUMN itemsnum TEXT DEFAULT '1'");
+        }
     }
 }
