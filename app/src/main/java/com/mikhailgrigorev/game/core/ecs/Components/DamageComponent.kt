@@ -8,17 +8,17 @@ import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquipmentComponent
 import kotlin.random.Random
 
 class DamageComponent(
-    physicalDamage: Int,
+    private var physicalDamage: Int,
     natureForcesDamage: NatureForcesValues,
-    criticalChancePercent: Int,
-    criticalMultiplier: Float
+    private var criticalChancePercent: Int,
+    private var criticalMultiplier: Float
 ): Component() {
 
     class DamageUpgrader(
         val physicalDamage: Int,
         natureForcesDamage: NatureForcesValues
     ) : Component.ComponentUpgrader<DamageComponent>(DamageComponent::class.java) {
-        var natureForcesDamage = Array<Int>(NatureForces.count) {0}
+        var natureForcesDamage = Array(NatureForces.count) {0}
             private set
 
         init {
@@ -28,24 +28,11 @@ class DamageComponent(
         }
     }
 
-    var physicalDamage: Int
-        private set
+    private var natureForcesDamage = Array(NatureForces.count) {0}
 
-    var natureForcesDamage = Array<Int>(NatureForces.count) {0}
-
-    var criticalChancePercent: Int
-        private set
-
-    var criticalMultiplier: Float
-        private set
-
-    var isLastCritical: Boolean = false
-        private set
+    private var isLastCritical: Boolean = false
 
     init {
-        this.physicalDamage = physicalDamage
-        this.criticalChancePercent = criticalChancePercent
-        this.criticalMultiplier = criticalMultiplier
 
         for (i in 0 until NatureForces.count){
             this.natureForcesDamage[i] = natureForcesDamage.natureForcesValues[i]

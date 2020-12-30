@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:id="@+id/mainLayout"
+<LinearLayout android:id="@+id/mainLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -14,9 +12,9 @@
     android:layout_marginStart="20dp"
     android:layout_marginEnd="20dp"
     android:layout_marginBottom="0dp"
-    android:textSize="25dp"
+    android:textSize="25sp"
     android:layout_gravity="center"
-    android:text="notext"/>
+    android:text="@string/noText"/>
 
     <TextView
         android:id="@+id/subText"
@@ -26,7 +24,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_gravity="center"
-        android:text="notext"/>
+        android:text="@string/noText"/>
     <ImageView
         android:id="@+id/image"
         android:layout_width="wrap_content"
@@ -36,7 +34,7 @@
         android:layout_marginEnd="20dp"
         android:layout_weight="1"
         android:layout_gravity="center"
-        android:contentDescription="TODO" />
+        android:contentDescription="@string/totem" />
     <TextView
         android:id="@+id/description"
         android:layout_width="wrap_content"
@@ -45,7 +43,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_gravity="center"
-        android:text="notext"/>
+        android:text="@string/noText"/>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_gravity="center"
@@ -56,15 +54,17 @@
         android:layout_marginBottom="10dp">
     <Button
         android:id="@+id/close"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
-        android:text="Close"/>
+        android:text="@string/close"/>
     <Button
         android:id="@+id/ok"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:text="Buy"/>
+        android:text="@string/buy"/>
 </LinearLayout>
 </LinearLayout>

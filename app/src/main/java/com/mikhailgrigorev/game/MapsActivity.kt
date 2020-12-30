@@ -66,7 +66,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         enableMyLocation()
     }
 
-    fun setPoiClick (map: GoogleMap){
+    private fun setPoiClick (map: GoogleMap){
         map.setOnPoiClickListener{ poi ->
             val poiMarker = map.addMarker(
                 MarkerOptions()
@@ -77,7 +77,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    fun setMapStyle (map:GoogleMap){
+    private fun setMapStyle (map:GoogleMap){
         try {
             val success = map.setMapStyle(
                 MapStyleOptions.loadRawResourceStyle(
@@ -123,7 +123,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         else{
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 REQUEST_LOCATION_PERMISSION
             )
         }

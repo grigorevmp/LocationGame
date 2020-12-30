@@ -22,6 +22,7 @@ import com.mikhailgrigorev.game.loader.EnemiesLoader
 import com.mikhailgrigorev.game.loader.TotemsLoader
 
 
+@SuppressLint("ViewConstructor")
 class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceView(context), Runnable, SurfaceHolder.Callback {
     private var mContext: Context? = context
     companion object{
@@ -63,9 +64,9 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
     private var player: Player? = null
 
     private fun createEnemyDialog(context: Context, obj: Entity) {
-        val positionComponent = obj.getComponent(PositionComponent::class.java)
-        val bitmapComponent = obj.getComponent(BitmapComponent::class.java)
-        val enemyMultiple = bitmapComponent!!._multiple
+        val objPositionComponent = obj.getComponent(PositionComponent::class.java)!!
+        val objBitmapComponent = obj.getComponent(BitmapComponent::class.java)!!
+        val enemyMultiple = objBitmapComponent._multiple
 
         val dialog = Dialog(context)
         val width = (resources.displayMetrics.widthPixels * 0.70).toInt()
@@ -84,15 +85,15 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val nameEnemy = dialog.findViewById(R.id.name) as TextView
         val enemiesIds = DBHelperFunctions.loadEnemyIDByXY(
             context,
-            obj.getComponent(PositionComponent::class.java)!!.x.toInt(),
-            obj.getComponent(PositionComponent::class.java)!!.y.toInt()
+            objPositionComponent.x.toInt(),
+            objPositionComponent.y.toInt()
         )
 
         if (enemyMultiple == 0) {
             val image = ImageView(context)
-            image.setBackgroundResource(obj.getComponent(BitmapComponent::class.java)!!._bitmapId)
+            image.setBackgroundResource(objBitmapComponent._bitmapId)
             imageHandler.addView(image)
-            nameEnemy.text = obj.getComponent(BitmapComponent::class.java)!!._name
+            nameEnemy.text = objBitmapComponent._name
         }
         else{
             nameEnemy.text = "Group of monsters"
@@ -106,18 +107,20 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
             }
         }
 
+        // CLOSE BUTTON
         val btnClose = dialog.findViewById(R.id.close) as Button
         btnClose.setOnClickListener {
             dialog.dismiss()
         }
 
+        // POSITIVE BUTTON
         val btnOk = dialog.findViewById(R.id.ok) as Button
         btnOk.setOnClickListener {
             val intent = Intent(mContext, FightActivity::class.java)
             if (enemyMultiple == 0) {
                 // One enemy sample
-                intent.putExtra("enemyId", bitmapComponent._id.toString())
-                println("Fighting with... @id#" + bitmapComponent._id.toString())
+                intent.putExtra("enemyId", objBitmapComponent._id.toString())
+                println("Fighting with... @id#" + objBitmapComponent._id.toString())
             } else {
                 intent.putExtra("enemyMulId", enemiesIds)
                 println("Fighting with... @id#$enemiesIds")
@@ -127,8 +130,11 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
             origin.finish()
         }
 
+        // DESCCRIPTION
         val descriptionEnemy = dialog.findViewById(R.id.description) as TextView
-        descriptionEnemy.text = obj.getComponent(BitmapComponent::class.java)!!._desc
+        descriptionEnemy.text = objBitmapComponent._desc
+
+        // SUB TEXT ENEMY
         val subTextEnemy = dialog.findViewById(R.id.subText) as TextView
         subTextEnemy.text = "Fight or Run"
 
@@ -151,6 +157,8 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         params.width = width
         mainLayout.layoutParams = params
 
+        val totemBitmapComponent = obj.getComponent(BitmapComponent::class.java)!!
+
         val btnClose = dialog.findViewById(R.id.close) as Button
         btnClose.setOnClickListener {
             dialog.dismiss()
@@ -161,13 +169,17 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
             upgradeComponent.upgrade(context, player as Entity)
         }
 
+        // TOTEM ICON
         val imageView = dialog.findViewById(R.id.image) as ImageView
-        imageView.setBackgroundResource(obj.getComponent(BitmapComponent::class.java)!!._bitmapId)
+        imageView.setBackgroundResource(totemBitmapComponent._bitmapId)
 
+        // NAME
         val nameTotem = dialog.findViewById(R.id.name) as TextView
-        nameTotem.text = obj.getComponent(BitmapComponent::class.java)!!._name
+        nameTotem.text = totemBitmapComponent._name
+        // TOTEM DESCRIPTION
         val descriptionTotem = dialog.findViewById(R.id.description) as TextView
-        descriptionTotem.text = obj.getComponent(BitmapComponent::class.java)!!._desc
+        descriptionTotem.text = totemBitmapComponent._desc
+        // TOTEM SUB TEXT
         val subTextTotem = dialog.findViewById(R.id.subText) as TextView
         subTextTotem.text = "Trust your luck"
         dialog.show()
@@ -215,6 +227,12 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         params.width = width
         mainLayout.layoutParams = params
 
+        val playerHealthComponent = player!!.getComponent(HealthComponent::class.java)!!
+        val objBitmapComponent =  obj.getComponent(BitmapComponent::class.java)!!
+
+        // PLAYER SUB TEXT
+        val subTextPlayer = dialog.findViewById(R.id.subText) as TextView
+
         val btnClose = dialog.findViewById(R.id.close) as Button
         btnClose.setOnClickListener {
             dialog.dismiss()
@@ -222,12 +240,10 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val btnOk = dialog.findViewById(R.id.ok) as Button
         btnOk.setOnClickListener {
             DBHelperFunctions.restorePlayerHealth(context, player!!)
-            val subTextTotem = dialog.findViewById(R.id.subText) as TextView
-            subTextTotem.text = "Health is ${player!!.getComponent(HealthComponent::class.java)!!.healthPoints}"
+            subTextPlayer.text = "Health is ${playerHealthComponent.healthPoints}"
         }
 
         val gridLayout = dialog.findViewById(R.id.gridLayout) as GridLayout
-
         val inventory = player!!.getComponent(InventoryComponent::class.java)!!
 
         var itemsTemp = DBHelperFunctions.loadAllItem(context)
@@ -262,13 +278,14 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
             gridLayout.addView(btn)
         }
 
-
-        val nameTotem = dialog.findViewById(R.id.name) as TextView
-        nameTotem.text = obj.getComponent(BitmapComponent::class.java)!!._name
-        val descriptionTotem = dialog.findViewById(R.id.description) as TextView
-        descriptionTotem.text = obj.getComponent(BitmapComponent::class.java)!!._desc
-        val subTextTotem = dialog.findViewById(R.id.subText) as TextView
-        subTextTotem.text = "Health is ${player!!.getComponent(HealthComponent::class.java)!!.healthPoints}"
+        // PLAYER NAME
+        val namePlayer = dialog.findViewById(R.id.name) as TextView
+        namePlayer.text = objBitmapComponent._name
+        // PLAYER DESCRIPTION
+        val descriptionPlayer = dialog.findViewById(R.id.description) as TextView
+        descriptionPlayer.text = objBitmapComponent._desc
+        // PLAYER SUB TEXT
+        subTextPlayer.text = "Health is ${playerHealthComponent.healthPoints}"
         dialog.show()
 
     }
@@ -278,315 +295,26 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val positionComponent = obj.getComponent(PositionComponent::class.java)
         val bitmapComponent = obj.getComponent(BitmapComponent::class.java)
 
-        var group = bitmapComponent!!._group
-        if (group in "0,Skeleton,skeleton,Bones,devil,13,Zombie,zombie,Bones,devil")
-            group = "enemy"
-
-        var positive = "Close"
-        when (group) {
-            "building" -> positive = "Respawn enemies"
-            "player" -> positive = "Heal yourself"
-            "totem" -> positive = "Buy"
-            "enemy" -> positive = "Fight"
-        }
-
         //Instantiate builder variable
         val builder = AlertDialog.Builder(context)
-
-        val enemyMultiple = bitmapComponent._multiple
-        // set title
-        if (enemyMultiple == 0)
-            builder.setTitle(bitmapComponent._name)
-        else
-            builder.setTitle("BIG MONSTER TOWER")
 
         //set content area
         builder.setMessage("You touched ${positionComponent!!.rect}")
 
         //set negative button
         builder.setPositiveButton(
-            positive
+            "Respawn enemies"
         ) { _, _ ->
-            when (group) {
-                /*
-                "enemy" -> {
-                    val intent = Intent(mContext, FightActivity::class.java)
-                    if (enemyMultiple == 0) {
-                        // One enemy sample
-                        intent.putExtra("enemyId", bitmapComponent._id.toString())
-                        println("Fighting with... @id#" + bitmapComponent._id.toString())
-                    } else {
-                        var enemiesIds = ""
-                        enemiesLoader = EnemiesLoader(context)
-                        for (enemy in enemiesLoader!!.enemies) {
-                            if ((obj.getComponent(PositionComponent::class.java)!!.x == enemy.getComponent(
-                                    PositionComponent::class.java
-                                )!!.x)
-                                and (obj.getComponent(PositionComponent::class.java)!!.y == enemy.getComponent(
-                                    PositionComponent::class.java
-                                )!!.y)
-                                and (enemy.getComponent(BitmapComponent::class.java)!!._multiple == 1)
-                            ) {
-                                enemiesIds += enemy.getComponent(BitmapComponent::class.java)!!._id
-                                enemiesIds += ","
-                            }
-                        }
-                        enemiesIds = enemiesIds.substring(0, enemiesIds.length - 1)
-                        intent.putExtra("enemyMulId", enemiesIds)
-                        println("Fighting with... @id#$enemiesIds")
-                    }
-                    val origin = mContext as Activity
-                    origin.startActivity(intent)
-                    origin.finish()
-                }
-                */
-                "player" -> {
-                    DBHelperFunctions.restorePlayerHealth(context, player!!)
-                }
-                "building" -> {
-                    enemiesLoader = EnemiesLoader(context, true)
-                    for (enemy in enemiesLoader!!.enemies)
-                        gameEntities.add(enemy)
-                }
-                /*
-                "totem" -> {
-                    // On 'BUY' button
-                    val totemComponent = obj.getComponent(TotemComponent::class.java)!!
-                    val upgradeComponent = UpgradeComponent()
-                    upgradeComponent.addUpgrader(
-                        HealthComponent.HealthUpgrader(
-                            0,
-                            totemComponent.health
-                        )
-                    )
-                    upgradeComponent.upgrade(context, player as Entity)
-                }
-
-                 */
-            }
+            enemiesLoader = EnemiesLoader(context, true)
+            for (enemy in enemiesLoader!!.enemies)
+                gameEntities.add(enemy)
         }
-
         //set positive button
         builder.setNegativeButton(
             "Cancel"
         ) { dialog, id ->
             // User cancelled the dialog
         }
-
-        if (group == "player") {
-            builder.setNeutralButton(
-                "Inventory"
-            ) { _, _ ->
-                val dialog = Dialog(context)
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                dialog.setCancelable(false)
-                dialog.setContentView(R.layout.inventory)
-                //val body = dialog.findViewById(R.id.body) as TextView
-                //body.text = title
-                //val noBtn = dialog.findViewById(R.id.noBtn) as TextView
-                //noBtn.setOnClickListener { dialog.dismiss() }
-
-                val mainLayout = dialog.findViewById(R.id.mainLayout) as GridLayout
-
-                val yesBtn = dialog.findViewById(R.id.yesBtn) as Button
-
-                // Ячейки
-                val button = dialog.findViewById(R.id.button) as Button
-                val button1 = dialog.findViewById(R.id.button2) as Button
-                val button2 = dialog.findViewById(R.id.button3) as Button
-                val button3 = dialog.findViewById(R.id.button4) as Button
-
-                // --------------------------
-                val newButton = Button(context)
-                val param = GridLayout.LayoutParams()
-                param.columnSpec = GridLayout.spec(0)
-                param.rowSpec = GridLayout.spec(3)
-                newButton.layoutParams = param
-                newButton.text = "NewItem"
-                mainLayout.addView(newButton)
-                // --------------------------
-
-                // Выбросить
-                val button5 = dialog.findViewById(R.id.button5) as Button
-                val button6 = dialog.findViewById(R.id.button6) as Button
-                val button7 = dialog.findViewById(R.id.button7) as Button
-                val button8 = dialog.findViewById(R.id.button8) as Button
-
-
-
-                button.text = "Name"
-                button.setOnClickListener {
-                    button5.visibility = View.VISIBLE
-                }
-
-                // Выбросить предмет
-                button5.setOnClickListener {
-                    button.visibility = View.GONE
-                    button5.visibility = View.GONE
-                }
-
-
-                yesBtn.setOnClickListener {
-                    dialog.dismiss()
-                }
-                dialog.show()
-            }
-        }
-        /*
-        if(group=="totem") {
-            // TEST NEW UI FOR TOTEM
-            builder.setNeutralButton(
-                "NEW TEST UI"
-            ) { _, _ ->
-
-                val dialog = Dialog(context)
-                val width = (resources.displayMetrics.widthPixels * 0.70).toInt()
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                dialog.setCancelable(false)
-                dialog.setContentView(R.layout.totem_dialog)
-
-                // Set size
-                val mainLayout = dialog.findViewById(R.id.mainLayout) as LinearLayout
-                val params: ViewGroup.LayoutParams = mainLayout.layoutParams
-                params.width = width
-                mainLayout.layoutParams = params
-
-                val btnClose = dialog.findViewById(R.id.close) as Button
-                btnClose.setOnClickListener {
-                    dialog.dismiss()
-                }
-                val btnOk = dialog.findViewById(R.id.ok) as Button
-                btnOk.setOnClickListener {
-                    val totemComponent = obj.getComponent(TotemComponent::class.java)!!
-                    val upgradeComponent = UpgradeComponent()
-                    upgradeComponent.addUpgrader(
-                        HealthComponent.HealthUpgrader(
-                            0,
-                            totemComponent.health
-                        )
-                    )
-                    upgradeComponent.upgrade(context, player as Entity)
-                }
-
-                val imageView = dialog.findViewById(R.id.image) as ImageView
-                imageView.setBackgroundResource(obj.getComponent(BitmapComponent::class.java)!!._bitmapId)
-
-                val nameTotem = dialog.findViewById(R.id.name) as TextView
-                nameTotem.text = obj.getComponent(BitmapComponent::class.java)!!._name
-                val descriptionTotem = dialog.findViewById(R.id.description) as TextView
-                descriptionTotem.text = obj.getComponent(BitmapComponent::class.java)!!._desc
-                val subTextTotem = dialog.findViewById(R.id.subText) as TextView
-                subTextTotem.text = "Trust your luck"
-
-
-
-                dialog.show()
-
-
-
-            }
-        }
-        if(group=="enemy") {
-            // TEST NEW UI FOR TOTEM
-            builder.setNeutralButton(
-                "NEW TEST UI"
-            ) { _, _ ->
-
-                val dialog = Dialog(context)
-                val width = (resources.displayMetrics.widthPixels * 0.70).toInt()
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                dialog.setCancelable(false)
-                dialog.setContentView(R.layout.enemy_dialog)
-
-                // Set size
-                val mainLayout = dialog.findViewById(R.id.mainLayout) as LinearLayout
-                val params: ViewGroup.LayoutParams = mainLayout.layoutParams
-                params.width = width
-                mainLayout.layoutParams = params
-
-                val imageHandler = dialog.findViewById(R.id.imageHandler) as LinearLayout
-
-                //val imageView = dialog.findViewById(R.id.image) as ImageView
-                //imageView.setBackgroundResource(obj.getComponent(BitmapComponent::class.java)!!._bitmapId)
-
-                val nameEnemy = dialog.findViewById(R.id.name) as TextView
-
-                if (enemyMultiple == 0) {
-                    val image = ImageView(context)
-                    image.setBackgroundResource(obj.getComponent(BitmapComponent::class.java)!!._bitmapId)
-                    imageHandler.addView(image)
-                    nameEnemy.text = obj.getComponent(BitmapComponent::class.java)!!._name
-                }
-                else{
-                    nameEnemy.text = "Group of monsters"
-                    for (enemy in enemiesLoader!!.enemies) {
-                        if ((obj.getComponent(PositionComponent::class.java)!!.x == enemy.getComponent(
-                                PositionComponent::class.java
-                            )!!.x)
-                            and (obj.getComponent(PositionComponent::class.java)!!.y == enemy.getComponent(
-                                PositionComponent::class.java
-                            )!!.y)
-                            and (enemy.getComponent(BitmapComponent::class.java)!!._multiple == 1)
-                        ) {
-                            val image = ImageView(context)
-                            image.setBackgroundResource(enemy.getComponent(BitmapComponent::class.java)!!._bitmapId)
-                            imageHandler.addView(image)
-                        }
-                    }
-                }
-
-                val btnClose = dialog.findViewById(R.id.close) as Button
-                btnClose.setOnClickListener {
-                    dialog.dismiss()
-                }
-                val btnOk = dialog.findViewById(R.id.ok) as Button
-                btnOk.setOnClickListener {
-                    val intent = Intent(mContext, FightActivity::class.java)
-                    if (enemyMultiple == 0) {
-                        // One enemy sample
-                        intent.putExtra("enemyId", bitmapComponent._id.toString())
-                        println("Fighting with... @id#" + bitmapComponent._id.toString())
-                    } else {
-                        var enemiesIds = ""
-                        enemiesLoader = EnemiesLoader(context)
-                        for (enemy in enemiesLoader!!.enemies) {
-                            if ((obj.getComponent(PositionComponent::class.java)!!.x == enemy.getComponent(
-                                    PositionComponent::class.java
-                                )!!.x)
-                                and (obj.getComponent(PositionComponent::class.java)!!.y == enemy.getComponent(
-                                    PositionComponent::class.java
-                                )!!.y)
-                                and (enemy.getComponent(BitmapComponent::class.java)!!._multiple == 1)
-                            ) {
-                                enemiesIds += enemy.getComponent(BitmapComponent::class.java)!!._id
-                                enemiesIds += ","
-                            }
-                        }
-                        enemiesIds = enemiesIds.substring(0, enemiesIds.length - 1)
-                        intent.putExtra("enemyMulId", enemiesIds)
-                        println("Fighting with... @id#$enemiesIds")
-                    }
-                    val origin = mContext as Activity
-                    origin.startActivity(intent)
-                    origin.finish()
-                }
-
-
-
-                val descriptionEnemy = dialog.findViewById(R.id.description) as TextView
-                descriptionEnemy.text = obj.getComponent(BitmapComponent::class.java)!!._desc
-                val subTextEnemy = dialog.findViewById(R.id.subText) as TextView
-                subTextEnemy.text = "Fight or Run"
-
-
-
-                dialog.show()
-
-
-
-            }
-        }
-        */
         builder.show()
     }
 
@@ -632,9 +360,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val window: Window = (context as Activity).window
         window.decorView.getWindowVisibleDisplayFrame(rectangle)
 
-
         val wm = context!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-
 
         val size = Point()
 

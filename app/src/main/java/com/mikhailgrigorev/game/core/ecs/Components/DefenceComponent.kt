@@ -1,10 +1,9 @@
 package com.mikhailgrigorev.game.core.ecs.Components
 
 import android.content.Context
-import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.core.data.NatureForces
 import com.mikhailgrigorev.game.core.data.NatureForcesValues
-import kotlin.random.Random
+import com.mikhailgrigorev.game.core.ecs.Component
 
 class DefenceComponent(
     physicalDefence : Int,
@@ -15,7 +14,7 @@ class DefenceComponent(
         val physicalDefence: Int,
         natureForcesDefence: NatureForcesValues
     ) : Component.ComponentUpgrader<DefenceComponent>(DefenceComponent::class.java) {
-        var natureForcesDefence = Array<Int>(NatureForces.count) {0}
+        var natureForcesDefence = Array(NatureForces.count) {0}
             private set
 
         init {
@@ -28,7 +27,7 @@ class DefenceComponent(
     var physicalDefence: Int
         private set
 
-    var natureForcesDefence = Array<Int>(NatureForces.count) {0}
+    var natureForcesDefence = Array(NatureForces.count) {0}
         private set
 
     init {

@@ -33,8 +33,8 @@ class FightActivity : AppCompatActivity() {
         NatureAttack;
     }
 
-    var fightFSM = FSM<Int>()
-    var enemiesNum = 0
+    private var fightFSM = FSM<Int>()
+    private var enemiesNum = 0
     private var enemy: Enemy? = null
     private val enemies: ArrayList<Enemy> = ArrayList()
     private val enemiesNums: ArrayList<Int> = ArrayList()
@@ -94,7 +94,6 @@ class FightActivity : AppCompatActivity() {
         // --------------------------------------------------------
 
 
-
         // Get lone enemy if exists
         if(enemyId != "-1" ){
             enemiesNum += 1
@@ -102,7 +101,8 @@ class FightActivity : AppCompatActivity() {
 
             // Create image button
             val prgPEnemy = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal)
-            prgPEnemy.id = enemy!!.getComponent(BitmapComponent::class.java)!!._id * 100
+            val enemyBitmapComponent = enemy!!.getComponent(BitmapComponent::class.java)!!
+            prgPEnemy.id = enemyBitmapComponent._id * 100
             val maxHealth = enemy!!.getComponent(HealthComponent::class.java)!!.maxHealthPoints
             prgPEnemy.max = maxHealth
             prgPEnemy.progress = maxHealth
@@ -114,7 +114,7 @@ class FightActivity : AppCompatActivity() {
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
             )
             btnEnemy.id = enemyId.toInt()
-            btnEnemy.setImageResource(enemy!!.getComponent(BitmapComponent::class.java)!!._bitmapId)
+            btnEnemy.setImageResource(enemyBitmapComponent._bitmapId)
             btnEnemy.setBackgroundColor(Color.TRANSPARENT)
             btnEnemy.scaleX = 1f
             btnEnemy.scaleY = 1f
@@ -126,32 +126,30 @@ class FightActivity : AppCompatActivity() {
                 buttonTest.scaleX = 1f
                 buttonTest.scaleY = 1f
             }
-            val paramsLO: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.WRAP_CONTENT,
-                ConstraintLayout.LayoutParams.WRAP_CONTENT
-            )
-            paramsLO.setMargins(30, 0, 30, 0)
             chooseEnemyLayout.addView(btnEnemy, paramsLO)
         }
 
         // Get multiple enemies if exist
         if(enemyMulId != "-1" ){
             val enemyStr = enemyMulId.split(',')
-            val enemyStrIter = enemyStr.iterator()
-            var i = 0
-            enemyStrIter.forEach {
+            for((i, it) in enemyStr.withIndex()){
                 enemiesNum += 1
-                findEnemyByID(it)?.let { it1 -> enemies.add(it1) }
+                findEnemyByID(it)?.let {
+                        newEnemy -> enemies.add(newEnemy)
+                }
                 enemiesNums.add(i)
 
                 val index: Int = i
+
+                // HEALTH PROGRESS BAR FOR ENEMY
                 val prgPEnemy = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal)
                 prgPEnemy.id = it.toInt() * 100
                 val maxHealth = enemies[index].getComponent(HealthComponent::class.java)!!.maxHealthPoints
                 prgPEnemy.max = maxHealth
                 prgPEnemy.progress = maxHealth
                 chooseEnemyLayout.addView(prgPEnemy)
-                // Create image button
+
+                // IMAGE BUTTON FOR ENEMY
                 val btnEnemy = ImageButton(this)
                 btnEnemy.layoutParams = ConstraintLayout.LayoutParams(
                     ConstraintLayout.LayoutParams.WRAP_CONTENT,
@@ -176,15 +174,9 @@ class FightActivity : AppCompatActivity() {
                     buttonTest.scaleX = 1f
                     buttonTest.scaleY = 1f
                 }
-                val paramsLO: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
-                    ConstraintLayout.LayoutParams.WRAP_CONTENT,
-                    ConstraintLayout.LayoutParams.WRAP_CONTENT
-                )
-                paramsLO.setMargins(30, 0, 30, 0)
                 chooseEnemyLayout.addView(btnEnemy, paramsLO)
 
 
-                i++
             }
             enemy = enemies[0]
         }

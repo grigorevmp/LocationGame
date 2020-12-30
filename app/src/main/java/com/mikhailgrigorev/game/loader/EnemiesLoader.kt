@@ -1,6 +1,5 @@
 package com.mikhailgrigorev.game.loader
 
-import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.util.Log
