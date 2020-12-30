@@ -7,7 +7,7 @@ import com.mikhailgrigorev.game.core.data.NatureForcesValues
 import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquipmentComponent
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.InventoryComponent
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
-import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.weapon.Weapon
+import com.mikhailgrigorev.game.core.ecs.Components.equipment.equipmentTypes.Weapon
 
 import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.databases.DBHelperFunctions
@@ -56,7 +56,7 @@ class Player(context: Context): Entity() {
         defenceComponent = this.addComponent(DefenceComponent(0, naturalValueDef))
 
         inventoryComponent = this.addComponent(InventoryComponent())
-        inventoryComponent.addItem(Item(9,"Ring",1))
+        inventoryComponent.addItem(Item(9,"Ring",1, Item.equippable))
         DBHelperFunctions.createItem(context, arrayListOf("9", "Ring", "0", "1", "0"))
 
         equipmentComponent = EquipmentComponent(

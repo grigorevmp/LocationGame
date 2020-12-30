@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.*
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.view.*
 import android.widget.*
@@ -72,8 +73,9 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val width = (resources.displayMetrics.widthPixels * 0.70).toInt()
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
-        dialog.setContentView(R.layout.enemy_dialog)
+        dialog.setContentView(R.layout.dialog_enemy)
 
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         // Set size
         val mainLayout = dialog.findViewById(R.id.mainLayout) as LinearLayout
         val params: ViewGroup.LayoutParams = mainLayout.layoutParams
@@ -108,13 +110,13 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         }
 
         // CLOSE BUTTON
-        val btnClose = dialog.findViewById(R.id.close) as Button
+        val btnClose = dialog.findViewById(R.id.closeEnemyDialog) as ImageButton
         btnClose.setOnClickListener {
             dialog.dismiss()
         }
 
         // POSITIVE BUTTON
-        val btnOk = dialog.findViewById(R.id.ok) as Button
+        val btnOk = dialog.findViewById(R.id.fightButton) as Button
         btnOk.setOnClickListener {
             val intent = Intent(mContext, FightActivity::class.java)
             if (enemyMultiple == 0) {
@@ -149,7 +151,8 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val width = (resources.displayMetrics.widthPixels * 0.70).toInt()
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
-        dialog.setContentView(R.layout.totem_dialog)
+        dialog.setContentView(R.layout.dialog_totem)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         // Set size
         val mainLayout = dialog.findViewById(R.id.mainLayout) as LinearLayout
@@ -159,14 +162,16 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
 
         val totemBitmapComponent = obj.getComponent(BitmapComponent::class.java)!!
 
-        val btnClose = dialog.findViewById(R.id.close) as Button
+        val btnClose = dialog.findViewById(R.id.closeDialogTotem) as ImageButton
         btnClose.setOnClickListener {
             dialog.dismiss()
         }
-        val btnOk = dialog.findViewById(R.id.ok) as Button
+
+        val btnOk = dialog.findViewById(R.id.sacrifice) as Button
         btnOk.setOnClickListener {
             val upgradeComponent = obj.getComponent(UpgradeComponent::class.java)!!
             upgradeComponent.upgrade(context, player as Entity)
+            dialog.dismiss()
         }
 
         // TOTEM ICON
@@ -196,7 +201,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
             when (it.itemId) {
                 R.id.dropItem -> {
                     Toast.makeText(context, "Item id = ${view.id/1000}", Toast.LENGTH_SHORT).show()
-                    player!!.getComponent(InventoryComponent::class.java)!!.dropItemById(view.id/1000)
+                    player!!.getComponent(InventoryComponent::class.java)!!.dropItem(view.id/1000)
                     DBHelperFunctions.dropItem(context, view.id/1000)
                     //view.visibility = View.GONE
                     view.alpha = 0.4f
@@ -219,10 +224,11 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val width = (resources.displayMetrics.widthPixels * 0.90).toInt()
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
-        dialog.setContentView(R.layout.inventory_dialog)
+        dialog.setContentView(R.layout.dialog_player)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         // Set size
-        val mainLayout = dialog.findViewById(R.id.inventoryLayout) as LinearLayout
+        val mainLayout = dialog.findViewById(R.id.playerLayout) as LinearLayout
         val params: ViewGroup.LayoutParams = mainLayout.layoutParams
         params.width = width
         mainLayout.layoutParams = params
@@ -231,19 +237,19 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val objBitmapComponent =  obj.getComponent(BitmapComponent::class.java)!!
 
         // PLAYER SUB TEXT
-        val subTextPlayer = dialog.findViewById(R.id.subText) as TextView
+        val healthTextPlayer = dialog.findViewById(R.id.healthText) as TextView
 
-        val btnClose = dialog.findViewById(R.id.close) as Button
+        val btnClose = dialog.findViewById(R.id.closePlayerDialog) as ImageButton
         btnClose.setOnClickListener {
             dialog.dismiss()
         }
         val btnOk = dialog.findViewById(R.id.ok) as Button
         btnOk.setOnClickListener {
             DBHelperFunctions.restorePlayerHealth(context, player!!)
-            subTextPlayer.text = "Health is ${playerHealthComponent.healthPoints}"
+            healthTextPlayer.text = "Health is ${playerHealthComponent.healthPoints}"
         }
 
-        val gridLayout = dialog.findViewById(R.id.gridLayout) as GridLayout
+        val inventoryLayout = dialog.findViewById(R.id.inventoryLayout) as GridLayout
         val inventory = player!!.getComponent(InventoryComponent::class.java)!!
 
         var itemsTemp = DBHelperFunctions.loadAllItem(context)
@@ -275,9 +281,12 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
                 showFilterPopup(it)
             }
 
-            gridLayout.addView(btn)
+            inventoryLayout.addView(btn)
         }
 
+        // PLAYER ICON
+        val imageView = dialog.findViewById(R.id.playerImage) as ImageView
+        imageView.setBackgroundResource(objBitmapComponent._bitmapId)
         // PLAYER NAME
         val namePlayer = dialog.findViewById(R.id.name) as TextView
         namePlayer.text = objBitmapComponent._name
@@ -285,7 +294,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val descriptionPlayer = dialog.findViewById(R.id.description) as TextView
         descriptionPlayer.text = objBitmapComponent._desc
         // PLAYER SUB TEXT
-        subTextPlayer.text = "Health is ${playerHealthComponent.healthPoints}"
+        healthTextPlayer.text = "Health is ${playerHealthComponent.healthPoints}"
         dialog.show()
 
     }

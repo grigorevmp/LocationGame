@@ -52,13 +52,14 @@
     <string name="totem">Totem</string>
     <string name="noText">notext</string>
     <string name="close">Close</string>
-    <string name="buy">Buy</string>
+    <string name="buy">Sacrifice</string>
     <string name="heal">Heal</string>
     <string name="fight">Fight</string>
     <string name="_0_0">0/0</string>
     <string name="exit">Exit</string>
     <string name="currentId">CurrentID</string>
     <string name="player">Player</string>
+    <string name="inventory">Inventory</string>
 
 
 </resources>
