@@ -347,11 +347,11 @@ class FightActivity : AppCompatActivity() {
     }
 
     private fun setNewPlayerHealthToDatabase(context:Context, player: Player){
-        DBHelperFunctions().setPlayerHealth(context, player)
+        DBHelperFunctions.setPlayerHealth(context, player)
     }
 
     private fun deleteEnemyFromDatabase(context:Context, enemy: Enemy){
-        DBHelperFunctions().deleteEnemy(context, enemy)
+        DBHelperFunctions.deleteEnemy(context, enemy)
     }
 
     private fun updateViewData(enemy: Enemy?, player: Player, context:Context) {

@@ -2,14 +2,15 @@ package com.mikhailgrigorev.game.entities
 
 import android.content.Context
 import com.mikhailgrigorev.game.core.ecs.Components.*
-import com.mikhailgrigorev.game.core.data.InventoryComponent
 import com.mikhailgrigorev.game.game.Game
 import com.mikhailgrigorev.game.core.data.NatureForcesValues
 import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquipmentComponent
+import com.mikhailgrigorev.game.core.ecs.Components.inventory.InventoryComponent
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.weapon.Weapon
 
 import com.mikhailgrigorev.game.core.ecs.Entity
+import com.mikhailgrigorev.game.databases.DBHelperFunctions
 import com.mikhailgrigorev.game.entities.sprit.Spirit
 import com.mikhailgrigorev.game.loader.PlayerLoader
 
@@ -58,6 +59,7 @@ class Player(context: Context): Entity() {
 
         inventoryComponent = this.addComponent(InventoryComponent())
         inventoryComponent.addItem(Item(9,"Ring",1))
+        DBHelperFunctions.createItem(context, arrayListOf("9", "Ring", "0", "1", "0"))
 
         equipmentComponent = EquipmentComponent(
             Weapon(10, "Sword", 15)

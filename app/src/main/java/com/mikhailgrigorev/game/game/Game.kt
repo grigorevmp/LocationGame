@@ -3,23 +3,17 @@ package com.mikhailgrigorev.game.game
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
-import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.content.Intent
 import android.graphics.*
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat.getSystemService
 import com.mikhailgrigorev.game.R
 import com.mikhailgrigorev.game.activities.FightActivity
-import com.mikhailgrigorev.game.activities.MainActivity
-import com.mikhailgrigorev.game.activities.MapFragment
-import com.mikhailgrigorev.game.core.data.InventoryComponent
 import com.mikhailgrigorev.game.core.ecs.Components.*
-import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
+import com.mikhailgrigorev.game.core.ecs.Components.inventory.InventoryComponent
 import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.databases.DBHelperFunctions
 import com.mikhailgrigorev.game.entities.Player
@@ -87,11 +81,8 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
 
         val imageHandler = dialog.findViewById(R.id.imageHandler) as LinearLayout
 
-        //val imageView = dialog.findViewById(R.id.image) as ImageView
-        //imageView.setBackgroundResource(obj.getComponent(BitmapComponent::class.java)!!._bitmapId)
-
         val nameEnemy = dialog.findViewById(R.id.name) as TextView
-        val enemiesIds = DBHelperFunctions().loadEnemyIDByXY(
+        val enemiesIds = DBHelperFunctions.loadEnemyIDByXY(
             context,
             obj.getComponent(PositionComponent::class.java)!!.x.toInt(),
             obj.getComponent(PositionComponent::class.java)!!.y.toInt()
@@ -120,8 +111,6 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
             dialog.dismiss()
         }
 
-
-
         val btnOk = dialog.findViewById(R.id.ok) as Button
         btnOk.setOnClickListener {
             val intent = Intent(mContext, FightActivity::class.java)
@@ -138,14 +127,10 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
             origin.finish()
         }
 
-
-
         val descriptionEnemy = dialog.findViewById(R.id.description) as TextView
         descriptionEnemy.text = obj.getComponent(BitmapComponent::class.java)!!._desc
         val subTextEnemy = dialog.findViewById(R.id.subText) as TextView
         subTextEnemy.text = "Fight or Run"
-
-
 
         dialog.show()
 
@@ -190,6 +175,9 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
     }
 
     private fun showFilterPopup(view: View) {
+        /*
+        Drop item function
+         */
         val popupMenu = PopupMenu(context, view)
         popupMenu.inflate(R.menu.action)
         popupMenu.setOnMenuItemClickListener {
@@ -197,6 +185,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
                 R.id.dropItem -> {
                     Toast.makeText(context, "Item id = ${view.id/1000}", Toast.LENGTH_SHORT).show()
                     player!!.getComponent(InventoryComponent::class.java)!!.dropItemById(view.id/1000)
+                    DBHelperFunctions.dropItem(context, view.id/1000)
                     //view.visibility = View.GONE
                     view.alpha = 0.4f
                     view.isClickable = false
@@ -232,7 +221,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         }
         val btnOk = dialog.findViewById(R.id.ok) as Button
         btnOk.setOnClickListener {
-            DBHelperFunctions().restorePlayerHealth(context, player!!)
+            DBHelperFunctions.restorePlayerHealth(context, player!!)
             val subTextTotem = dialog.findViewById(R.id.subText) as TextView
             subTextTotem.text = "Health is ${player!!.getComponent(HealthComponent::class.java)!!.healthPoints}"
         }
@@ -241,18 +230,23 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
 
         val inventory = player!!.getComponent(InventoryComponent::class.java)!!
 
+        var itemsTemp = DBHelperFunctions.loadAllItem(context)
         // TEST LOADING
-        if(inventory.getAllItems().count() < 2) {
-            val item1 = Item(1, "Item", 5)
-            val item2 = Item(2, "Item2", 1)
-            val item3 = Item(3, "Item3", 2)
-            val item4 = Item(4, "Item4", 6)
-            val item5 = Item(5, "Item5", 8)
-            inventory.addItem(item1)
-            inventory.addItem(item2)
-            inventory.addItem(item3)
-            inventory.addItem(item4)
-            inventory.addItem(item5)
+        if(itemsTemp.count() < 2) {
+            DBHelperFunctions.createItem(context, arrayListOf("1", "Item",  "0", "5", "0"))
+            DBHelperFunctions.createItem(context, arrayListOf("2", "Item2", "0", "1", "0"))
+            DBHelperFunctions.createItem(context, arrayListOf("3", "Item3", "0", "2", "0"))
+            DBHelperFunctions.createItem(context, arrayListOf("4", "Item4", "0", "6", "0"))
+            DBHelperFunctions.createItem(context, arrayListOf("5", "Item5", "0", "8", "0"))
+            itemsTemp = DBHelperFunctions.loadAllItem(context)
+        }
+
+        for(item in itemsTemp) {
+            inventory.addItem(item)
+            inventory.addItem(item)
+            inventory.addItem(item)
+            inventory.addItem(item)
+            inventory.addItem(item)
         }
 
         val items = inventory.getAllItems()
@@ -347,7 +341,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
                 }
                 */
                 "player" -> {
-                    DBHelperFunctions().restorePlayerHealth(context, player!!)
+                    DBHelperFunctions.restorePlayerHealth(context, player!!)
                 }
                 "building" -> {
                     enemiesLoader = EnemiesLoader(context, true)

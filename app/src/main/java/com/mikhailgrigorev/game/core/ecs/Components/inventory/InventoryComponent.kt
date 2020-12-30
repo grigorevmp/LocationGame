@@ -1,4 +1,4 @@
-package com.mikhailgrigorev.game.core.data
+package com.mikhailgrigorev.game.core.ecs.Components.inventory
 
 import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item

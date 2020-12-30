@@ -33,7 +33,7 @@ class TotemsLoader(context: Context) {
         val dbHelper = TotemDBHelper(context)
         val database = dbHelper.writableDatabase
         for (totem in dataForFirstLoad) {
-            DBHelperFunctions().spawnTotems(context, totem)
+            DBHelperFunctions.spawnTotems(context, totem)
         }
 
 

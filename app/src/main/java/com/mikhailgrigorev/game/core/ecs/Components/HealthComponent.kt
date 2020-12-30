@@ -36,6 +36,6 @@ class HealthComponent(
         this.maxHealthPoints += healthUpgrader.maxHealthPoints
         this.healthPoints += healthUpgrader.healthPoints
         if (this.healthPoints > this.maxHealthPoints) this.healthPoints = this.maxHealthPoints
-        DBHelperFunctions().setPlayerHealth(context, this.entity as Player)
+        DBHelperFunctions.setPlayerHealth(context, this.entity as Player)
     }
 }
