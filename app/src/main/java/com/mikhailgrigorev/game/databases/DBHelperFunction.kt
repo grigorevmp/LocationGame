@@ -264,13 +264,14 @@ class DBHelperFunctions {
             val playerId = player.getComponent(BitmapComponent::class.java)!!._id
             val contentValues = ContentValues()
 
+            val playerHealthComponent = player.getComponent(HealthComponent::class.java)
             contentValues.put(
                 PlayerDBHelper.HEALTH,
-                player.getComponent(HealthComponent::class.java)!!.healthPoints
+                playerHealthComponent!!.healthPoints
             )
             contentValues.put(
                 PlayerDBHelper.MAXHEALTH,
-                player.getComponent(HealthComponent::class.java)!!.maxHealthPoints
+                playerHealthComponent.maxHealthPoints
             )
             database.update(PlayerDBHelper.TABLE_PLAYER, contentValues, "_id = $playerId", null)
         }

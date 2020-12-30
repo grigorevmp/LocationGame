@@ -21,7 +21,6 @@ class Player(context: Context): Entity() {
     private var healthComponent: HealthComponent
     private var damageComponent: DamageComponent
     private var defenceComponent: DefenceComponent
-    private var upgradeComponent: UpgradeComponent
     private var equipmentComponent: EquipmentComponent
     private var inventoryComponent: InventoryComponent
     private var spirit: Spirit
@@ -55,7 +54,6 @@ class Player(context: Context): Entity() {
 
         val naturalValueDef = NatureForcesValues(0, 0, 0, 0)
         defenceComponent = this.addComponent(DefenceComponent(0, naturalValueDef))
-        upgradeComponent = this.addComponent(UpgradeComponent())
 
         inventoryComponent = this.addComponent(InventoryComponent())
         inventoryComponent.addItem(Item(9,"Ring",1))
@@ -67,10 +65,6 @@ class Player(context: Context): Entity() {
         defenceComponent = this.addComponent(
             DefenceComponent(
                 playerData.defence, playerData.naturalValueDef
-            )
-        )
-        upgradeComponent = this.addComponent(
-            UpgradeComponent(
             )
         )
 
