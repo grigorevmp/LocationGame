@@ -28,15 +28,4 @@
             android:visibility="gone" />
     </LinearLayout>
 
-
-    <!--TextView
-        android:id="@+id/infoText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/play_info"
-        app:layout_constraintBottom_toTopOf="@id/menuBack"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" /-->
-
 </LinearLayout>

@@ -114,10 +114,10 @@ class PlayerLoader(context: Context) {
             val indexX         : Int  = cursor.getColumnIndex(PlayerDBHelper.X         )
             val indexY         : Int  = cursor.getColumnIndex(PlayerDBHelper.Y         )
             val indexID        : Int  = cursor.getColumnIndex(PlayerDBHelper.ID        )
-            val indexKEY_NAME  : Int  = cursor.getColumnIndex(PlayerDBHelper.KEY_NAME  )
-            val indexKEY_DESC  : Int  = cursor.getColumnIndex(PlayerDBHelper.KEY_DESC  )
-            val indexKEY_BITMAP: Int  = cursor.getColumnIndex(PlayerDBHelper.KEY_BITMAP)
-            val indexKEY_GROUP : Int  = cursor.getColumnIndex(PlayerDBHelper.KEY_GROUP )
+            val indexKEYNAME  : Int  = cursor.getColumnIndex(PlayerDBHelper.KEY_NAME   )
+            val indexKEYDESC  : Int  = cursor.getColumnIndex(PlayerDBHelper.KEY_DESC   )
+            val indexKEYBITMAP: Int  = cursor.getColumnIndex(PlayerDBHelper.KEY_BITMAP )
+            val indexKEYGROUP : Int  = cursor.getColumnIndex(PlayerDBHelper.KEY_GROUP  )
             val indexSpeed     : Int  = cursor.getColumnIndex(PlayerDBHelper.Speed     )
             val indexHEALTH    : Int  = cursor.getColumnIndex(PlayerDBHelper.HEALTH    )
             val indexDMG       : Int  = cursor.getColumnIndex(PlayerDBHelper.DMG       )
@@ -132,32 +132,32 @@ class PlayerLoader(context: Context) {
             val indexWATER2    : Int  = cursor.getColumnIndex(PlayerDBHelper.WATER2    )
             val indexEARTH2    : Int  = cursor.getColumnIndex(PlayerDBHelper.EARTH2    )
             val indexFIRE2     : Int  = cursor.getColumnIndex(PlayerDBHelper.FIRE2     )
-            val indexMAXHEALTH : Int  = cursor.getColumnIndex(PlayerDBHelper.MAXHEALTH     )
+            val indexMAXHEALTH : Int  = cursor.getColumnIndex(PlayerDBHelper.MAXHEALTH )
             do {
                 data.add(
                     arrayOf(
-                        cursor.getString(indexSIZE      ),
-                        cursor.getString(indexX         ),
-                        cursor.getString(indexY         ),
-                        cursor.getString(indexID        ),
-                        cursor.getString(indexKEY_NAME  ),
-                        cursor.getString(indexKEY_DESC  ),
-                        cursor.getString(indexKEY_BITMAP),
-                        cursor.getString(indexKEY_GROUP ),
-                        cursor.getString(indexSpeed     ),
-                        cursor.getString(indexHEALTH    ),
-                        cursor.getString(indexDMG       ),
-                        cursor.getString(indexDEFENCE   ),
-                        cursor.getString(indexCC        ),
-                        cursor.getString(indexCM        ),
-                        cursor.getString(indexAIR       ),
-                        cursor.getString(indexWATER     ),
-                        cursor.getString(indexEARTH     ),
-                        cursor.getString(indexFIRE      ),
-                        cursor.getString(indexAIR2      ),
-                        cursor.getString(indexWATER2    ),
-                        cursor.getString(indexEARTH2    ),
-                        cursor.getString(indexFIRE2     ),
+                        cursor.getString(indexSIZE),
+                        cursor.getString(indexX   ),
+                        cursor.getString(indexY   ),
+                        cursor.getString(indexID  ),
+                        cursor.getString(indexKEYNAME  ),
+                        cursor.getString(indexKEYDESC  ),
+                        cursor.getString(indexKEYBITMAP),
+                        cursor.getString(indexKEYGROUP ),
+                        cursor.getString(indexSpeed  ),
+                        cursor.getString(indexHEALTH ),
+                        cursor.getString(indexDMG    ),
+                        cursor.getString(indexDEFENCE),
+                        cursor.getString(indexCC ),
+                        cursor.getString(indexCM ),
+                        cursor.getString(indexAIR),
+                        cursor.getString(indexWATER ),
+                        cursor.getString(indexEARTH ),
+                        cursor.getString(indexFIRE  ),
+                        cursor.getString(indexAIR2  ),
+                        cursor.getString(indexWATER2),
+                        cursor.getString(indexEARTH2),
+                        cursor.getString(indexFIRE2 ),
                         cursor.getString(indexMAXHEALTH ),
                     )
                 )

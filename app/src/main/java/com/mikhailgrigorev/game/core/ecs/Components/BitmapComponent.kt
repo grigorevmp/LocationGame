@@ -29,14 +29,12 @@ class BitmapComponent(
     var _bitmapId: Int = bitmapId
         private set
     // id картинки
-    var _bitmapMultiple: Bitmap? = null
-        private set
+    private var _bitmapMultiple: Bitmap? = null
     // группа персонажей
     var _multiple: Int = multiple
         private set
     // картинка
-    var _bitmap : Bitmap? = null
-        private set
+    private var _bitmap : Bitmap? = null
 
     // классы
     var _group : String = group

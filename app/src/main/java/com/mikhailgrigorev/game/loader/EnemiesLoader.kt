@@ -1,6 +1,5 @@
 package com.mikhailgrigorev.game.loader
 
-import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.util.Log
@@ -49,7 +48,7 @@ class EnemiesLoader(context: Context, specialSpawn:Boolean = false) {
        //val contentValues = ContentValues()
         if(specialSpawn) {
             for (enemy in dataForFirstLoad) {
-                DBHelperFunctions().spawnEnemy(context, enemy)
+                DBHelperFunctions.spawnEnemy(context, enemy)
             }
         }
 

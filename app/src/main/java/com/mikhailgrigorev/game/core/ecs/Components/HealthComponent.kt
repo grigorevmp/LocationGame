@@ -4,7 +4,6 @@ import android.content.Context
 import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.databases.DBHelperFunctions
 import com.mikhailgrigorev.game.entities.Player
-import kotlin.random.Random
 
 class HealthComponent(
     healthPoints: Int,
@@ -36,6 +35,6 @@ class HealthComponent(
         this.maxHealthPoints += healthUpgrader.maxHealthPoints
         this.healthPoints += healthUpgrader.healthPoints
         if (this.healthPoints > this.maxHealthPoints) this.healthPoints = this.maxHealthPoints
-        DBHelperFunctions().setPlayerHealth(context, this.entity as Player)
+        DBHelperFunctions.setPlayerHealth(context, this.entity as Player)
     }
 }

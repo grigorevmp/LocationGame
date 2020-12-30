@@ -7,61 +7,37 @@ import com.mikhailgrigorev.game.core.ecs.Components.*
 import com.mikhailgrigorev.game.core.ecs.Entity
 
 class Totem(context: Context,
-            _x : Float,
-            _y: Float,
-            _size: Float,
-            _id: Int,
-            _name: String,
-            _desc: String,
-            _bitmapId: Int,
-            _group: String,
-            _health: Int,
-            _damage: Int,
-            _damageAir: Int,
-            _damageWater: Int,
-            _damageFire: Int,
-            _damageEarth: Int,
-            _defence: Int,
-            _defenceAir: Int,
-            _defenceWater: Int,
-            _defenceEarth: Int,
-            _defenceFire: Int,
+            x : Float,
+            y: Float,
+            size: Float,
+            id: Int,
+            name: String,
+            desc: String,
+            bitmapId: Int,
+            group: String,
+            maxHealth: Int,
+            damage: Int,
+            damageAir: Int,
+            damageWater: Int,
+            damageFire: Int,
+            damageEarth: Int,
+            defence: Int,
+            defenceAir: Int,
+            defenceWater: Int,
+            defenceEarth: Int,
+            defenceFire: Int,
                ): Entity() {
 
-    private var id = _id
-    private var name = _name
-    private var desc = _desc
-    private var bitmapId = _bitmapId
-    private var group = _group
-    private var x = _x
-    private var y = _y
-    private var size = _size
-
     private var bitmapComponent: BitmapComponent
-    private var positionComponent: PositionComponent
-    private var totemComponent: TotemComponent
-    private var upgradeComponent: UpgradeComponent
+    private var positionComponent: PositionComponent = this.addComponent(PositionComponent(
+        x,
+        y,
+        size
+    ))
+    private var upgradeComponent: UpgradeComponent = this.addComponent(UpgradeComponent())
 
 
     init{
-        totemComponent = this.addComponent(TotemComponent(
-            _health,
-            _damage,
-            _damageAir,
-            _damageWater,
-            _damageFire,
-            _damageEarth,
-            _defence,
-            _defenceAir,
-            _defenceWater,
-            _defenceEarth,
-            _defenceFire,
-        ))
-        positionComponent = this.addComponent(PositionComponent(
-            x,
-            y,
-            size
-        ))
         bitmapComponent = this.addComponent(BitmapComponent(
             positionComponent = positionComponent,
             context = context,
@@ -71,10 +47,9 @@ class Totem(context: Context,
             bitmapId = bitmapId,
             group = group
         ))
-        upgradeComponent = this.addComponent(UpgradeComponent())
         upgradeComponent.addUpgrader(HealthComponent.HealthUpgrader(
-            0,
-            10
+            healthPoints = 0,
+            maxHealthPoints = maxHealth
         ))
 
     }

@@ -3,7 +3,6 @@
 package com.mikhailgrigorev.game.core.ecs
 
 import android.content.Context
-import kotlin.reflect.KClass
 
 abstract class Component {
 

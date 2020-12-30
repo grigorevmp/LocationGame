@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="10dp"
-        android:text="TextView"
+        android:text="@string/noText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header" />
 
@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="10dp"
-        android:text="TextView"
+        android:text="@string/noText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
@@ -86,7 +86,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:text="CurrentID"
+        android:text="@string/currentId"
         app:layout_constraintBottom_toBottomOf="@+id/header"
         app:layout_constraintStart_toEndOf="@+id/header"
         app:layout_constraintTop_toTopOf="@+id/header" />
@@ -96,7 +96,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="TextView"
+        android:text="@string/noText"
         app:layout_constraintBottom_toBottomOf="@+id/currentIdText"
         app:layout_constraintStart_toEndOf="@+id/currentIdText"
         app:layout_constraintTop_toTopOf="@+id/currentIdText" />
@@ -133,7 +133,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
-        android:text="Player"
+        android:text="@string/player"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -178,7 +178,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="10dp"
-        android:text="0/0"
+        android:text="@string/_0_0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/playerHealthProgress" />
 
@@ -191,6 +191,7 @@
         android:background="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/door" />
+        app:srcCompat="@drawable/door"
+        android:contentDescription="@string/exit" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

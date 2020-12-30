@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="EntryPointsManager">
+    <pattern value="com.mikhailgrigorev.game.databases.EnemyDBHelper" method="EnemyDBHelper" />
+    <pattern value="com.mikhailgrigorev.game.databases.ItemsDBHelper" method="ItemsDBHelper" />
+    <pattern value="com.mikhailgrigorev.game.databases.PlayerDBHelper" />
+    <pattern value="com.mikhailgrigorev.game.databases.PlayerDBHelper" method="PlayerDBHelper" />
+    <pattern value="com.mikhailgrigorev.game.databases.TotemDBHelper" />
+    <pattern value="com.mikhailgrigorev.game.databases.TotemDBHelper" method="TotemDBHelper" />
+  </component>
   <component name="JavaScriptSettings">
     <option name="languageLevel" value="ES6" />
   </component>

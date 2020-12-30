@@ -18,7 +18,7 @@ class NatureForcesValues (
     earthValue: Int,
     fireValue: Int
 ) {
-    var natureForcesValues = Array<Int>(NatureForces.count) {0}
+    var natureForcesValues = Array(NatureForces.count) {0}
         private set
 
     init {
