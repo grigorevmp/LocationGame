@@ -106,7 +106,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, zoomLevel))
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, zoomLevel))
             }
         }
 
