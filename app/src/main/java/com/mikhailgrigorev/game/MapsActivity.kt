@@ -7,15 +7,15 @@ import android.os.Bundle
 import android.util.Log
 import androidx.core.content.ContextCompat
 
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import android.Manifest
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import com.google.android.gms.maps.*
+import org.osmdroid.views.MapView
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var map: GoogleMap
     private val TAG = MapsActivity::class.java.simpleName
@@ -50,8 +50,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         map.addMarker(
             MarkerOptions()
                 .position(home)
-                .title("Marker in my home")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                .title("1st marker")
+                .snippet("Marker in my home")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
         )
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(home, zoomLevel))
         val overlaySize = 200f
@@ -62,8 +63,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         setPoiClick(map)
         setMapStyle(map)
-
+        map.setOnMarkerClickListener(this)
+        val ui = map.uiSettings
+        ui.setMapToolbarEnabled(false)
+        ui.setMyLocationButtonEnabled(false)
         enableMyLocation()
+
+        val newTilt = Math.min(map.cameraPosition.tilt + 10, 90F)
+        val cameraPosition = CameraPosition.Builder(map.cameraPosition).tilt(newTilt).build()
+
+        changeCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+
+
     }
 
     fun setPoiClick (map: GoogleMap){
@@ -122,5 +133,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 enableMyLocation()
             }
         }
+    }
+
+    override fun onMarkerClick(p0: Marker?): Boolean {
+        val toast = Toast.makeText(applicationContext, p0?.snippet, Toast.LENGTH_SHORT)
+        toast.show()
+        return true
     }
 }
