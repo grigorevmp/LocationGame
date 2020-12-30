@@ -196,7 +196,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
             when (it.itemId) {
                 R.id.dropItem -> {
                     Toast.makeText(context, "Item id = ${view.id/1000}", Toast.LENGTH_SHORT).show()
-                    player!!.getComponent(InventoryComponent::class.java)!!.dropItemById(view.id/1000)
+                    player!!.getComponent(InventoryComponent::class.java)!!.dropItem(view.id/1000)
                     DBHelperFunctions.dropItem(context, view.id/1000)
                     //view.visibility = View.GONE
                     view.alpha = 0.4f
