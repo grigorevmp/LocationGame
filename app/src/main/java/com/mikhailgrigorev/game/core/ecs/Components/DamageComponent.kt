@@ -33,42 +33,63 @@ class DamageComponent(
     private var isLastCritical: Boolean = false
 
     init {
-
         for (i in 0 until NatureForces.count){
             this.natureForcesDamage[i] = natureForcesDamage.natureForcesValues[i]
         }
     }
 
     operator fun invoke(healthComponent: HealthComponent) : Int {
+        val enemy = healthComponent.entity
+        val enemyEquipment = enemy?.getComponent(EquipmentComponent::class.java)
+        var enemyPhysicalDefence = 0
+        val enemyForcesDefence = Array<Int>(NatureForces.count) { 0 }
+        val enemyDefenceComponent = enemy?.getComponent(DefenceComponent::class.java)
+        val enemyArmorDefenceComponent = enemyEquipment?.armor?.defenceComponent
+
+        if (enemyDefenceComponent != null)
+            enemyPhysicalDefence += enemyDefenceComponent.physicalDefence
+        if (enemyArmorDefenceComponent != null)
+            enemyPhysicalDefence += enemyArmorDefenceComponent.physicalDefence
+
+        for (i in 0 until NatureForces.count) {
+            if (enemyDefenceComponent != null) {
+                enemyForcesDefence[i] += enemyDefenceComponent.natureForcesDefence[i]
+            }
+            if (enemyArmorDefenceComponent != null) {
+                enemyForcesDefence[i] += enemyArmorDefenceComponent.natureForcesDefence[i]
+            }
+        }
+
+
+        var applyingPhysicalDamage = physicalDamage
+        val applyingForcesDamage = natureForcesDamage
+
+        val myEquipmentComponent = this.entity?.getComponent(EquipmentComponent::class.java)
+        val myWeaponDamageComponent = myEquipmentComponent?.weapon?.damageComponent
+
+        if (myWeaponDamageComponent != null) {
+            applyingPhysicalDamage += myWeaponDamageComponent.physicalDamage
+            for (i in 0 until NatureForces.count) {
+                applyingForcesDamage[i] += myWeaponDamageComponent.natureForcesDamage[i]
+            }
+            if (Random.nextInt(1, 100) <= myWeaponDamageComponent.criticalChancePercent) {
+                applyingPhysicalDamage = (applyingPhysicalDamage * myWeaponDamageComponent.criticalMultiplier).toInt()
+                isLastCritical = true
+            } else isLastCritical = false
+        }
+
+
+        applyingPhysicalDamage -= enemyPhysicalDefence
+        if (applyingPhysicalDamage < 0) applyingPhysicalDamage = 0
+        for (i in 0 until NatureForces.count) {
+            applyingForcesDamage[i] -= enemyForcesDefence[i]
+            if (applyingForcesDamage[i] < 0) applyingForcesDamage[i] = 0
+        }
+
+
         var newHealthPoints = healthComponent.healthPoints
-        var applyingPhysicalDamage = 0
-        var applyingForcesDamage = 0
-        val weapon = healthComponent.entity?.getComponent(EquipmentComponent::class.java)?.weapon
-        val defenceComponent = healthComponent.entity?.getComponent(DefenceComponent::class.java)
-        if (defenceComponent != null) {
-            applyingPhysicalDamage = physicalDamage - defenceComponent.physicalDefence
-            for (i in 0 until NatureForces.count) {
-                applyingForcesDamage += natureForcesDamage[i] - defenceComponent.natureForcesDefence[i]
-            }
-            if (weapon != null){
-                applyingPhysicalDamage += (weapon.damage - defenceComponent.physicalDefence)
-            }
-        }
-        else {
-            applyingPhysicalDamage = physicalDamage
-            if (weapon != null){ applyingPhysicalDamage += weapon.damage }
-            for (i in 0 until NatureForces.count) {
-                applyingForcesDamage += natureForcesDamage[i]
-            }
-        }
-
-        if(Random.nextInt(1,100) <= criticalChancePercent) {
-            applyingPhysicalDamage = (applyingPhysicalDamage*criticalMultiplier).toInt()
-            isLastCritical = true
-        } else isLastCritical = false
-
         newHealthPoints -= applyingPhysicalDamage
-        newHealthPoints -= applyingForcesDamage
+        newHealthPoints -= applyingForcesDamage.sum()
         return newHealthPoints
     }
 

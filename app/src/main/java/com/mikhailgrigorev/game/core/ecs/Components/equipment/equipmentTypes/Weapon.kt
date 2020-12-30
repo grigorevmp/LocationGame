@@ -7,16 +7,15 @@ import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
 class Weapon(
     id: Int,
     name: String,
-    //physicalDamage: Int,
-    //natureForcesDamage: NatureForcesValues,
-    //criticalChancePercent: Int,
-    //criticalMultiplier: Float
-    val damage: Int
+    physicalDamage: Int,
+    natureForcesDamage: NatureForcesValues,
+    criticalChancePercent: Int,
+    criticalMultiplier: Float
     ) : Item (id, name,1, Item.equippable) {
-        //val damageComponent = this.addComponent(DamageComponent(
-        //    physicalDamage,
-        //    natureForcesDamage,
-        //    criticalChancePercent,
-        //    criticalMultiplier
-        //))
+        val damageComponent = this.addComponent(DamageComponent(
+            physicalDamage,
+            natureForcesDamage,
+            criticalChancePercent,
+            criticalMultiplier
+        ))
 }

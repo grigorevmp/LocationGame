@@ -13,10 +13,10 @@ enum class NatureForces {
 }
 
 class NatureForcesValues (
-    airValue: Int,
-    waterValue: Int,
-    earthValue: Int,
-    fireValue: Int
+    airValue: Int = 0,
+    waterValue: Int = 0,
+    earthValue: Int = 0,
+    fireValue: Int = 0
 ) {
     var natureForcesValues = Array(NatureForces.count) {0}
         private set
