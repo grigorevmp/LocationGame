@@ -110,7 +110,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             }
         }
 
-        setPoiClick(map)
         setMapStyle(map)
         map.setOnMarkerClickListener(this)
         val ui = map.uiSettings
@@ -126,17 +125,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     }
 
-
-    private fun setPoiClick(map: GoogleMap){
-        map.setOnPoiClickListener{ poi ->
-            val poiMarker = map.addMarker(
-                MarkerOptions()
-                    .position(poi.latLng)
-                    .title(poi.name)
-            )
-            poiMarker.showInfoWindow()
-        }
-    }
 
     private fun setMapStyle(map: GoogleMap){
         try {
