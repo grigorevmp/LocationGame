@@ -263,6 +263,8 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val nameTotem = dialog.findViewById(R.id.name) as TextView
         nameTotem.text = totemBitmapComponent._name
 
+        val noItems = dialog.findViewById(R.id.no_items) as TextView
+
         // TOTEM DESCRIPTION
         val descriptionTotem = dialog.findViewById(R.id.description) as TextView
         descriptionTotem.text = totemBitmapComponent._desc
@@ -334,6 +336,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         }
 
         if(isOk) {
+            noItems.visibility = View.GONE
             sacrifice.setOnClickListener {
                 for (item in sacrificeItem) {
                     val inventoryComponent = player!!.getComponent(InventoryComponent::class.java)!!
@@ -355,7 +358,8 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
                 Toast.makeText(context, "NO ITEMS", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
-            sacrifice.isActivated = false
+            sacrifice.alpha = 0.4f
+            sacrifice.isClickable = false
         }
 
         dialog.show()
@@ -421,11 +425,6 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val playerHealthProgress = dialog.findViewById(R.id.playerHealthProgress) as ProgressBar
         playerHealthProgress.max = playerHealthComponent.maxHealthPoints
         playerHealthProgress.progress = playerHealthComponent.healthPoints
-        val mannaTextPlayer = dialog.findViewById(R.id.mannaText) as TextView
-        mannaTextPlayer.text = "Manna is ${player!!.manna}/${player!!.mannaMax}"
-        val playerMannaProgress = dialog.findViewById(R.id.playerMannaProgress) as ProgressBar
-        playerMannaProgress.max = player!!.mannaMax
-        playerMannaProgress.progress = player!!.manna
 
         val btnClose = dialog.findViewById(R.id.closePlayerDialog) as ImageButton
         btnClose.setOnClickListener {
@@ -501,6 +500,8 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
 
             val items = inventory.getAllItems()
 
+
+            inventoryLayout.removeAllViews()
             for(item in items){
                 val btn = Button(context, null, android.R.attr.borderlessButtonStyle)
                 btn.text = "${item.name} : ${item.count}"
@@ -565,7 +566,6 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
     // When User cilcks on dialog button, call this method
     private fun alertDialog(context: Context, obj: Entity) {
         val positionComponent = obj.getComponent(PositionComponent::class.java)
-        val bitmapComponent = obj.getComponent(BitmapComponent::class.java)
 
         //Instantiate builder variable
         val builder = AlertDialog.Builder(context)

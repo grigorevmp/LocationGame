@@ -18,10 +18,13 @@ import com.mikhailgrigorev.game.R
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.DamageComponent
 import com.mikhailgrigorev.game.core.ecs.Components.HealthComponent
+import com.mikhailgrigorev.game.core.ecs.Components.inventory.InventoryComponent
+import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
 import com.mikhailgrigorev.game.core.fsm.FSM
 import com.mikhailgrigorev.game.core.fsm.State
 import com.mikhailgrigorev.game.core.fsm.Transition
 import com.mikhailgrigorev.game.databases.DBHelperFunctions
+import com.mikhailgrigorev.game.databases.ItemsDB
 import com.mikhailgrigorev.game.entities.Enemy
 import com.mikhailgrigorev.game.entities.Player
 import com.mikhailgrigorev.game.loader.EnemiesLoader
@@ -95,17 +98,6 @@ class FightActivity : AppCompatActivity() {
         textView.text = playerBitMap._name
         textView.gravity = Gravity.CENTER
         choosePlayerLayout.addView(textView)
-        // --------------------------------------------------------
-        // --------------------------------------------------------
-
-
-        // SET MANNA IN PROGRESS NOW
-        // --------------------------------------------------------
-        // --------------------------------------------------------
-        playerMannaProgress.max = player.mannaMax
-        playerMannaProgress.progress = player.manna
-        playerMannaValue.text = "${player.manna}/${player.mannaMax}"
-
         // --------------------------------------------------------
         // --------------------------------------------------------
 
@@ -381,7 +373,7 @@ class FightActivity : AppCompatActivity() {
             ConstraintLayout.LayoutParams.WRAP_CONTENT,
             ConstraintLayout.LayoutParams.WRAP_CONTENT
         )
-        btnBackToAttack.text = "Back"
+        btnBackToAttack.text = getString(R.string.back)
         btnBackToAttack.setOnClickListener {
             createAttackButton()
         }
@@ -400,7 +392,7 @@ class FightActivity : AppCompatActivity() {
         btnObject.isFocusable = false
         btnObject.isClickable = false
         btnObject.isEnabled = false
-        btnObject.text = "Objects"
+        btnObject.text = getString(R.string.objects)
         btnObject.setOnClickListener {
             createAdditionalObjectButtons()
         }
@@ -422,7 +414,7 @@ class FightActivity : AppCompatActivity() {
             ConstraintLayout.LayoutParams.WRAP_CONTENT,
             ConstraintLayout.LayoutParams.WRAP_CONTENT
         )
-        btnMagic.text = "Magic"
+        btnMagic.text = getString(R.string.magic)
         btnMagic.setOnClickListener {
             createAdditionalMagicButtons()
             createBackToMajorAttackButton()
@@ -440,7 +432,7 @@ class FightActivity : AppCompatActivity() {
             ConstraintLayout.LayoutParams.WRAP_CONTENT,
             ConstraintLayout.LayoutParams.WRAP_CONTENT
         )
-        btnMagic.text = "Nature attack"
+        btnMagic.text = getString(R.string.nature_attack)
         btnMagic.setOnClickListener {
             fightFSM.handle(ButtonType.NatureAttack.ordinal)
             fightFSM.execute()
@@ -459,7 +451,7 @@ class FightActivity : AppCompatActivity() {
             ConstraintLayout.LayoutParams.WRAP_CONTENT,
             ConstraintLayout.LayoutParams.WRAP_CONTENT
         )
-        btnWeapon.text = "Weapon"
+        btnWeapon.text = getString(R.string.waepon)
         btnWeapon.setOnClickListener {
             createAdditionalWeaponButtons()
             createBackToMajorAttackButton()
@@ -477,7 +469,7 @@ class FightActivity : AppCompatActivity() {
             ConstraintLayout.LayoutParams.WRAP_CONTENT,
             ConstraintLayout.LayoutParams.WRAP_CONTENT
         )
-        btnMagic.text = "Physical attack"
+        btnMagic.text = getString(R.string.physical_attack)
         btnMagic.setOnClickListener {
             fightFSM.handle(ButtonType.PhysicalAttack.ordinal)
             fightFSM.execute()
@@ -497,7 +489,7 @@ class FightActivity : AppCompatActivity() {
             ConstraintLayout.LayoutParams.WRAP_CONTENT,
             ConstraintLayout.LayoutParams.WRAP_CONTENT
         )
-        btnBackToAttack.text = "Back"
+        btnBackToAttack.text = getString(R.string.back)
         btnBackToAttack.setOnClickListener {
             attackButtonsLayout.removeAllViews()
             createWeaponButton()
@@ -519,7 +511,7 @@ class FightActivity : AppCompatActivity() {
             ConstraintLayout.LayoutParams.WRAP_CONTENT,
             ConstraintLayout.LayoutParams.WRAP_CONTENT
         )
-        btnBackToAttack.text = "Attack"
+        btnBackToAttack.text = getString(R.string.attack)
         btnBackToAttack.setOnClickListener {
             fightFSM.handle(ButtonType.Attack.ordinal)
             fightFSM.execute()
@@ -613,6 +605,26 @@ class FightActivity : AppCompatActivity() {
             enemyHealthProgress.max = maxHealth
             enemyHealthProgress.progress = valueEnemy.toInt()
             updateEnemyHealthText("0/$maxHealth")
+
+            val enemyDrop = enemy!!.items
+            val enemyDropNum = enemy!!.itemsNum
+            val dropItems: ArrayList<Item> = ArrayList()
+
+            enemyDrop.split('.').zip(enemyDropNum.split('.')).forEach { pair ->
+                ItemsDB.init(context)
+                val item = ItemsDB.loadItemByID(context, pair.component1().toInt())
+                if (item != null) {
+                    dropItems.add(Item(pair.component1().toInt(), "", pair.component2().toInt(), 0))
+                }
+            }
+
+            for (item in dropItems) {
+                val inventoryComponent = player.getComponent(InventoryComponent::class.java)!!
+                inventoryComponent.addItem(item)
+                DBHelperFunctions.replaceItem(context, item.id, inventoryComponent.takeItem(item.id)!!.count)
+                Toast.makeText(context, "You got ${item.count} ${item.name}", Toast.LENGTH_SHORT).show()
+                }
+
             deleteEnemyFromDatabase(context, enemy!!)
             hideImageButtonById(id)
             enemiesNum -= 1

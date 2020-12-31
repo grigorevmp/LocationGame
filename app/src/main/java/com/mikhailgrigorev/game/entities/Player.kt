@@ -65,6 +65,11 @@ class Player(context: Context): Entity() {
         defenceComponent = this.addComponent(DefenceComponent(0, naturalValueDef))
 
         inventoryComponent = this.addComponent(InventoryComponent())
+
+        val itemsTemp = DBHelperFunctions.loadAllItem(context)
+        for(item in itemsTemp)
+            inventoryComponent.addItem(item)
+
         inventoryComponent.addItem(Item(9,"Ring",1, Item.equippable))
         DBHelperFunctions.createItem(context, arrayListOf("9", "Ring", "0", "1", "0"))
 

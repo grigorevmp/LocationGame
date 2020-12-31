@@ -62,13 +62,21 @@
     <string name="inventory">Inventory</string>
     <string name="respawn_enemies">Respawn enemies</string>
     <string name="get_all_possible_items">Get all possible items</string>
-    <string name="set_health_to_3000">Set health to...</string>
+    <string name="set_health_to_3000">Set health to…</string>
     <string name="need_to_sacrifice">Need to Sacrifice</string>
     <string name="possible_drop">Possible drop</string>
     <string name="dungeon">Monster dungeon</string>
     <string name="drop_item">Drop Item</string>
     <string name="nz">NZ</string>
     <string name="load_items">Load items</string>
+    <string name="you_haven_t_enough_items">You haven\'t enough items</string>
+    <string name="back">Back</string>
+    <string name="objects">Objects</string>
+    <string name="magic">Magic</string>
+    <string name="nature_attack">Nature attack</string>
+    <string name="waepon">Weapon</string>
+    <string name="physical_attack">Physical attack</string>
+    <string name="attack">Attack</string>
 
 
 </resources>

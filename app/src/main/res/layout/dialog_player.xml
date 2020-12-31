@@ -76,24 +76,6 @@
                         android:gravity="end"
                         android:text="@string/noText" />
 
-                    <ProgressBar
-                        android:id="@+id/playerMannaProgress"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="10dp"
-                        android:indeterminate="false"
-                        android:theme="@style/BlueProgress" />
-
-                    <TextView
-                        android:id="@+id/mannaText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:gravity="end"
-                        android:text="@string/noText" />
-
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
