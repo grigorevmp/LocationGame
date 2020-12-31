@@ -94,6 +94,7 @@ class DamageComponent(
         var newHealthPoints = healthComponent.healthPoints
         newHealthPoints -= applyingPhysicalDamage
         newHealthPoints -= applyingForcesDamage.sum()
+        if (newHealthPoints < 0 ) newHealthPoints = 0
         return newHealthPoints
     }
 
