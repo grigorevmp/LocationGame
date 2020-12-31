@@ -622,7 +622,7 @@ class FightActivity : AppCompatActivity() {
                 val inventoryComponent = player.getComponent(InventoryComponent::class.java)!!
                 inventoryComponent.addItem(item)
                 DBHelperFunctions.replaceItem(context, item.id, inventoryComponent.takeItem(item.id)!!.count)
-                Toast.makeText(context, "You got ${item.count} ${item.name}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "You got ${item.count} ${inventoryComponent.takeItem(item.id)!!.name}", Toast.LENGTH_SHORT).show()
                 }
 
             deleteEnemyFromDatabase(context, enemy!!)
