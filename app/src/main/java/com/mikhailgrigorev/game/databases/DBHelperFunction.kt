@@ -184,8 +184,16 @@ class DBHelperFunctions {
         fun dropItem(context: Context, id: Int) {
             val dbHelper = ItemsDBHelper(context)
             val database = dbHelper.writableDatabase
-
             database.delete(ItemsDBHelper.TABLE_ITEMS, "_id = $id", null)
+        }
+
+        fun replaceItem(context: Context, id: Int, count: Int) {
+            val dbHelper = ItemsDBHelper(context)
+            val database = dbHelper.writableDatabase
+
+            val contentValues = ContentValues()
+            contentValues.put(ItemsDBHelper.COUNT, count)
+            database.update(ItemsDBHelper.TABLE_ITEMS, contentValues, "_id = $id", null)
         }
 
         fun loadAllItem(context: Context): ArrayList<Item> {
@@ -209,7 +217,8 @@ class DBHelperFunctions {
                         Item(
                             cursor.getInt(indexID),
                             cursor.getString(indexNAME),
-                            cursor.getInt(indexCOUNT)
+                            cursor.getInt(indexCOUNT),
+                            cursor.getInt(indexTYPE)
                         )
                     )
                 } while (cursor.moveToNext())

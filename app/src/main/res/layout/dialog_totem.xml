@@ -102,7 +102,6 @@
 
             <Button
                 android:id="@+id/sacrifice"
-                style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -110,6 +109,8 @@
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="10dp"
                 android:layout_gravity="center"
+                android:clickable="true"
+                android:focusable="true"
                 android:text="@string/buy"/>
         </LinearLayout>
         <ImageButton

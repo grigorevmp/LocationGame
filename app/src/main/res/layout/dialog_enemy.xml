@@ -109,13 +109,13 @@
                 android:text="@string/possible_drop"
                 android:textSize="20sp" />
 
-            <LinearLayout
+            <GridLayout
                 android:id="@+id/sItems"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="20dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginEnd="20dp"
+                android:rowCount="3"
+                android:columnCount="3"
                 android:orientation="horizontal" />
 
             <Button

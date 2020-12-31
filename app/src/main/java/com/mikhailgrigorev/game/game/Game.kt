@@ -24,10 +24,10 @@ import com.mikhailgrigorev.game.databases.DBHelperFunctions
 import com.mikhailgrigorev.game.databases.ItemsDB
 import com.mikhailgrigorev.game.entities.Enemy
 import com.mikhailgrigorev.game.entities.Player
+import com.mikhailgrigorev.game.entities.Totem
 import com.mikhailgrigorev.game.loader.BuildingsLoader
 import com.mikhailgrigorev.game.loader.EnemiesLoader
 import com.mikhailgrigorev.game.loader.TotemsLoader
-import com.mikhailgrigorev.game.entities.Totem
 
 
 @SuppressLint("ViewConstructor")
@@ -195,20 +195,37 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         enemyProperties.addView(textView10)
         enemyProperties.addView(textView11)
 
-
         // ITEMS
-        val sItems = dialog.findViewById(R.id.sItems) as LinearLayout
+        val sItems = dialog.findViewById(R.id.sItems) as GridLayout
 
-        for(id in obj.items.split('.')){
-            ItemsDB.init(context)
-            val btn = Button(context, null, android.R.attr.borderlessButtonStyle)
-            val item = ItemsDB.loadItemByID(context, id.toInt())
-            if(item != null) {
-                btn.text = item.name
-                btn.id = item.id
-                sItems.addView(btn)
+
+
+
+        var ids = ""
+        for (enemy in enemiesLoader!!.enemies) {
+            if (enemy.getComponent(BitmapComponent::class.java)!!._id.toString() in enemiesIds) {
+                (enemy as Enemy).items.split('.').zip(enemy.itemsNum.split('.')).forEach { pair ->
+                    ItemsDB.init(context)
+                    val btn = Button(context, null, android.R.attr.borderlessButtonStyle)
+                    val item = ItemsDB.loadItemByID(context, pair.component1().toInt())
+                    if (item != null) {
+                        if (pair.component1() !in ids) {
+                            btn.text = "${item.name}-${pair.component2()}"
+                            btn.id = item.id
+                            sItems.addView(btn)
+                            ids += "${pair.component1()}."
+                        }
+                        else{
+                            val btId = dialog.findViewById<Button>(pair.component1().toInt())
+                            val text = btId.text.split('-')
+                            btId.text = "${item.name}-${pair.component2().toInt()+text[1].toInt()}"
+                        }
+                    }
+                }
             }
         }
+
+
 
         dialog.show()
 
@@ -235,13 +252,6 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
 
         val btnClose = dialog.findViewById(R.id.closeDialogTotem) as ImageButton
         btnClose.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        val btnOk = dialog.findViewById(R.id.sacrifice) as Button
-        btnOk.setOnClickListener {
-            val upgradeComponent = obj.getComponent(UpgradeComponent::class.java)!!
-            upgradeComponent.upgrade(context, player as Entity)
             dialog.dismiss()
         }
 
@@ -298,16 +308,56 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         // ITEMS
         val sItems = dialog.findViewById(R.id.sItems) as LinearLayout
 
-        for(id in obj.items.split('.')){
+        val sacrificeItem: ArrayList<Item> = ArrayList()
+
+        val sacrifice = dialog.findViewById(R.id.sacrifice) as Button
+        var isOk = true
+
+        obj.items.split('.').zip(obj.itemsNum.split('.')).forEach { pair ->
             ItemsDB.init(context)
             val btn = Button(context, null, android.R.attr.borderlessButtonStyle)
-            val item = ItemsDB.loadItemByID(context, id.toInt())
-            if(item != null) {
-                btn.text = item.name
+            val item = ItemsDB.loadItemByID(context, pair.component1().toInt())
+            if (item != null) {
+                btn.text = "${item.name}-${pair.component2()}"
                 btn.id = item.id
+
+                val playerItem = player!!.getComponent(InventoryComponent::class.java)!!.takeItem(pair.component1().toInt())
+                if(playerItem == null){
+                    isOk = false
+                }
+                else if(playerItem.count < pair.component2().toInt()){
+                    isOk = false
+                }
+                sacrificeItem.add(Item(pair.component1().toInt(), "", pair.component2().toInt(), 0))
                 sItems.addView(btn)
             }
         }
+
+        if(isOk) {
+            sacrifice.setOnClickListener {
+                for (item in sacrificeItem) {
+                    val inventoryComponent = player!!.getComponent(InventoryComponent::class.java)!!
+                    inventoryComponent.dropItem(item)
+                    if (inventoryComponent.takeItem(item.id) != null)
+                        DBHelperFunctions.replaceItem(context, item.id, inventoryComponent.takeItem(item.id)!!.count)
+                    else{
+                        DBHelperFunctions.dropItem(context, item.id)
+                    }
+                }
+                val upgradeComponent = obj.getComponent(UpgradeComponent::class.java)!!
+                upgradeComponent.upgrade(context, player as Entity)
+                Toast.makeText(context, "SUCCESSFULLY", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+        }
+        else {
+            sacrifice.setOnClickListener {
+                Toast.makeText(context, "NO ITEMS", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+            sacrifice.isActivated = false
+        }
+
         dialog.show()
 
     }
@@ -317,17 +367,20 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         Drop item function
          */
         val popupMenu = PopupMenu(context, view)
+        val inventory = player!!.getComponent(InventoryComponent::class.java)!!
         popupMenu.inflate(R.menu.action)
+        val itemsCount = popupMenu.menu.findItem(R.id.items_count)
+        itemsCount.title = inventory.takeItem(view.id / 1000)!!.count.toString()
         popupMenu.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.dropItem -> {
-                    val inventory = player!!.getComponent(InventoryComponent::class.java)!!
-                    Toast.makeText(context, "Item id = ${view.id/1000}", Toast.LENGTH_SHORT).show()
-                    val item = inventory.takeItem(view.id/1000)
+                    Toast.makeText(context, "Item id = ${view.id / 1000}", Toast.LENGTH_SHORT)
+                        .show()
+                    val item = inventory.takeItem(view.id / 1000)
                     if (item != null) {
                         inventory.dropItem(item)
                     }
-                    DBHelperFunctions.dropItem(context, view.id/1000)
+                    DBHelperFunctions.dropItem(context, view.id / 1000)
                     //view.visibility = View.GONE
                     view.alpha = 0.4f
                     view.isClickable = false
@@ -374,7 +427,6 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         playerMannaProgress.max = player!!.mannaMax
         playerMannaProgress.progress = player!!.manna
 
-
         val btnClose = dialog.findViewById(R.id.closePlayerDialog) as ImageButton
         btnClose.setOnClickListener {
             dialog.dismiss()
@@ -389,24 +441,78 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val inventoryLayout = dialog.findViewById(R.id.inventoryLayout) as GridLayout
         val inventory = player!!.getComponent(InventoryComponent::class.java)!!
 
-        var itemsTemp = DBHelperFunctions.loadAllItem(context)
-        // TEST LOADING
-        if(itemsTemp.count() < 2) {
-            DBHelperFunctions.createItem(context, arrayListOf("1", "Fresh meat", "0", "30", "${Item.stackable}"))
-            DBHelperFunctions.createItem(context, arrayListOf("2", "Bones", "0", "30",  "${Item.stackable}"))
-            DBHelperFunctions.createItem(context, arrayListOf("3", "Rotten meat", "30", "2",  "${Item.stackable}"))
-            DBHelperFunctions.createItem(context, arrayListOf("4", "Wood", "0", "30",  "${Item.stackable}"))
-            DBHelperFunctions.createItem(context, arrayListOf("5", "Souls", "0", "30",  "${Item.stackable}"))
-            itemsTemp = DBHelperFunctions.loadAllItem(context)
+
+        val loadItems = dialog.findViewById(R.id.load_items) as Button
+        loadItems.setOnClickListener {
+            var itemsTemp = DBHelperFunctions.loadAllItem(context)
+            // TEST LOADING
+            if(itemsTemp.count() < 2) {
+                DBHelperFunctions.createItem(
+                    context, arrayListOf(
+                        "1",
+                        "Fresh meat",
+                        "0",
+                        "30",
+                        "${Item.stackable}"
+                    )
+                )
+                DBHelperFunctions.createItem(
+                    context, arrayListOf(
+                        "2",
+                        "Bones",
+                        "0",
+                        "30",
+                        "${Item.stackable}"
+                    )
+                )
+                DBHelperFunctions.createItem(
+                    context, arrayListOf(
+                        "3",
+                        "Rotten meat",
+                        "30",
+                        "2",
+                        "${Item.stackable}"
+                    )
+                )
+                DBHelperFunctions.createItem(
+                    context, arrayListOf(
+                        "4",
+                        "Wood",
+                        "0",
+                        "30",
+                        "${Item.stackable}"
+                    )
+                )
+                DBHelperFunctions.createItem(
+                    context, arrayListOf(
+                        "5",
+                        "Souls",
+                        "0",
+                        "30",
+                        "${Item.stackable}"
+                    )
+                )
+                itemsTemp = DBHelperFunctions.loadAllItem(context)
+            }
+
+
+            for(item in itemsTemp)
+                inventory.addItem(item)
+
+            val items = inventory.getAllItems()
+
+            for(item in items){
+                val btn = Button(context, null, android.R.attr.borderlessButtonStyle)
+                btn.text = "${item.name} : ${item.count}"
+                btn.id = item.id*1000
+                btn.setOnClickListener {
+                    showFilterPopup(it)
+                }
+
+                inventoryLayout.addView(btn)
+            }
         }
 
-        for(item in itemsTemp) {
-            inventory.addItem(item)
-            inventory.addItem(item)
-            inventory.addItem(item)
-            inventory.addItem(item)
-            inventory.addItem(item)
-        }
 
         val items = inventory.getAllItems()
 

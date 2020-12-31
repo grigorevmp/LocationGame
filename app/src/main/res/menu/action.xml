@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/id1"
-        android:title="NZ" />
+    <item android:id="@+id/items_count"
+        android:title="@string/nz" />
     <item android:id="@+id/dropItem"
-        android:title="Drop Item" />
+        android:title="@string/drop_item" />
 </menu>

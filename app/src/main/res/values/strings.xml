@@ -66,6 +66,9 @@
     <string name="need_to_sacrifice">Need to Sacrifice</string>
     <string name="possible_drop">Possible drop</string>
     <string name="dungeon">Monster dungeon</string>
+    <string name="drop_item">Drop Item</string>
+    <string name="nz">NZ</string>
+    <string name="load_items">Load items</string>
 
 
 </resources>

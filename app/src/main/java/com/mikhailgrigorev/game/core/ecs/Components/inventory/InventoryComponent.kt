@@ -13,10 +13,12 @@ class InventoryComponent : Component() {
     }
 
     fun dropItem(item: Item) {
-        if(items[item.id]!!.count == item.count)
-            items.remove(item.id)
-        else if (items[item.id]!!.count > item.count)
-            items[item.id]!!.take(item.count)
+        if(item.id in items.keys) {
+            if (items[item.id]!!.count == item.count)
+                items.remove(item.id)
+            else if (items[item.id]!!.count > item.count)
+                items[item.id]!!.take(item.count)
+        }
     }
 
     fun takeItem (id: Int) : Item? {
