@@ -28,8 +28,16 @@ class ItemsDB {
         }
 
         fun init(context: Context){
-            val item1 = arrayListOf("1", "name", "description", "${Item.equippable}")
+            val item1 = arrayListOf("1", "Fresh meat", "description", "${Item.equippable}")
+            val item2 = arrayListOf("2", "Bones", "description", "${Item.equippable}")
+            val item3= arrayListOf("3", "Rotten meat", "description", "${Item.equippable}")
+            val item4 = arrayListOf("4", "Wood", "description", "${Item.equippable}")
+            val item5= arrayListOf("5", "Souls", "description", "${Item.equippable}")
             createItem(context, item1)
+            createItem(context, item2)
+            createItem(context, item3)
+            createItem(context, item4)
+            createItem(context, item5)
         }
 
         private fun createItem(context: Context, item: List<String>) {

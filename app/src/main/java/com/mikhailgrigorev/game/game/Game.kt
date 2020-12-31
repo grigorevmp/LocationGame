@@ -18,6 +18,7 @@ import com.mikhailgrigorev.game.activities.FightActivity
 import com.mikhailgrigorev.game.core.data.NatureForces
 import com.mikhailgrigorev.game.core.ecs.Components.*
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.InventoryComponent
+import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
 import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.databases.DBHelperFunctions
 import com.mikhailgrigorev.game.databases.ItemsDB
@@ -79,7 +80,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val dialog = Dialog(context)
         val width = (resources.displayMetrics.widthPixels * 0.80).toInt()
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.dialog_totem)
+        dialog.setContentView(R.layout.dialog_enemy)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         // Set size
@@ -320,8 +321,12 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         popupMenu.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.dropItem -> {
+                    val inventory = player!!.getComponent(InventoryComponent::class.java)!!
                     Toast.makeText(context, "Item id = ${view.id/1000}", Toast.LENGTH_SHORT).show()
-                    player!!.getComponent(InventoryComponent::class.java)!!.dropItem(view.id/1000)
+                    val item = inventory.takeItem(view.id/1000)
+                    if (item != null) {
+                        inventory.dropItem(item)
+                    }
                     DBHelperFunctions.dropItem(context, view.id/1000)
                     //view.visibility = View.GONE
                     view.alpha = 0.4f
@@ -387,11 +392,11 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         var itemsTemp = DBHelperFunctions.loadAllItem(context)
         // TEST LOADING
         if(itemsTemp.count() < 2) {
-            DBHelperFunctions.createItem(context, arrayListOf("1", "Item",  "0", "5", "0"))
-            DBHelperFunctions.createItem(context, arrayListOf("2", "Item2", "0", "1", "0"))
-            DBHelperFunctions.createItem(context, arrayListOf("3", "Item3", "0", "2", "0"))
-            DBHelperFunctions.createItem(context, arrayListOf("4", "Item4", "0", "6", "0"))
-            DBHelperFunctions.createItem(context, arrayListOf("5", "Item5", "0", "8", "0"))
+            DBHelperFunctions.createItem(context, arrayListOf("1", "Fresh meat", "0", "30", "${Item.stackable}"))
+            DBHelperFunctions.createItem(context, arrayListOf("2", "Bones", "0", "30",  "${Item.stackable}"))
+            DBHelperFunctions.createItem(context, arrayListOf("3", "Rotten meat", "30", "2",  "${Item.stackable}"))
+            DBHelperFunctions.createItem(context, arrayListOf("4", "Wood", "0", "30",  "${Item.stackable}"))
+            DBHelperFunctions.createItem(context, arrayListOf("5", "Souls", "0", "30",  "${Item.stackable}"))
             itemsTemp = DBHelperFunctions.loadAllItem(context)
         }
 
