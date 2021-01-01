@@ -25,6 +25,7 @@ import com.mikhailgrigorev.game.core.fsm.State
 import com.mikhailgrigorev.game.core.fsm.Transition
 import com.mikhailgrigorev.game.databases.DBHelperFunctions
 import com.mikhailgrigorev.game.databases.ItemsDB
+import com.mikhailgrigorev.game.databases.ItemsDBHelper
 import com.mikhailgrigorev.game.entities.Enemy
 import com.mikhailgrigorev.game.entities.Player
 import com.mikhailgrigorev.game.loader.EnemiesLoader
@@ -620,8 +621,12 @@ class FightActivity : AppCompatActivity() {
 
             for (item in dropItems) {
                 val inventoryComponent = player.getComponent(InventoryComponent::class.java)!!
+                val isItemInInventory = inventoryComponent.takeItem(item.id)
                 inventoryComponent.addItem(item)
-                DBHelperFunctions.replaceItem(context, item.id, inventoryComponent.takeItem(item.id)!!.count)
+                if(isItemInInventory != null)
+                    DBHelperFunctions.replaceItem(context, item.id, inventoryComponent.takeItem(item.id)!!.count)
+                else
+                    DBHelperFunctions.createItem(context, arrayListOf("${item.id}", item.name, "0", "${item.count}", "${item.type}"))
                 Toast.makeText(context, "You got ${item.count} ${inventoryComponent.takeItem(item.id)!!.name}", Toast.LENGTH_SHORT).show()
                 }
 

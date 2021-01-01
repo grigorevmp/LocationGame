@@ -73,60 +73,63 @@ class Player(context: Context): Entity() {
         // _________________________________
         // _________________________________
         // _________________________________
-        DBHelperFunctions.createItem(
-            context, arrayListOf(
-                "1",
-                "Fresh meat",
-                "0",
-                "30",
-                "${Item.stackable}"
+
+        if ( DBHelperFunctions.loadAllItem(context).count() <2) {
+            DBHelperFunctions.createItem(
+                context, arrayListOf(
+                    "1",
+                    "Fresh meat",
+                    "0",
+                    "30",
+                    "${Item.stackable}"
+                )
             )
-        )
-        DBHelperFunctions.createItem(
-            context, arrayListOf(
-                "2",
-                "Bones",
-                "0",
-                "30",
-                "${Item.stackable}"
+            DBHelperFunctions.createItem(
+                context, arrayListOf(
+                    "2",
+                    "Bones",
+                    "0",
+                    "30",
+                    "${Item.stackable}"
+                )
             )
-        )
-        DBHelperFunctions.createItem(
-            context, arrayListOf(
-                "3",
-                "Rotten meat",
-                "30",
-                "2",
-                "${Item.stackable}"
+            DBHelperFunctions.createItem(
+                context, arrayListOf(
+                    "3",
+                    "Rotten meat",
+                    "30",
+                    "2",
+                    "${Item.stackable}"
+                )
             )
-        )
-        DBHelperFunctions.createItem(
-            context, arrayListOf(
-                "4",
-                "Wood",
-                "0",
-                "30",
-                "${Item.stackable}"
+            DBHelperFunctions.createItem(
+                context, arrayListOf(
+                    "4",
+                    "Wood",
+                    "0",
+                    "30",
+                    "${Item.stackable}"
+                )
             )
-        )
-        DBHelperFunctions.createItem(
-            context, arrayListOf(
-                "5",
-                "Souls",
-                "0",
-                "30",
-                "${Item.stackable}"
+            DBHelperFunctions.createItem(
+                context, arrayListOf(
+                    "5",
+                    "Souls",
+                    "0",
+                    "30",
+                    "${Item.stackable}"
+                )
             )
-        )
-        DBHelperFunctions.createItem(
-            context, arrayListOf(
-                "9",
-                "Ring",
-                "0",
-                "1",
-                "${Item.equippable}"
+            DBHelperFunctions.createItem(
+                context, arrayListOf(
+                    "9",
+                    "Ring",
+                    "0",
+                    "1",
+                    "${Item.equippable}"
+                )
             )
-        )
+        }
         // _________________________________
         // _________________________________
         // _________________________________
