@@ -17,6 +17,7 @@ import com.mikhailgrigorev.game.R
 import com.mikhailgrigorev.game.activities.FightActivity
 import com.mikhailgrigorev.game.core.data.NatureForces
 import com.mikhailgrigorev.game.core.ecs.Components.*
+import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquipmentComponent
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.InventoryComponent
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
 import com.mikhailgrigorev.game.core.ecs.Entity
@@ -28,6 +29,7 @@ import com.mikhailgrigorev.game.entities.Totem
 import com.mikhailgrigorev.game.loader.BuildingsLoader
 import com.mikhailgrigorev.game.loader.EnemiesLoader
 import com.mikhailgrigorev.game.loader.TotemsLoader
+import com.mikhailgrigorev.game.views.ItemView
 
 
 @SuppressLint("ViewConstructor")
@@ -198,37 +200,38 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         // ITEMS
         val sItems = dialog.findViewById(R.id.sItems) as GridLayout
 
-
-
-
         var ids = ""
         for (enemy in enemiesLoader!!.enemies) {
             if (enemy.getComponent(BitmapComponent::class.java)!!._id.toString() in enemiesIds) {
                 (enemy as Enemy).items.split('.').zip(enemy.itemsNum.split('.')).forEach { pair ->
                     ItemsDB.init(context)
-                    val btn = Button(context, null, android.R.attr.borderlessButtonStyle)
+                    val itemView = ItemView(context)
+                    val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                    val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                    //val btn = Button(context, null, android.R.attr.borderlessButtonStyle)
                     val item = ItemsDB.loadItemByID(context, pair.component1().toInt())
                     if (item != null) {
                         if (pair.component1() !in ids) {
-                            btn.text = "${item.name}-${pair.component2()}"
-                            btn.id = item.id
-                            sItems.addView(btn)
+                            val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, item.id), "drawable", context.packageName)
+                            btn.contentDescription = item.name
+                            btn.setBackgroundResource(bitmapId)
+                            itemView.id = item.id
+                            countText.text = pair.component2()
+                            sItems.addView(itemView)
                             ids += "${pair.component1()}."
                         }
                         else{
-                            val btId = dialog.findViewById<Button>(pair.component1().toInt())
-                            val text = btId.text.split('-')
-                            btId.text = "${item.name}-${pair.component2().toInt()+text[1].toInt()}"
+                            val itemViewID = dialog.findViewById<ItemView>(pair.component1().toInt())
+                            val countTextID = itemViewID.findViewById<TextView>(R.id.itemContentCount)
+                            countTextID.text = "${pair.component2().toInt() + countTextID.text.toString().toInt()}"
+
                         }
                     }
                 }
             }
         }
 
-
-
         dialog.show()
-
 
     }
 
@@ -317,11 +320,18 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
 
         obj.items.split('.').zip(obj.itemsNum.split('.')).forEach { pair ->
             ItemsDB.init(context)
-            val btn = Button(context, null, android.R.attr.borderlessButtonStyle)
+            val itemView = ItemView(context)
+            val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+            val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+            //val btn = Button(context, null, android.R.attr.borderlessButtonStyle)
             val item = ItemsDB.loadItemByID(context, pair.component1().toInt())
             if (item != null) {
-                btn.text = "${item.name}-${pair.component2()}"
+                //btn.text = "${item.name}-${pair.component2()}"
+                val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, item.id), "drawable", context.packageName)
+                btn.contentDescription = item.name
+                btn.setBackgroundResource(bitmapId)
                 btn.id = item.id
+                countText.text = pair.component2()
 
                 val playerItem = player!!.getComponent(InventoryComponent::class.java)!!.takeItem(pair.component1().toInt())
                 if(playerItem == null){
@@ -331,7 +341,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
                     isOk = false
                 }
                 sacrificeItem.add(Item(pair.component1().toInt(), "", pair.component2().toInt(), 0))
-                sItems.addView(btn)
+                sItems.addView(itemView)
             }
         }
 
@@ -437,10 +447,53 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
             playerHealthProgress.progress = playerHealthComponent.healthPoints
         }
 
+
+        // -------------------------------------
+        // EQUIPMENT INVENTORY
+        // -------------------------------------
+
+        val equipmentLayout = dialog.findViewById(R.id.equipmentLayout) as GridLayout
+        val equipment = player!!.getComponent(EquipmentComponent::class.java)!!
+
+        // Loading weapon
+        val weapon = equipment.weapon
+
+        if(weapon != null) {
+            val itemView = ItemView(context)
+            val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+            val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+            ItemsDB.init(context)
+            val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, weapon.id), "drawable", context.packageName)
+            btn.contentDescription = weapon.name
+            btn.setBackgroundResource(bitmapId)
+            btn.id = weapon.id*1000
+            countText.text = weapon.count.toString()
+            equipmentLayout.addView(itemView)
+        }
+
+        // Loading armor
+        val armor = equipment.armor
+
+        if(armor != null) {
+            val itemView = ItemView(context)
+            val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+            val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+            ItemsDB.init(context)
+            val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, armor.id), "drawable", context.packageName)
+            btn.contentDescription = armor.name
+            btn.setBackgroundResource(bitmapId)
+            btn.id = armor.id*1000
+            countText.text = armor.count.toString()
+            equipmentLayout.addView(itemView)
+        }
+
+
+        // -------------------------------------
+        // LOADING INVENTORY
+        // -------------------------------------
+
         val inventoryLayout = dialog.findViewById(R.id.inventoryLayout) as GridLayout
         val inventory = player!!.getComponent(InventoryComponent::class.java)!!
-
-
         val loadItems = dialog.findViewById(R.id.load_items) as Button
         loadItems.setOnClickListener {
             var itemsTemp = DBHelperFunctions.loadAllItem(context)
@@ -503,14 +556,22 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
 
             inventoryLayout.removeAllViews()
             for(item in items){
-                val btn = Button(context, null, android.R.attr.borderlessButtonStyle)
-                btn.text = "${item.name} : ${item.count}"
+                val itemView = ItemView(context)
+                val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                ItemsDB.init(context)
+                val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, item.id), "drawable", context.packageName)
+                //val btn = Button(context, null, android.R.attr.borderlessButtonStyle)
+                btn.contentDescription = item.name
+                btn.setBackgroundResource(bitmapId)
                 btn.id = item.id*1000
                 btn.setOnClickListener {
                     showFilterPopup(it)
                 }
 
-                inventoryLayout.addView(btn)
+                countText.text = item.count.toString()
+
+                inventoryLayout.addView(itemView)
             }
         }
 
@@ -518,14 +579,20 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val items = inventory.getAllItems()
 
         for(item in items){
-            val btn = Button(context, null, android.R.attr.borderlessButtonStyle)
-            btn.text = "${item.name} : ${item.count}"
+            val itemView = ItemView(context)
+            val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+            val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+            val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, item.id), "drawable", context.packageName)
+            btn.contentDescription = item.name
+            btn.setBackgroundResource(bitmapId)
             btn.id = item.id*1000
             btn.setOnClickListener {
                 showFilterPopup(it)
             }
 
-            inventoryLayout.addView(btn)
+            countText.text = item.count.toString()
+
+            inventoryLayout.addView(itemView)
         }
 
         // PLAYER DAMAGE

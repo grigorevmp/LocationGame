@@ -73,15 +73,15 @@ class Player(context: Context): Entity() {
         inventoryComponent.addItem(Item(9,"Ring",1, Item.equippable))
         DBHelperFunctions.createItem(context, arrayListOf("9", "Ring", "0", "1", "0"))
 
-        equipmentComponent = EquipmentComponent(
-            weapon = Weapon(10,
+        equipmentComponent =this.addComponent(EquipmentComponent(
+            weapon = Weapon(520,
                 "Sword",
                 15,
                 NatureForcesValues(),
                 0,
                 0f
             )
-        )
+        ))
         defenceComponent = this.addComponent(
             DefenceComponent(
                 playerData.defence, playerData.naturalValueDef

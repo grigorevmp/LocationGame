@@ -28,16 +28,20 @@ class ItemsDB {
         }
 
         fun init(context: Context){
-            val item1 = arrayListOf("1", "Fresh meat", "description", "${Item.equippable}")
-            val item2 = arrayListOf("2", "Bones", "description", "${Item.equippable}")
-            val item3= arrayListOf("3", "Rotten meat", "description", "${Item.equippable}")
-            val item4 = arrayListOf("4", "Wood", "description", "${Item.equippable}")
-            val item5= arrayListOf("5", "Souls", "description", "${Item.equippable}")
+            val item1 = arrayListOf("1", "Fresh meat", "description", "${Item.equippable}", "item_meat")
+            val item2 = arrayListOf("2", "Bones", "description", "${Item.equippable}", "item_bone")
+            val item3= arrayListOf("3", "Rotten meat", "description", "${Item.equippable}", "item_rotten")
+            val item4 = arrayListOf("4", "Wood", "description", "${Item.equippable}", "item_wood")
+            val item5 = arrayListOf("5", "Souls", "description", "${Item.equippable}", "item_soul")
+            val item9 = arrayListOf("9", "Ring", "description", "${Item.equippable}", "item_ring")
+            val item520 = arrayListOf("520", "Sword", "description", "${Item.equippable}", "item_sword")
             createItem(context, item1)
             createItem(context, item2)
             createItem(context, item3)
             createItem(context, item4)
             createItem(context, item5)
+            createItem(context, item9)
+            createItem(context, item520)
         }
 
         private fun createItem(context: Context, item: List<String>) {
@@ -49,10 +53,30 @@ class ItemsDB {
             contentValues.put(AllItemsDBHelper.NAME, item[1])
             contentValues.put(AllItemsDBHelper.DESC, item[2])
             contentValues.put(AllItemsDBHelper.TYPE, item[3].toInt())
+            contentValues.put(AllItemsDBHelper.RESOURCE, item[4])
 
             if (!isItemExists(item[0].toInt(), context)) {
                 database.insert(AllItemsDBHelper.TABLE_All_ITEMS, null, contentValues)
             }
+        }
+
+        fun loadItemBitmapByID(context: Context, id: Int): String? {
+            val dbHelper = AllItemsDBHelper(context)
+            val database = dbHelper.writableDatabase
+
+            val query = "select * from all_items where _id = $id"
+            val cursor = database.rawQuery(query, null)
+
+            var itemRes: String? = null
+            if (cursor.moveToFirst()) {
+                val indexRESOURCE: Int = cursor.getColumnIndex(AllItemsDBHelper.RESOURCE)
+                do {
+                    itemRes = cursor.getString(indexRESOURCE)
+
+                } while (cursor.moveToNext())
+            } else Log.d("mLog", "0 rows")
+            cursor.close()
+            return itemRes
         }
 
         fun loadItemByID(context: Context, id: Int): Item? {
@@ -62,19 +86,17 @@ class ItemsDB {
             val query = "select * from all_items where _id = $id"
             val cursor = database.rawQuery(query, null)
 
-            var enemiesIds = ""
             var item: Item? = null
             if (cursor.moveToFirst()) {
-                val indexEnemyID: Int = cursor.getColumnIndex(AllItemsDBHelper.ID)
-                val indexEnemyNAME: Int = cursor.getColumnIndex(AllItemsDBHelper.NAME)
-                val indexEnemyDESC: Int = cursor.getColumnIndex(AllItemsDBHelper.DESC)
-                val indexEnemyTYPE: Int = cursor.getColumnIndex(AllItemsDBHelper.TYPE)
+                val indexItemID: Int = cursor.getColumnIndex(AllItemsDBHelper.ID)
+                val indexItemNAME: Int = cursor.getColumnIndex(AllItemsDBHelper.NAME)
+                val indexItemTYPE: Int = cursor.getColumnIndex(AllItemsDBHelper.TYPE)
                 do {
                     item = Item(
-                        cursor.getInt(indexEnemyID),
-                        cursor.getString(indexEnemyNAME),
+                        cursor.getInt(indexItemID),
+                        cursor.getString(indexItemNAME),
                         1,
-                        cursor.getInt(indexEnemyTYPE)
+                        cursor.getInt(indexItemTYPE)
                     )
                 } while (cursor.moveToNext())
             } else Log.d("mLog", "0 rows")

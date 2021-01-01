@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.util.Log
 import com.mikhailgrigorev.game.R
 import com.mikhailgrigorev.game.core.data.NatureForcesValues
+import com.mikhailgrigorev.game.databases.ItemsDB
 import com.mikhailgrigorev.game.databases.PlayerDBHelper
 
 fun getCountPlayer(id: Int, context: Context): Int {
@@ -72,6 +73,7 @@ class PlayerLoader(context: Context) {
         private set
     init{
 
+        ItemsDB.init(context)
         val dataForFirstLoad = CSVReader(context, fileName).data
         val data = java.util.ArrayList<Array<String>>()
 
