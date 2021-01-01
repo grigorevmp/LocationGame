@@ -498,7 +498,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         loadItems.setOnClickListener {
             var itemsTemp = DBHelperFunctions.loadAllItem(context)
             // TEST LOADING
-            if(itemsTemp.count() < 2) {
+
                 DBHelperFunctions.createItem(
                     context, arrayListOf(
                         "1",
@@ -545,8 +545,9 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
                     )
                 )
                 itemsTemp = DBHelperFunctions.loadAllItem(context)
-            }
 
+
+            inventory.delItems()
 
             for(item in itemsTemp)
                 inventory.addItem(item)

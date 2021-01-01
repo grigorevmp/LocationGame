@@ -25,6 +25,10 @@ class InventoryComponent : Component() {
         return items[id]
     }
 
+    fun delItems () {
+        items.clear()
+    }
+
     fun getAllItems() : MutableCollection<Item> {
         return items.values
     }
