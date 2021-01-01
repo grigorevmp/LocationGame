@@ -384,20 +384,31 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val inventory = player!!.getComponent(InventoryComponent::class.java)!!
         popupMenu.inflate(R.menu.action)
         val itemsCount = popupMenu.menu.findItem(R.id.items_count)
-        itemsCount.title = inventory.takeItem(view.id / 1000)!!.count.toString()
+
+        // TEST
+        // itemsCount.title = inventory.takeItem(view.id / 1000)!!.count.toString()
+        // EQUIP
+        itemsCount.title = "EQUIP"
+
+        val item = inventory.takeItem(view.id / 1000) ?: return
+
+        if(item.type != Item.equippable)
+            popupMenu.menu.removeItem(R.id.items_count)
+
         popupMenu.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.dropItem -> {
                     Toast.makeText(context, "Item id = ${view.id / 1000}", Toast.LENGTH_SHORT)
                         .show()
-                    val item = inventory.takeItem(view.id / 1000)
-                    if (item != null) {
-                        inventory.dropItem(item)
-                    }
+
+                    inventory.dropItem(item)
                     DBHelperFunctions.dropItem(context, view.id / 1000)
-                    //view.visibility = View.GONE
                     view.alpha = 0.4f
                     view.isClickable = false
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.items_count -> {
+                    val itemId = view.id / 1000
                     return@setOnMenuItemClickListener true
                 }
                 else -> {
