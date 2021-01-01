@@ -1,17 +1,16 @@
 package com.mikhailgrigorev.game.entities
 
 import android.content.Context
-import com.mikhailgrigorev.game.core.ecs.Components.*
-import com.mikhailgrigorev.game.game.Game
 import com.mikhailgrigorev.game.core.data.NatureForcesValues
+import com.mikhailgrigorev.game.core.ecs.Components.*
 import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquipmentComponent
+import com.mikhailgrigorev.game.core.ecs.Components.equipment.equipmentTypes.Weapon
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.InventoryComponent
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
-import com.mikhailgrigorev.game.core.ecs.Components.equipment.equipmentTypes.Weapon
-
 import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.databases.DBHelperFunctions
 import com.mikhailgrigorev.game.entities.sprit.Spirit
+import com.mikhailgrigorev.game.game.Game
 import com.mikhailgrigorev.game.loader.PlayerLoader
 
 class Player(context: Context): Entity() {
@@ -57,7 +56,7 @@ class Player(context: Context): Entity() {
         ))
         damageComponent = this.addComponent(
             DamageComponent(
-                playerData.damage,playerData.naturalDamageValue,playerData.cc,playerData.cm
+                playerData.damage, playerData.naturalDamageValue, playerData.cc, playerData.cm
             )
         )
 
@@ -66,22 +65,95 @@ class Player(context: Context): Entity() {
 
         inventoryComponent = this.addComponent(InventoryComponent())
 
+
+        // _________________________________
+        // _________________________________
+        // _________________________________
+        // ITEMS PRELOADING BETA DELETE ME
+        // _________________________________
+        // _________________________________
+        // _________________________________
+        DBHelperFunctions.createItem(
+            context, arrayListOf(
+                "1",
+                "Fresh meat",
+                "0",
+                "30",
+                "${Item.stackable}"
+            )
+        )
+        DBHelperFunctions.createItem(
+            context, arrayListOf(
+                "2",
+                "Bones",
+                "0",
+                "30",
+                "${Item.stackable}"
+            )
+        )
+        DBHelperFunctions.createItem(
+            context, arrayListOf(
+                "3",
+                "Rotten meat",
+                "30",
+                "2",
+                "${Item.stackable}"
+            )
+        )
+        DBHelperFunctions.createItem(
+            context, arrayListOf(
+                "4",
+                "Wood",
+                "0",
+                "30",
+                "${Item.stackable}"
+            )
+        )
+        DBHelperFunctions.createItem(
+            context, arrayListOf(
+                "5",
+                "Souls",
+                "0",
+                "30",
+                "${Item.stackable}"
+            )
+        )
+        DBHelperFunctions.createItem(
+            context, arrayListOf(
+                "9",
+                "Ring",
+                "0",
+                "1",
+                "${Item.equippable}"
+            )
+        )
+        // _________________________________
+        // _________________________________
+        // _________________________________
+        // _________________________________
+        // _________________________________
+        // _________________________________
+
         val itemsTemp = DBHelperFunctions.loadAllItem(context)
-        for(item in itemsTemp)
+
+        for (item in itemsTemp)
             inventoryComponent.addItem(item)
 
-        inventoryComponent.addItem(Item(9,"Ring",1, Item.equippable))
-        DBHelperFunctions.createItem(context, arrayListOf("9", "Ring", "0", "1", "0"))
 
-        equipmentComponent =this.addComponent(EquipmentComponent(
-            weapon = Weapon(520,
-                "Sword",
-                15,
-                NatureForcesValues(),
-                0,
-                0f
+
+
+        equipmentComponent = this.addComponent(
+            EquipmentComponent(
+                weapon = Weapon(
+                    520,
+                    "Sword",
+                    15,
+                    NatureForcesValues(),
+                    0,
+                    0f
+                )
             )
-        ))
+        )
         defenceComponent = this.addComponent(
             DefenceComponent(
                 playerData.defence, playerData.naturalValueDef
