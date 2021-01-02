@@ -7,6 +7,13 @@ open class Item (id: Int, name: String, count: Int, val type: Int = none) : Enti
         const val none = 0b00
         const val stackable = 0b10
         const val equippable = 0b01
+
+        fun isType(item: Item,typeCheckValue: Int):  Boolean{
+            return ((item.type and typeCheckValue) != 0)
+        }
+        fun isType(type: Int, typeCheckValue: Int):  Boolean{
+            return ((type and typeCheckValue) != 0)
+        }
     }
     var id = id
         private set

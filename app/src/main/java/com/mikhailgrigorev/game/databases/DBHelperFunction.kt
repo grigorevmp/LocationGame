@@ -7,6 +7,8 @@ import android.util.Log
 import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.HealthComponent
+import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquipmentComponent
+import com.mikhailgrigorev.game.core.ecs.Components.equipment.equipmentTypes.Jewelry
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
 import com.mikhailgrigorev.game.entities.Enemy
 import com.mikhailgrigorev.game.entities.Player
@@ -213,14 +215,24 @@ class DBHelperFunctions {
                 val indexCOUNT: Int = cursor.getColumnIndex(ItemsDBHelper.COUNT)
                 val indexTYPE: Int = cursor.getColumnIndex(ItemsDBHelper.TYPE)
                 do {
-                    items.add(
-                        Item(
-                            cursor.getInt(indexID),
-                            cursor.getString(indexNAME),
-                            cursor.getInt(indexCOUNT),
-                            cursor.getInt(indexTYPE)
+                    if (Item.isType(indexTYPE, Item.equippable)) {
+                        items.add(
+                            Jewelry(
+                                cursor.getInt(indexID),
+                                cursor.getString(indexNAME),
+                                EquipmentComponent::ring.name
+                            )
                         )
-                    )
+                    }else {
+                        items.add(
+                            Item(
+                                cursor.getInt(indexID),
+                                cursor.getString(indexNAME),
+                                cursor.getInt(indexCOUNT),
+                                cursor.getInt(indexTYPE)
+                            )
+                        )
+                    }
                 } while (cursor.moveToNext())
             } else Log.d("mLog", "0 rows")
             cursor.close()

@@ -26,4 +26,14 @@ open class EquippableItem (
             equipmentField.set(equipment, this)
         }
     }
+
+    fun takeFromEntity(entity: Entity) {
+        val equipment = entity.getComponent(EquipmentComponent::class.java)
+        val inventory = entity.getComponent(InventoryComponent::class.java)
+        if (equipment != null && inventory != null) {
+            val equipmentField = EquipmentComponent::class.java.getField(equippableItemType)
+            inventory.addItem(equipmentField.get(equipment) as Item)
+            equipmentField.set(equipment, null)
+        }
+    }
 }
