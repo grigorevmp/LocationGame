@@ -9,16 +9,22 @@ import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
 class Jewelry(
     id: Int,
     name: String,
-    equippableItemType: String
+    equippableItemType: String,
+    physicalDefence : Int,
+    natureForcesDefence: NatureForcesValues,
+    physicalDamage: Int,
+    natureForcesDamage: NatureForcesValues,
+    criticalChancePercent: Int,
+    criticalMultiplier: Float
     ) : EquippableItem (id, name, equippableItemType) {
         val defenceComponent = this.addComponent(DefenceComponent(
-            0,
-            NatureForcesValues()
+            physicalDefence,
+            natureForcesDefence
         ))
         val damageComponent = this.addComponent(DamageComponent(
-            0,
-            NatureForcesValues(),
-            0,
-            0f
+            physicalDamage,
+            natureForcesDamage,
+            criticalChancePercent,
+            criticalMultiplier
         ))
 }

@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class ItemsDBHelper extends SQLiteOpenHelper{
 
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "itemsDb";
     public static final String TABLE_ITEMS = "items";
 
@@ -15,6 +15,9 @@ public class ItemsDBHelper extends SQLiteOpenHelper{
     public static final String DAMAGE = "dmg";
     public static final String COUNT = "count";
     public static final String TYPE = "type";
+    public static final String EQTYPE = "eqType";
+    public static final String VALUE = "value";
+    public static final String ISE = "ise";
 
     public ItemsDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -27,13 +30,19 @@ public class ItemsDBHelper extends SQLiteOpenHelper{
                 + NAME + " text,"
                 + DAMAGE + " integer,"
                 + COUNT + " integer,"
+                + EQTYPE + " text,"
+                + VALUE + " text,"
+                + ISE + " integer,"
                 + TYPE + " integer"
                 + ")");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("drop table if exists " + TABLE_ITEMS);
-        onCreate(db);
+        if (newVersion > oldVersion) {
+            db.execSQL("ALTER TABLE items ADD COLUMN eqType text DEFAULT 'jewerly'");
+            db.execSQL("ALTER TABLE items ADD COLUMN value text DEFAULT ''");
+            db.execSQL("ALTER TABLE items ADD COLUMN ise INTEGER DEFAULT 0");
+        }
     }
 }

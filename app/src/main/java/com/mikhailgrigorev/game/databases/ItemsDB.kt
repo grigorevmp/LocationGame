@@ -28,13 +28,13 @@ class ItemsDB {
         }
 
         fun init(context: Context){
-            val item1 = arrayListOf("1", "Fresh meat", "description", "${Item.equippable}", "item_meat")
-            val item2 = arrayListOf("2", "Bones", "description", "${Item.equippable}", "item_bone")
-            val item3= arrayListOf("3", "Rotten meat", "description", "${Item.equippable}", "item_rotten")
-            val item4 = arrayListOf("4", "Wood", "description", "${Item.equippable}", "item_wood")
-            val item5 = arrayListOf("5", "Souls", "description", "${Item.equippable}", "item_soul")
-            val item9 = arrayListOf("9", "Ring", "description", "${Item.equippable}", "item_ring")
-            val item520 = arrayListOf("520", "Sword", "description", "${Item.equippable}", "item_sword")
+            val item1 = arrayListOf("1", "Fresh meat", "description", "${Item.equippable}", "item_meat", "null")
+            val item2 = arrayListOf("2", "Bones", "description", "${Item.equippable}", "item_bone", "null")
+            val item3= arrayListOf("3", "Rotten meat", "description", "${Item.equippable}", "item_rotten", "null")
+            val item4 = arrayListOf("4", "Wood", "description", "${Item.equippable}", "item_wood", "null")
+            val item5 = arrayListOf("5", "Souls", "description", "${Item.equippable}", "item_soul", "null")
+            val item9 = arrayListOf("9", "Ring", "description", "${Item.equippable}", "item_ring", "null")
+            val item520 = arrayListOf("520", "Sword", "description", "${Item.equippable}", "item_sword", "jewelry")
             createItem(context, item1)
             createItem(context, item2)
             createItem(context, item3)
@@ -54,6 +54,7 @@ class ItemsDB {
             contentValues.put(AllItemsDBHelper.DESC, item[2])
             contentValues.put(AllItemsDBHelper.TYPE, item[3].toInt())
             contentValues.put(AllItemsDBHelper.RESOURCE, item[4])
+            contentValues.put(AllItemsDBHelper.EQTYPE, item[5])
 
             if (!isItemExists(item[0].toInt(), context)) {
                 database.insert(AllItemsDBHelper.TABLE_All_ITEMS, null, contentValues)

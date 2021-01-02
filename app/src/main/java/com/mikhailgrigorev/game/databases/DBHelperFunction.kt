@@ -4,11 +4,15 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.util.Log
+import com.mikhailgrigorev.game.core.data.NatureForcesValues
 import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.HealthComponent
 import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquipmentComponent
+import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquippableItem
+import com.mikhailgrigorev.game.core.ecs.Components.equipment.equipmentTypes.Armor
 import com.mikhailgrigorev.game.core.ecs.Components.equipment.equipmentTypes.Jewelry
+import com.mikhailgrigorev.game.core.ecs.Components.equipment.equipmentTypes.Weapon
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
 import com.mikhailgrigorev.game.entities.Enemy
 import com.mikhailgrigorev.game.entities.Player
@@ -177,6 +181,9 @@ class DBHelperFunctions {
             contentValues.put(ItemsDBHelper.DAMAGE, item[2].toInt())
             contentValues.put(ItemsDBHelper.COUNT, item[3].toInt())
             contentValues.put(ItemsDBHelper.TYPE, item[4].toInt())
+            contentValues.put(ItemsDBHelper.EQTYPE, item[5])
+            contentValues.put(ItemsDBHelper.VALUE, item[6])
+            contentValues.put(ItemsDBHelper.ISE, item[7].toInt())
 
             if (!isItemExists(item[0].toInt(), context)) {
                 database.insert(ItemsDBHelper.TABLE_ITEMS, null, contentValues)
@@ -197,7 +204,92 @@ class DBHelperFunctions {
             contentValues.put(ItemsDBHelper.COUNT, count)
             database.update(ItemsDBHelper.TABLE_ITEMS, contentValues, "_id = $id", null)
         }
+        fun loadEquippedItem(context: Context): ArrayList<EquippableItem> {
+            val dbHelper = ItemsDBHelper(context)
+            val database = dbHelper.writableDatabase
 
+            // Database reading TEST
+            val cursor: Cursor =
+                database.query(ItemsDBHelper.TABLE_ITEMS, null, null, null, null, null, null)
+
+            val items: ArrayList<EquippableItem> = ArrayList()
+
+            if (cursor.moveToFirst()) {
+                val indexID: Int = cursor.getColumnIndex(ItemsDBHelper.ID)
+                val indexNAME: Int = cursor.getColumnIndex(ItemsDBHelper.NAME)
+                val indexEQT: Int = cursor.getColumnIndex(ItemsDBHelper.EQTYPE)
+                val indexValue: Int = cursor.getColumnIndex(ItemsDBHelper.VALUE)
+                val indexISE: Int = cursor.getColumnIndex(ItemsDBHelper.ISE)
+                do {
+                    if(cursor.getInt(indexISE) == 1) {
+                            if (cursor.getString(indexEQT) == "jewelry") {
+                                val values = cursor.getString(indexValue).split('.')
+                                items.add(
+                                    Jewelry(
+                                        cursor.getInt(indexID),
+                                        cursor.getString(indexNAME),
+                                        EquipmentComponent::ring.name,
+                                        values[0].toInt(),
+                                        NatureForcesValues(
+                                            values[1].toInt(),
+                                            values[2].toInt(),
+                                            values[3].toInt(),
+                                            values[4].toInt()
+                                        ),
+                                        values[5].toInt(),
+                                        NatureForcesValues(
+                                            values[6].toInt(),
+                                            values[7].toInt(),
+                                            values[8].toInt(),
+                                            values[9].toInt()
+                                        ),
+                                        values[10].toInt(),
+                                        values[11].toFloat()
+                                    )
+                                )
+                            }
+                            if (cursor.getString(indexEQT) == "armor") {
+                                val values = cursor.getString(indexValue).split('.')
+                                items.add(
+                                    Armor(
+                                        cursor.getInt(indexID),
+                                        cursor.getString(indexNAME),
+                                        EquipmentComponent::armor.name,
+                                        values[0].toInt(),
+                                        NatureForcesValues(
+                                            values[1].toInt(),
+                                            values[2].toInt(),
+                                            values[3].toInt(),
+                                            values[4].toInt()
+                                        )
+                                    )
+                                )
+                            }
+                            if (cursor.getString(indexEQT) == "weapon") {
+                                val values = cursor.getString(indexValue).split('.')
+                                items.add(
+                                    Weapon(
+                                        cursor.getInt(indexID),
+                                        cursor.getString(indexNAME),
+                                        EquipmentComponent::weapon.name,
+                                        values[0].toInt(),
+                                        NatureForcesValues(
+                                            values[1].toInt(),
+                                            values[2].toInt(),
+                                            values[3].toInt(),
+                                            values[4].toInt()
+                                        ),
+                                        values[5].toInt(),
+                                        values[6].toFloat()
+                                    )
+                                )
+                            }
+                    }
+                } while (cursor.moveToNext())
+            } else Log.d("mLog", "0 rows")
+            cursor.close()
+            return items
+        }
         fun loadAllItem(context: Context): ArrayList<Item> {
             val dbHelper = ItemsDBHelper(context)
             val database = dbHelper.writableDatabase
@@ -214,24 +306,85 @@ class DBHelperFunctions {
                 val indexDAMAGE: Int = cursor.getColumnIndex(ItemsDBHelper.DAMAGE)
                 val indexCOUNT: Int = cursor.getColumnIndex(ItemsDBHelper.COUNT)
                 val indexTYPE: Int = cursor.getColumnIndex(ItemsDBHelper.TYPE)
+                val indexEQT: Int = cursor.getColumnIndex(ItemsDBHelper.EQTYPE)
+                val indexValue: Int = cursor.getColumnIndex(ItemsDBHelper.VALUE)
+                val indexISE: Int = cursor.getColumnIndex(ItemsDBHelper.ISE)
                 do {
-                    if (Item.isType(indexTYPE, Item.equippable)) {
-                        items.add(
-                            Jewelry(
-                                cursor.getInt(indexID),
-                                cursor.getString(indexNAME),
-                                EquipmentComponent::ring.name
+                    if(cursor.getInt(indexISE) == 0) {
+                        val type = cursor.getInt(indexTYPE)
+                        if (Item.isType(type, Item.equippable)) {
+                            if (cursor.getString(indexEQT) == "jewelry") {
+                                val values = cursor.getString(indexValue).split('.')
+                                items.add(
+                                    Jewelry(
+                                        cursor.getInt(indexID),
+                                        cursor.getString(indexNAME),
+                                        EquipmentComponent::ring.name,
+                                        values[0].toInt(),
+                                        NatureForcesValues(
+                                            values[1].toInt(),
+                                            values[2].toInt(),
+                                            values[3].toInt(),
+                                            values[4].toInt()
+                                        ),
+                                        values[5].toInt(),
+                                        NatureForcesValues(
+                                            values[6].toInt(),
+                                            values[7].toInt(),
+                                            values[8].toInt(),
+                                            values[9].toInt()
+                                        ),
+                                        values[10].toInt(),
+                                        values[11].toFloat()
+                                    )
+                                )
+                            }
+                            if (cursor.getString(indexEQT) == "armor") {
+                                val values = cursor.getString(indexValue).split('.')
+                                items.add(
+                                    Armor(
+                                        cursor.getInt(indexID),
+                                        cursor.getString(indexNAME),
+                                        EquipmentComponent::armor.name,
+                                        values[0].toInt(),
+                                        NatureForcesValues(
+                                            values[1].toInt(),
+                                            values[2].toInt(),
+                                            values[3].toInt(),
+                                            values[4].toInt()
+                                        )
+                                    )
+                                )
+                            }
+                            if (cursor.getString(indexEQT) == "weapon") {
+                                val values = cursor.getString(indexValue).split('.')
+                                items.add(
+                                    Weapon(
+                                        cursor.getInt(indexID),
+                                        cursor.getString(indexNAME),
+                                        EquipmentComponent::weapon.name,
+                                        values[0].toInt(),
+                                        NatureForcesValues(
+                                            values[1].toInt(),
+                                            values[2].toInt(),
+                                            values[3].toInt(),
+                                            values[4].toInt()
+                                        ),
+                                        values[5].toInt(),
+                                        values[6].toFloat()
+                                    )
+                                )
+                            }
+                        } else {
+                            items.add(
+                                Item(
+                                    cursor.getInt(indexID),
+                                    cursor.getString(indexNAME),
+                                    cursor.getInt(indexCOUNT),
+                                    cursor.getInt(indexTYPE)
+                                )
                             )
-                        )
-                    }else {
-                        items.add(
-                            Item(
-                                cursor.getInt(indexID),
-                                cursor.getString(indexNAME),
-                                cursor.getInt(indexCOUNT),
-                                cursor.getInt(indexTYPE)
-                            )
-                        )
+                        }
                     }
                 } while (cursor.moveToNext())
             } else Log.d("mLog", "0 rows")

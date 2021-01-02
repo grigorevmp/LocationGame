@@ -83,7 +83,10 @@ class Player(context: Context): Entity() {
                     "Fresh meat",
                     "0",
                     "30",
-                    "${Item.stackable}"
+                    "${Item.stackable}",
+                    "null",
+                    "",
+                    "0"
                 )
             )
             DBHelperFunctions.createItem(
@@ -92,7 +95,10 @@ class Player(context: Context): Entity() {
                     "Bones",
                     "0",
                     "30",
-                    "${Item.stackable}"
+                    "${Item.stackable}",
+                    "null",
+                    "",
+                    "0"
                 )
             )
             DBHelperFunctions.createItem(
@@ -101,7 +107,10 @@ class Player(context: Context): Entity() {
                     "Rotten meat",
                     "30",
                     "2",
-                    "${Item.stackable}"
+                    "${Item.stackable}",
+                    "null",
+                    "",
+                    "0"
                 )
             )
             DBHelperFunctions.createItem(
@@ -110,7 +119,10 @@ class Player(context: Context): Entity() {
                     "Wood",
                     "0",
                     "30",
-                    "${Item.stackable}"
+                    "${Item.stackable}",
+                    "null",
+                    "",
+                    "0"
                 )
             )
             DBHelperFunctions.createItem(
@@ -119,7 +131,10 @@ class Player(context: Context): Entity() {
                     "Souls",
                     "0",
                     "30",
-                    "${Item.stackable}"
+                    "${Item.stackable}",
+                    "null",
+                    "",
+                    "0"
                 )
             )
             DBHelperFunctions.createItem(
@@ -128,7 +143,23 @@ class Player(context: Context): Entity() {
                     "Ring",
                     "0",
                     "1",
-                    "${Item.equippable}"
+                    "${Item.equippable}",
+                    "jewelry",
+                    "0.0.5.2.1.0.0.0.0.0.0.0",
+                    "0"
+                )
+            )
+
+            DBHelperFunctions.createItem(
+                context, arrayListOf(
+                    "520",
+                    "Sword",
+                    "0",
+                    "1",
+                    "${Item.equippable}",
+                    "weapon",
+                    "15.0.0.0.0.0.0",
+                    "1"
                 )
             )
         }
@@ -144,22 +175,27 @@ class Player(context: Context): Entity() {
         for (item in itemsTemp)
             inventoryComponent.addItem(item)
 
-
-
-
         equipmentComponent = this.addComponent(
             EquipmentComponent(
-                weapon = Weapon(
-                    520,
-                    "Sword",
-                    EquipmentComponent::weapon.name,
-                    15,
-                    NatureForcesValues(),
-                    0,
-                    0f
-                )
+                //weapon = Weapon(
+                //    520,
+                //    "Sword",
+                //    EquipmentComponent::weapon.name,
+                //    15,
+                //    NatureForcesValues(),
+                //    0,
+                //    0f
+                //)
             )
         )
+
+        val eqItemsTemp = DBHelperFunctions.loadEquippedItem(context)
+
+        for (item in eqItemsTemp)
+            item.equipToEntity(this)
+
+
+
         defenceComponent = this.addComponent(
             DefenceComponent(
                 playerData.defence, playerData.naturalValueDef

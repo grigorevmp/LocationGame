@@ -10,7 +10,7 @@ open class EquippableItem (
     id: Int,
     name: String,
     private val equippableItemType: String
-    ): Item (id, name, 1, Item.equippable) {
+    ): Item (id, name, 1, equippable) {
 
     var gemSlots = Slots<Gem>()
         private set
