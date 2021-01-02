@@ -377,13 +377,191 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
 
     }
 
-    private fun showFilterPopup(view: View) {
+
+
+    private fun showEquipmentItemPopup(view: View, item: EquippableItem, dialog: Dialog) {
+        val popupMenu = PopupMenu(context, view)
+        val inventory = player!!.getComponent(InventoryComponent::class.java)!!
+        popupMenu.inflate(R.menu.menu_equipment_item)
+
+        // TEST
+        // itemsCount.title = inventory.takeItem(view.id / 1000)!!.count.toString()
+        // EQUIP
+
+        val itemId = view.id / 1000
+
+        popupMenu.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.dropItem -> {
+                    Toast.makeText(context, "Item id = $itemId", Toast.LENGTH_SHORT)
+                        .show()
+
+                    inventory.dropItem(item)
+                    DBHelperFunctions.dropItem(context, itemId)
+                    view.alpha = 0.4f
+                    view.isClickable = false
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.unEquip -> {
+                    item.takeFromEntity(player as Entity)
+                    DBHelperFunctions.unEquipItem(context, itemId)
+
+                    val equipmentLayout = dialog.findViewById(R.id.equipmentLayout) as GridLayout
+                    val equipment = player!!.getComponent(EquipmentComponent::class.java)!!
+                    equipmentLayout.removeAllViews()
+
+                    // Loading weapon
+                    val weapon = equipment.weapon
+
+                    if(weapon != null) {
+                        val itemView = ItemView(context)
+                        val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                        val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                        ItemsDB.init(context)
+                        val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, weapon.id), "drawable", context.packageName)
+                        btn.contentDescription = weapon.name
+                        btn.setBackgroundResource(bitmapId)
+                        btn.setOnClickListener {
+                            showEquipmentItemPopup(it, weapon, dialog)
+                        }
+                        btn.id = weapon.id*1000
+                        countText.text = weapon.count.toString()
+                        equipmentLayout.addView(itemView)
+                    }
+
+                    // Loading amulet
+                    val amulet = equipment.amulet
+
+                    if(amulet != null) {
+                        val itemView = ItemView(context)
+                        val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                        val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                        ItemsDB.init(context)
+                        val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, amulet.id), "drawable", context.packageName)
+                        btn.contentDescription = amulet.name
+                        btn.setBackgroundResource(bitmapId)
+                        btn.setOnClickListener {
+                            showEquipmentItemPopup(it, amulet, dialog)
+                        }
+                        btn.id = amulet.id*1000
+                        countText.text = amulet.count.toString()
+                        equipmentLayout.addView(itemView)
+                    }
+
+                    // Loading belt
+                    val belt = equipment.belt
+
+                    if(belt != null) {
+                        val itemView = ItemView(context)
+                        val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                        val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                        ItemsDB.init(context)
+                        val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, belt.id), "drawable", context.packageName)
+                        btn.contentDescription = belt.name
+                        btn.setBackgroundResource(bitmapId)
+                        btn.setOnClickListener {
+                            showEquipmentItemPopup(it, belt, dialog)
+                        }
+                        btn.id = belt.id*1000
+                        countText.text = belt.count.toString()
+                        equipmentLayout.addView(itemView)
+                    }
+                    // Loading head
+                    val head = equipment.head
+
+                    if(head != null) {
+                        val itemView = ItemView(context)
+                        val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                        val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                        ItemsDB.init(context)
+                        val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, head.id), "drawable", context.packageName)
+                        btn.contentDescription = head.name
+                        btn.setBackgroundResource(bitmapId)
+                        btn.setOnClickListener {
+                            showEquipmentItemPopup(it, head, dialog)
+                        }
+                        btn.id = head.id*1000
+                        countText.text = head.count.toString()
+                        equipmentLayout.addView(itemView)
+                    }
+
+                    // Loading ring
+                    val ring = equipment.ring
+
+                    if(ring != null) {
+                        val itemView = ItemView(context)
+                        val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                        val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                        ItemsDB.init(context)
+                        val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, ring.id), "drawable", context.packageName)
+                        btn.contentDescription = ring.name
+                        btn.setBackgroundResource(bitmapId)
+                        btn.setOnClickListener {
+                            showEquipmentItemPopup(it, ring, dialog)
+                        }
+                        btn.id = ring.id*1000
+                        countText.text = ring.count.toString()
+                        equipmentLayout.addView(itemView)
+                    }
+
+                    // Loading armor
+                    val armor = equipment.armor
+
+                    if(armor != null) {
+                        val itemView = ItemView(context)
+                        val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                        val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                        ItemsDB.init(context)
+                        val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, armor.id), "drawable", context.packageName)
+                        btn.contentDescription = armor.name
+                        btn.setBackgroundResource(bitmapId)
+                        btn.setOnClickListener {
+                            showEquipmentItemPopup(it, armor, dialog)
+                        }
+                        btn.id = armor.id*1000
+                        countText.text = armor.count.toString()
+                        equipmentLayout.addView(itemView)
+                    }
+
+                    val inventoryLayout = dialog.findViewById(R.id.inventoryLayout) as GridLayout
+                    inventoryLayout.removeAllViews()
+                    val items = inventory.getAllItems()
+
+                    for(tmpItem in items){
+                        val itemView = ItemView(context)
+                        val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                        val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                        val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, tmpItem.id), "drawable", context.packageName)
+                        btn.contentDescription = tmpItem.name
+                        btn.setBackgroundResource(bitmapId)
+                        btn.id = tmpItem.id*1000
+                        btn.setOnClickListener {
+                            showFilterPopup(it, dialog)
+                        }
+
+                        countText.text = tmpItem.count.toString()
+
+                        inventoryLayout.addView(itemView)
+                    }
+                    return@setOnMenuItemClickListener true
+                }
+                else -> {
+                    Toast.makeText(context, "Meow", Toast.LENGTH_SHORT).show()
+                    return@setOnMenuItemClickListener false
+                }
+            }
+        }
+        popupMenu.show()
+    }
+
+
+    private fun showFilterPopup(view: View, dialog: Dialog) {
         /*
         Drop item function
          */
         val popupMenu = PopupMenu(context, view)
         val inventory = player!!.getComponent(InventoryComponent::class.java)!!
-        popupMenu.inflate(R.menu.action)
+        popupMenu.inflate(R.menu.menu_inventory_item)
         val itemsCount = popupMenu.menu.findItem(R.id.items_count)
 
         // TEST
@@ -392,6 +570,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         itemsCount.title = "EQUIP"
 
         val item = inventory.takeItem(view.id / 1000) ?: return
+        val itemId = view.id / 1000
 
         if(!item.isType(Item.equippable))
             popupMenu.menu.removeItem(R.id.items_count)
@@ -399,21 +578,175 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         popupMenu.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.dropItem -> {
-                    Toast.makeText(context, "Item id = ${view.id / 1000}", Toast.LENGTH_SHORT)
+                    Toast.makeText(context, "Item id = $itemId", Toast.LENGTH_SHORT)
                         .show()
 
                     inventory.dropItem(item)
-                    DBHelperFunctions.dropItem(context, view.id / 1000)
-                    view.alpha = 0.4f
-                    view.isClickable = false
+                    DBHelperFunctions.dropItem(context, itemId)
+
+                    val inventoryLayout = dialog.findViewById(R.id.inventoryLayout) as GridLayout
+                    inventoryLayout.removeAllViews()
+                    val items = inventory.getAllItems()
+
+                    for(tmpItem in items){
+                        val itemView = ItemView(context)
+                        val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                        val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                        val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, tmpItem.id), "drawable", context.packageName)
+                        btn.contentDescription = tmpItem.name
+                        btn.setBackgroundResource(bitmapId)
+                        btn.id = tmpItem.id*1000
+                        btn.setOnClickListener {
+                            showFilterPopup(it, dialog)
+                        }
+
+                        countText.text = tmpItem.count.toString()
+
+                        inventoryLayout.addView(itemView)
+                    }
                     return@setOnMenuItemClickListener true
                 }
                 R.id.items_count -> {
-                    val itemId = view.id / 1000
-
                     val equippableItem = item as EquippableItem
                     equippableItem.equipToEntity(player as Entity)
+                    DBHelperFunctions.equipItem(context, itemId)
 
+                    val equipmentLayout = dialog.findViewById(R.id.equipmentLayout) as GridLayout
+                    val equipment = player!!.getComponent(EquipmentComponent::class.java)!!
+                    equipmentLayout.removeAllViews()
+                    // Loading weapon
+                    val weapon = equipment.weapon
+
+                    if(weapon != null) {
+                        val itemView = ItemView(context)
+                        val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                        val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                        ItemsDB.init(context)
+                        val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, weapon.id), "drawable", context.packageName)
+                        btn.contentDescription = weapon.name
+                        btn.setBackgroundResource(bitmapId)
+                        btn.setOnClickListener {
+                            showEquipmentItemPopup(it, weapon, dialog)
+                        }
+                        btn.id = weapon.id*1000
+                        countText.text = weapon.count.toString()
+                        equipmentLayout.addView(itemView)
+                    }
+
+                    // Loading amulet
+                    val amulet = equipment.amulet
+
+                    if(amulet != null) {
+                        val itemView = ItemView(context)
+                        val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                        val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                        ItemsDB.init(context)
+                        val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, amulet.id), "drawable", context.packageName)
+                        btn.contentDescription = amulet.name
+                        btn.setBackgroundResource(bitmapId)
+                        btn.setOnClickListener {
+                            showEquipmentItemPopup(it, amulet, dialog)
+                        }
+                        btn.id = amulet.id*1000
+                        countText.text = amulet.count.toString()
+                        equipmentLayout.addView(itemView)
+                    }
+
+                    // Loading belt
+                    val belt = equipment.belt
+
+                    if(belt != null) {
+                        val itemView = ItemView(context)
+                        val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                        val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                        ItemsDB.init(context)
+                        val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, belt.id), "drawable", context.packageName)
+                        btn.contentDescription = belt.name
+                        btn.setBackgroundResource(bitmapId)
+                        btn.setOnClickListener {
+                            showEquipmentItemPopup(it, belt, dialog)
+                        }
+                        btn.id = belt.id*1000
+                        countText.text = belt.count.toString()
+                        equipmentLayout.addView(itemView)
+                    }
+                    // Loading head
+                    val head = equipment.head
+
+                    if(head != null) {
+                        val itemView = ItemView(context)
+                        val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                        val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                        ItemsDB.init(context)
+                        val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, head.id), "drawable", context.packageName)
+                        btn.contentDescription = head.name
+                        btn.setBackgroundResource(bitmapId)
+                        btn.setOnClickListener {
+                            showEquipmentItemPopup(it, head, dialog)
+                        }
+                        btn.id = head.id*1000
+                        countText.text = head.count.toString()
+                        equipmentLayout.addView(itemView)
+                    }
+
+                    // Loading ring
+                    val ring = equipment.ring
+
+                    if(ring != null) {
+                        val itemView = ItemView(context)
+                        val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                        val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                        ItemsDB.init(context)
+                        val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, ring.id), "drawable", context.packageName)
+                        btn.contentDescription = ring.name
+                        btn.setBackgroundResource(bitmapId)
+                        btn.setOnClickListener {
+                            showEquipmentItemPopup(it, ring, dialog)
+                        }
+                        btn.id = ring.id*1000
+                        countText.text = ring.count.toString()
+                        equipmentLayout.addView(itemView)
+                    }
+
+                    // Loading armor
+                    val armor = equipment.armor
+
+                    if(armor != null) {
+                        val itemView = ItemView(context)
+                        val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                        val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                        ItemsDB.init(context)
+                        val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, armor.id), "drawable", context.packageName)
+                        btn.contentDescription = armor.name
+                        btn.setBackgroundResource(bitmapId)
+                        btn.setOnClickListener {
+                            showEquipmentItemPopup(it, armor, dialog)
+                        }
+                        btn.id = armor.id*1000
+                        countText.text = armor.count.toString()
+                        equipmentLayout.addView(itemView)
+                    }
+
+                    val inventoryLayout = dialog.findViewById(R.id.inventoryLayout) as GridLayout
+                    inventoryLayout.removeAllViews()
+                    val items = inventory.getAllItems()
+
+                    for(tmpItem in items){
+                        val itemView = ItemView(context)
+                        val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+                        val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+                        val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, tmpItem.id), "drawable", context.packageName)
+                        btn.contentDescription = tmpItem.name
+                        btn.setBackgroundResource(bitmapId)
+                        btn.id = tmpItem.id*1000
+                        btn.setOnClickListener {
+                            showFilterPopup(it, dialog)
+                        }
+
+                        countText.text = tmpItem.count.toString()
+
+                        inventoryLayout.addView(itemView)
+                    }
                     return@setOnMenuItemClickListener true
                 }
                 else -> {
@@ -482,8 +815,86 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
             val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, weapon.id), "drawable", context.packageName)
             btn.contentDescription = weapon.name
             btn.setBackgroundResource(bitmapId)
+            btn.setOnClickListener {
+                showEquipmentItemPopup(it, weapon, dialog)
+            }
             btn.id = weapon.id*1000
             countText.text = weapon.count.toString()
+            equipmentLayout.addView(itemView)
+        }
+
+        // Loading amulet
+        val amulet = equipment.amulet
+
+        if(amulet != null) {
+            val itemView = ItemView(context)
+            val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+            val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+            ItemsDB.init(context)
+            val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, amulet.id), "drawable", context.packageName)
+            btn.contentDescription = amulet.name
+            btn.setBackgroundResource(bitmapId)
+            btn.setOnClickListener {
+                showEquipmentItemPopup(it, amulet, dialog)
+            }
+            btn.id = amulet.id*1000
+            countText.text = amulet.count.toString()
+            equipmentLayout.addView(itemView)
+        }
+
+        // Loading belt
+        val belt = equipment.belt
+
+        if(belt != null) {
+            val itemView = ItemView(context)
+            val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+            val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+            ItemsDB.init(context)
+            val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, belt.id), "drawable", context.packageName)
+            btn.contentDescription = belt.name
+            btn.setBackgroundResource(bitmapId)
+            btn.setOnClickListener {
+                showEquipmentItemPopup(it, belt, dialog)
+            }
+            btn.id = belt.id*1000
+            countText.text = belt.count.toString()
+            equipmentLayout.addView(itemView)
+        }
+        // Loading head
+        val head = equipment.head
+
+        if(head != null) {
+            val itemView = ItemView(context)
+            val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+            val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+            ItemsDB.init(context)
+            val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, head.id), "drawable", context.packageName)
+            btn.contentDescription = head.name
+            btn.setBackgroundResource(bitmapId)
+            btn.setOnClickListener {
+                showEquipmentItemPopup(it, head, dialog)
+            }
+            btn.id = head.id*1000
+            countText.text = head.count.toString()
+            equipmentLayout.addView(itemView)
+        }
+
+        // Loading ring
+        val ring = equipment.ring
+
+        if(ring != null) {
+            val itemView = ItemView(context)
+            val btn = itemView.findViewById<ImageButton>(R.id.itemContent)
+            val countText = itemView.findViewById<TextView>(R.id.itemContentCount)
+            ItemsDB.init(context)
+            val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, ring.id), "drawable", context.packageName)
+            btn.contentDescription = ring.name
+            btn.setBackgroundResource(bitmapId)
+            btn.setOnClickListener {
+                showEquipmentItemPopup(it, ring, dialog)
+            }
+            btn.id = ring.id*1000
+            countText.text = ring.count.toString()
             equipmentLayout.addView(itemView)
         }
 
@@ -498,6 +909,9 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
             val bitmapId = context.resources.getIdentifier(ItemsDB.loadItemBitmapByID(context, armor.id), "drawable", context.packageName)
             btn.contentDescription = armor.name
             btn.setBackgroundResource(bitmapId)
+            btn.setOnClickListener {
+                showEquipmentItemPopup(it, armor, dialog)
+            }
             btn.id = armor.id*1000
             countText.text = armor.count.toString()
             equipmentLayout.addView(itemView)
@@ -583,7 +997,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
                 btn.setBackgroundResource(bitmapId)
                 btn.id = item.id*1000
                 btn.setOnClickListener {
-                    showFilterPopup(it)
+                    showFilterPopup(it, dialog)
                 }
 
                 countText.text = item.count.toString()
@@ -591,7 +1005,6 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
                 inventoryLayout.addView(itemView)
             }
         }
-
 
         val items = inventory.getAllItems()
 
@@ -604,7 +1017,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
             btn.setBackgroundResource(bitmapId)
             btn.id = item.id*1000
             btn.setOnClickListener {
-                showFilterPopup(it)
+                showFilterPopup(it, dialog)
             }
 
             countText.text = item.count.toString()

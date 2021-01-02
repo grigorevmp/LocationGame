@@ -78,6 +78,7 @@
     <string name="physical_attack">Physical attack</string>
     <string name="attack">Attack</string>
     <string name="equipment">Equipment</string>
+    <string name="unequip_item">Unequip item</string>
 
 
 </resources>

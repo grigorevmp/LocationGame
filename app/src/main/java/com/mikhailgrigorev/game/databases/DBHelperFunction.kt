@@ -196,6 +196,24 @@ class DBHelperFunctions {
             database.delete(ItemsDBHelper.TABLE_ITEMS, "_id = $id", null)
         }
 
+        fun equipItem(context: Context, id: Int) {
+            val dbHelper = ItemsDBHelper(context)
+            val database = dbHelper.writableDatabase
+
+            val contentValues = ContentValues()
+            contentValues.put(ItemsDBHelper.ISE, 1)
+            database.update(ItemsDBHelper.TABLE_ITEMS, contentValues, "_id = $id", null)
+        }
+
+        fun unEquipItem(context: Context, id: Int) {
+            val dbHelper = ItemsDBHelper(context)
+            val database = dbHelper.writableDatabase
+
+            val contentValues = ContentValues()
+            contentValues.put(ItemsDBHelper.ISE, 0)
+            database.update(ItemsDBHelper.TABLE_ITEMS, contentValues, "_id = $id", null)
+        }
+
         fun replaceItem(context: Context, id: Int, count: Int) {
             val dbHelper = ItemsDBHelper(context)
             val database = dbHelper.writableDatabase
