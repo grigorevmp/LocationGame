@@ -4,8 +4,10 @@ import android.content.Context
 import com.mikhailgrigorev.game.core.data.NatureForcesValues
 import com.mikhailgrigorev.game.core.ecs.Components.*
 import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquipmentComponent
+import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquippableItem
 import com.mikhailgrigorev.game.core.ecs.Components.equipment.equipmentTypes.Weapon
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.InventoryComponent
+import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Gem
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
 import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.databases.DBHelperFunctions
@@ -150,6 +152,7 @@ class Player(context: Context): Entity() {
                 weapon = Weapon(
                     520,
                     "Sword",
+                    EquipmentComponent::weapon.name,
                     15,
                     NatureForcesValues(),
                     0,

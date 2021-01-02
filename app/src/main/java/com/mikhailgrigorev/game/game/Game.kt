@@ -18,6 +18,7 @@ import com.mikhailgrigorev.game.activities.FightActivity
 import com.mikhailgrigorev.game.core.data.NatureForces
 import com.mikhailgrigorev.game.core.ecs.Components.*
 import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquipmentComponent
+import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquippableItem
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.InventoryComponent
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
 import com.mikhailgrigorev.game.core.ecs.Entity
@@ -392,7 +393,7 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
 
         val item = inventory.takeItem(view.id / 1000) ?: return
 
-        if(item.type != Item.equippable)
+        if(!item.isType(Item.equippable))
             popupMenu.menu.removeItem(R.id.items_count)
 
         popupMenu.setOnMenuItemClickListener {
@@ -409,6 +410,10 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
                 }
                 R.id.items_count -> {
                     val itemId = view.id / 1000
+
+                    val equippableItem = item as EquippableItem
+                    equippableItem.equipToEntity(player as Entity)
+
                     return@setOnMenuItemClickListener true
                 }
                 else -> {

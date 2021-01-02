@@ -23,4 +23,8 @@ open class Item (id: Int, name: String, count: Int, val type: Int = none) : Enti
         this.count -= count
         return true
     }
+
+    fun isType(typeCheckValue: Int):  Boolean{
+        return ((type and typeCheckValue) != 0)
+    }
 }
