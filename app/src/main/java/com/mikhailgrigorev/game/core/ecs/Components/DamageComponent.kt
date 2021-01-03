@@ -62,9 +62,8 @@ class DamageComponent(
 
         for (field in equipmentFields) {
             field.isAccessible = true
-            val equippableItem = field.get(enemyEquipment) as Item
-            val equippableItemDefenceComponent =
-                equippableItem.getComponent(DefenceComponent::class.java)
+            val equippableItem = field.get(enemyEquipment) as Item?
+            val equippableItemDefenceComponent = equippableItem?.getComponent(DefenceComponent::class.java)
             if (equippableItemDefenceComponent != null) {
                 enemyPhysicalDefence += equippableItemDefenceComponent.physicalDefence
                 for (i in 0 until NatureForces.count) {
@@ -84,8 +83,8 @@ class DamageComponent(
 
         for (field in equipmentFields) {
             field.isAccessible = true
-            val equippableItem = field.get(myEquipment) as Item
-            val equippableItemDamageComponent = equippableItem.getComponent(DamageComponent::class.java)
+            val equippableItem = field.get(myEquipment) as Item?
+            val equippableItemDamageComponent = equippableItem?.getComponent(DamageComponent::class.java)
             if (equippableItemDamageComponent != null) {
                 myPhysicalDamage += equippableItemDamageComponent.physicalDamage
                 for (i in 0 until NatureForces.count) {
