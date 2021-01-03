@@ -16,9 +16,6 @@
             app:destination="@id/PlayFragment" />
 
         <action
-            android:id="@+id/action_FirstFragment_to_AuthFragment"
-            app:destination="@id/AuthFragment" />
-        <action
             android:id="@+id/action_FirstFragment_to_maratFragment"
             app:destination="@id/maratFragment" />
     </fragment>
@@ -31,17 +28,6 @@
 
         <action
             android:id="@+id/action_PlayFragment_to_FirstFragment"
-            app:destination="@id/MainFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/AuthFragment"
-        android:name="com.mikhailgrigorev.game.activities.AuthFragment"
-        android:label="@string/auth_fragment_label"
-        tools:layout="@layout/fragment_map">
-
-        <action
-            android:id="@+id/action_AuthFragment_to_FirstFragment"
             app:destination="@id/MainFragment" />
     </fragment>
 

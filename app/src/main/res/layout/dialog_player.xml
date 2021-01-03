@@ -15,7 +15,7 @@
         tools:ignore="UselessParent">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:layout_marginTop="15dp"
@@ -64,15 +64,18 @@
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
+                        android:layout_marginStart="20dp"
                         android:layout_marginTop="5dp"
-                        android:layout_marginEnd="10dp" />
+                        android:layout_marginEnd="20dp" />
 
                     <TextView
                         android:id="@+id/healthText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="20dp"
                         android:gravity="end"
                         android:text="@string/noText" />
 
@@ -81,6 +84,11 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:src="@drawable/sword" />
 
                         <TextView
                             android:id="@+id/damage"
@@ -88,28 +96,44 @@
                             android:layout_height="match_parent"
                             android:layout_marginStart="5dp"
                             android:text="@string/noText" />
-
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:src="@drawable/airballoon_outline" />
                         <TextView
                             android:id="@+id/damageA"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginStart="5dp"
                             android:text="@string/noText" />
-
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:src="@drawable/water" />
                         <TextView
                             android:id="@+id/damageW"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginStart="5dp"
                             android:text="@string/noText" />
-
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:src="@drawable/fire" />
                         <TextView
                             android:id="@+id/damageF"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginStart="5dp"
                             android:text="@string/noText" />
-
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:src="@drawable/earth" />
                         <TextView
                             android:id="@+id/damageE"
                             android:layout_width="match_parent"
@@ -117,40 +141,60 @@
                             android:layout_marginStart="5dp"
                             android:text="@string/noText" />
                     </LinearLayout>
-
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
                         android:orientation="horizontal">
-
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:src="@drawable/shield" />
                         <TextView
                             android:id="@+id/defence"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginStart="5dp"
                             android:text="@string/noText" />
-
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:src="@drawable/airballoon_outline" />
                         <TextView
                             android:id="@+id/defenceA"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginStart="5dp"
                             android:text="@string/noText" />
-
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:src="@drawable/water" />
                         <TextView
                             android:id="@+id/defenceW"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginStart="5dp"
                             android:text="@string/noText" />
-
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:src="@drawable/fire" />
                         <TextView
                             android:id="@+id/defenceF"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginStart="5dp"
                             android:text="@string/noText" />
-
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:src="@drawable/earth" />
                         <TextView
                             android:id="@+id/defenceE"
                             android:layout_width="match_parent"
