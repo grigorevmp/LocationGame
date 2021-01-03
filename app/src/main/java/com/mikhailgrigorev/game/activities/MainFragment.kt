@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -26,13 +27,16 @@ class MainFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            requireActivity().window.decorView.systemUiVisibility = (
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
             // Transparent status bar
             requireActivity().window.statusBarColor = Color.TRANSPARENT
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                // Black icons
-                requireActivity().window.decorView.systemUiVisibility =
-                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            }
+            //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //    // Black icons
+            //    requireActivity().window.decorView.systemUiVisibility =
+            //        View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            //}
 
         }
         return inflater.inflate(R.layout.fragment_main, container, false)
@@ -51,10 +55,6 @@ class MainFragment : Fragment() {
         menuPlay.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_PlayFragment)
         }
-        // MAIN - > AUTH
-        menuAuth.setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_AuthFragment)
-        }
         // MAIN - > SETTINGS
         menuSettings.setOnClickListener {
             //findNavController().navigate(R.id.action_FirstFragment_to_SettingFragment)
@@ -67,6 +67,9 @@ class MainFragment : Fragment() {
             val intent = Intent(context, MapsActivity::class.java)
             startActivity(intent)
         }
+
+        gameName.setOnClickListener {
+            gameName.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake)) }
 
     }
 

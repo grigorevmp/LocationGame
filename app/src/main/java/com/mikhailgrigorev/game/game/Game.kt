@@ -273,43 +273,41 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val descriptionTotem = dialog.findViewById(R.id.description) as TextView
         descriptionTotem.text = totemBitmapComponent._desc
 
+
         // TOTEM PROPERTIES
-        val totemProperties = dialog.findViewById(R.id.totemProperties) as LinearLayout
 
-        val textView1 = TextView(context)
-        textView1.text = "HP +${obj.maxHealth}"
-        val textView2 = TextView(context)
-        textView2.text = "Damage +${obj.damage}"
-        val textView3 = TextView(context)
-        textView3.text = "Air +${obj.damageAir}"
-        val textView4 = TextView(context)
-        textView4.text = "Water +${obj.damageWater}"
-        val textView5 = TextView(context)
-        textView5.text = "Fire +${obj.damageFire}"
-        val textView6 = TextView(context)
-        textView6.text = "Earth +${obj.damageEarth}"
-        val textView7 = TextView(context)
-        textView7.text = "Defence +${obj.defence}"
-        val textView8 = TextView(context)
-        textView8.text = "Air +${obj.defenceAir}"
-        val textView9 = TextView(context)
-        textView9.text = "Water +${obj.defenceWater}"
-        val textView10 = TextView(context)
-        textView10.text = "Fire +${obj.defenceFire}"
-        val textView11 = TextView(context)
-        textView11.text = "Earth +${obj.defenceEarth}"
+        val heart = dialog.findViewById(R.id.heart) as TextView
+        heart.text = "+${obj.maxHealth}"
 
-        totemProperties.addView(textView1)
-        totemProperties.addView(textView2)
-        totemProperties.addView(textView3)
-        totemProperties.addView(textView4)
-        totemProperties.addView(textView5)
-        totemProperties.addView(textView6)
-        totemProperties.addView(textView7)
-        totemProperties.addView(textView8)
-        totemProperties.addView(textView9)
-        totemProperties.addView(textView10)
-        totemProperties.addView(textView11)
+        val damage = dialog.findViewById(R.id.damage) as TextView
+        damage.text = "+${obj.damage}"
+
+        val damageAir = dialog.findViewById(R.id.damageA) as TextView
+        damageAir.text = "+${obj.damageAir}"
+
+        val damageWater = dialog.findViewById(R.id.damageW) as TextView
+        damageWater.text = "+${obj.damageWater}"
+
+        val damageFire = dialog.findViewById(R.id.damageF) as TextView
+        damageFire.text = "+${obj.damageFire}"
+
+        val damageEarth = dialog.findViewById(R.id.damageE) as TextView
+        damageEarth.text = "+${obj.damageEarth}"
+
+        val defence = dialog.findViewById(R.id.defence) as TextView
+        defence.text = "+${obj.defence}"
+
+        val defenceAir = dialog.findViewById(R.id.defenceA) as TextView
+        defenceAir.text = "+${obj.defenceAir}"
+
+        val defenceWater = dialog.findViewById(R.id.defenceW) as TextView
+        defenceWater.text = "+${obj.defenceWater}"
+
+        val defenceFire = dialog.findViewById(R.id.defenceF) as TextView
+        defenceFire.text = "+${obj.defenceFire}"
+
+        val defenceEarth = dialog.findViewById(R.id.defenceE) as TextView
+        defenceEarth.text = "+${obj.defenceEarth}"
 
         // ITEMS
         val sItems = dialog.findViewById(R.id.sItems) as LinearLayout
@@ -929,51 +927,91 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
             var itemsTemp = DBHelperFunctions.loadAllItem(context)
             // TEST LOADING
 
-                DBHelperFunctions.createItem(
-                    context, arrayListOf(
-                        "1",
-                        "Fresh meat",
-                        "0",
-                        "30",
-                        "${Item.stackable}"
-                    )
+            DBHelperFunctions.createItem(
+                context, arrayListOf(
+                    "1",
+                    "Fresh meat",
+                    "0",
+                    "30",
+                    "${Item.stackable}",
+                    "null",
+                    "",
+                    "0"
                 )
-                DBHelperFunctions.createItem(
-                    context, arrayListOf(
-                        "2",
-                        "Bones",
-                        "0",
-                        "30",
-                        "${Item.stackable}"
-                    )
+            )
+            DBHelperFunctions.createItem(
+                context, arrayListOf(
+                    "2",
+                    "Bones",
+                    "0",
+                    "30",
+                    "${Item.stackable}",
+                    "null",
+                    "",
+                    "0"
                 )
-                DBHelperFunctions.createItem(
-                    context, arrayListOf(
-                        "3",
-                        "Rotten meat",
-                        "30",
-                        "2",
-                        "${Item.stackable}"
-                    )
+            )
+            DBHelperFunctions.createItem(
+                context, arrayListOf(
+                    "3",
+                    "Rotten meat",
+                    "30",
+                    "2",
+                    "${Item.stackable}",
+                    "null",
+                    "",
+                    "0"
                 )
-                DBHelperFunctions.createItem(
-                    context, arrayListOf(
-                        "4",
-                        "Wood",
-                        "0",
-                        "30",
-                        "${Item.stackable}"
-                    )
+            )
+            DBHelperFunctions.createItem(
+                context, arrayListOf(
+                    "4",
+                    "Wood",
+                    "0",
+                    "30",
+                    "${Item.stackable}",
+                    "null",
+                    "",
+                    "0"
                 )
-                DBHelperFunctions.createItem(
-                    context, arrayListOf(
-                        "5",
-                        "Souls",
-                        "0",
-                        "30",
-                        "${Item.stackable}"
-                    )
+            )
+            DBHelperFunctions.createItem(
+                context, arrayListOf(
+                    "5",
+                    "Souls",
+                    "0",
+                    "30",
+                    "${Item.stackable}",
+                    "null",
+                    "",
+                    "0"
                 )
+            )
+            DBHelperFunctions.createItem(
+                context, arrayListOf(
+                    "9",
+                    "Ring",
+                    "0",
+                    "1",
+                    "${Item.equippable}",
+                    "jewelry",
+                    "0.0.5.2.1.0.0.0.0.0.0.0",
+                    "0"
+                )
+            )
+
+            DBHelperFunctions.createItem(
+                context, arrayListOf(
+                    "520",
+                    "Sword",
+                    "0",
+                    "1",
+                    "${Item.equippable}",
+                    "weapon",
+                    "15.0.0.0.0.0.0",
+                    "1"
+                )
+            )
                 itemsTemp = DBHelperFunctions.loadAllItem(context)
 
 
@@ -1027,27 +1065,27 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
 
         // PLAYER DAMAGE
         val damage  = dialog.findViewById(R.id.damage) as TextView
-        damage.text = "Damage: ${objDamageComponent.physicalDamage}"
+        damage.text = "${objDamageComponent.physicalDamage}"
         val damageA = dialog.findViewById(R.id.damageA) as TextView
-        damageA.text = "A: ${objDamageComponent.natureForcesDamage[NatureForces.Air.ordinal]}"
+        damageA.text = "${objDamageComponent.natureForcesDamage[NatureForces.Air.ordinal]}"
         val damageF = dialog.findViewById(R.id.damageF) as TextView
-        damageF.text = "F: ${objDamageComponent.natureForcesDamage[NatureForces.Fire.ordinal]}"
+        damageF.text = "${objDamageComponent.natureForcesDamage[NatureForces.Fire.ordinal]}"
         val damageW = dialog.findViewById(R.id.damageW) as TextView
-        damageW.text = "W: ${objDamageComponent.natureForcesDamage[NatureForces.Water.ordinal]}"
+        damageW.text = "${objDamageComponent.natureForcesDamage[NatureForces.Water.ordinal]}"
         val damageE = dialog.findViewById(R.id.damageE) as TextView
-        damageE.text = "E: ${objDamageComponent.natureForcesDamage[NatureForces.Earth.ordinal]}"
+        damageE.text = "${objDamageComponent.natureForcesDamage[NatureForces.Earth.ordinal]}"
 
         // PLAYER DEFENCE
         val defence  = dialog.findViewById(R.id.defence) as TextView
-        defence.text = "Defence: ${objDefenceComponent.physicalDefence}"
+        defence.text = "${objDefenceComponent.physicalDefence}"
         val defenceA = dialog.findViewById(R.id.defenceA) as TextView
-        defenceA.text = "A: ${objDefenceComponent.natureForcesDefence[NatureForces.Air.ordinal]}"
+        defenceA.text = "${objDefenceComponent.natureForcesDefence[NatureForces.Air.ordinal]}"
         val defenceF = dialog.findViewById(R.id.defenceF) as TextView
-        defenceF.text = "F: ${objDefenceComponent.natureForcesDefence[NatureForces.Fire.ordinal]}"
+        defenceF.text = "${objDefenceComponent.natureForcesDefence[NatureForces.Fire.ordinal]}"
         val defenceW = dialog.findViewById(R.id.defenceW) as TextView
-        defenceW.text = "W: ${objDefenceComponent.natureForcesDefence[NatureForces.Water.ordinal]}"
+        defenceW.text = "${objDefenceComponent.natureForcesDefence[NatureForces.Water.ordinal]}"
         val defenceE = dialog.findViewById(R.id.defenceE) as TextView
-        defenceE.text = "E: ${objDefenceComponent.natureForcesDefence[NatureForces.Earth.ordinal]}"
+        defenceE.text = "${objDefenceComponent.natureForcesDefence[NatureForces.Earth.ordinal]}"
 
         // PLAYER ICON
         val imageView = dialog.findViewById(R.id.playerImage) as ImageView
