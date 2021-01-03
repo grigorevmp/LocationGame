@@ -1,10 +1,11 @@
 package com.mikhailgrigorev.game.core.ecs.Components
 
 import android.content.Context
-import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.core.data.NatureForces
 import com.mikhailgrigorev.game.core.data.NatureForcesValues
+import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquipmentComponent
+import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
 import kotlin.random.Random
 
 class DamageComponent(
@@ -43,58 +44,76 @@ class DamageComponent(
     }
 
     operator fun invoke(healthComponent: HealthComponent) : Int {
+        val equipmentFields = EquipmentComponent::class.java.declaredFields
+
         val enemy = healthComponent.entity
         val enemyEquipment = enemy?.getComponent(EquipmentComponent::class.java)
+
         var enemyPhysicalDefence = 0
         val enemyForcesDefence = Array<Int>(NatureForces.count) { 0 }
         val enemyDefenceComponent = enemy?.getComponent(DefenceComponent::class.java)
-        val enemyArmorDefenceComponent = enemyEquipment?.armor?.defenceComponent
 
-        if (enemyDefenceComponent != null)
+        if (enemyDefenceComponent != null) {
             enemyPhysicalDefence += enemyDefenceComponent.physicalDefence
-        if (enemyArmorDefenceComponent != null)
-            enemyPhysicalDefence += enemyArmorDefenceComponent.physicalDefence
-
-        for (i in 0 until NatureForces.count) {
-            if (enemyDefenceComponent != null) {
+            for (i in 0 until NatureForces.count) {
                 enemyForcesDefence[i] += enemyDefenceComponent.natureForcesDefence[i]
             }
-            if (enemyArmorDefenceComponent != null) {
-                enemyForcesDefence[i] += enemyArmorDefenceComponent.natureForcesDefence[i]
+        }
+
+        for (field in equipmentFields) {
+            field.isAccessible = true
+            val equippableItem = field.get(enemyEquipment) as Item
+            val equippableItemDefenceComponent =
+                equippableItem.getComponent(DefenceComponent::class.java)
+            if (equippableItemDefenceComponent != null) {
+                enemyPhysicalDefence += equippableItemDefenceComponent.physicalDefence
+                for (i in 0 until NatureForces.count) {
+                    enemyForcesDefence[i] += equippableItemDefenceComponent.natureForcesDefence[i]
+                }
             }
         }
 
 
-        var applyingPhysicalDamage = physicalDamage
-        val applyingForcesDamage = natureForcesDamage
+        val myEquipment = this.entity?.getComponent(EquipmentComponent::class.java)
 
-        val myEquipmentComponent = this.entity?.getComponent(EquipmentComponent::class.java)
-        val myWeaponDamageComponent = myEquipmentComponent?.weapon?.damageComponent
+        var myPhysicalDamage = physicalDamage
+        val myForcesDamage = natureForcesDamage.toIntArray()
+        var myCriticalChancePercent = criticalChancePercent
+        var myCriticalMultiplier = criticalMultiplier
 
-        if (myWeaponDamageComponent != null) {
-            applyingPhysicalDamage += myWeaponDamageComponent.physicalDamage
-            for (i in 0 until NatureForces.count) {
-                applyingForcesDamage[i] += myWeaponDamageComponent.natureForcesDamage[i]
+
+        for (field in equipmentFields) {
+            field.isAccessible = true
+            val equippableItem = field.get(myEquipment) as Item
+            val equippableItemDamageComponent = equippableItem.getComponent(DamageComponent::class.java)
+            if (equippableItemDamageComponent != null) {
+                myPhysicalDamage += equippableItemDamageComponent.physicalDamage
+                for (i in 0 until NatureForces.count) {
+                    myForcesDamage[i] += equippableItemDamageComponent.natureForcesDamage[i]
+                }
+                myCriticalChancePercent += equippableItemDamageComponent.criticalChancePercent
+                myCriticalMultiplier += equippableItemDamageComponent.criticalMultiplier
             }
-            if (Random.nextInt(1, 100) <= myWeaponDamageComponent.criticalChancePercent) {
-                applyingPhysicalDamage = (applyingPhysicalDamage * myWeaponDamageComponent.criticalMultiplier).toInt()
-                isLastCritical = true
-            } else isLastCritical = false
         }
 
+        if (Random.nextInt(1, 100) <= myCriticalChancePercent) {
+            myPhysicalDamage = (myPhysicalDamage * myCriticalMultiplier).toInt()
+            isLastCritical = true
+        } else isLastCritical = false
 
-        applyingPhysicalDamage -= enemyPhysicalDefence
-        if (applyingPhysicalDamage < 0) applyingPhysicalDamage = 0
+
+        myPhysicalDamage -= enemyPhysicalDefence
+        if (myPhysicalDamage < 0) myPhysicalDamage = 0
         for (i in 0 until NatureForces.count) {
-            applyingForcesDamage[i] -= enemyForcesDefence[i]
-            if (applyingForcesDamage[i] < 0) applyingForcesDamage[i] = 0
+            myForcesDamage[i] -= enemyForcesDefence[i]
+            if (myForcesDamage[i] < 0) myForcesDamage[i] = 0
         }
 
 
         var newHealthPoints = healthComponent.healthPoints
-        newHealthPoints -= applyingPhysicalDamage
-        newHealthPoints -= applyingForcesDamage.sum()
-        if (newHealthPoints < 0 ) newHealthPoints = 0
+        newHealthPoints -= myPhysicalDamage
+        newHealthPoints -= myForcesDamage.sum()
+        if (newHealthPoints < 0) newHealthPoints = 0
         return newHealthPoints
     }
 
