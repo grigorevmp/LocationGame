@@ -47,7 +47,6 @@ class DamageComponent(
         val equipmentFields = EquipmentComponent::class.java.declaredFields
 
         val enemy = healthComponent.entity
-        val enemyEquipment = enemy?.getComponent(EquipmentComponent::class.java)
 
         var enemyPhysicalDefence = 0
         val enemyForcesDefence = Array<Int>(NatureForces.count) { 0 }
@@ -60,38 +59,43 @@ class DamageComponent(
             }
         }
 
-        for (field in equipmentFields) {
-            field.isAccessible = true
-            val equippableItem = field.get(enemyEquipment) as Item?
-            val equippableItemDefenceComponent = equippableItem?.getComponent(DefenceComponent::class.java)
-            if (equippableItemDefenceComponent != null) {
-                enemyPhysicalDefence += equippableItemDefenceComponent.physicalDefence
-                for (i in 0 until NatureForces.count) {
-                    enemyForcesDefence[i] += equippableItemDefenceComponent.natureForcesDefence[i]
+        val enemyEquipment = enemy?.getComponent(EquipmentComponent::class.java)
+        if (enemyEquipment != null) {
+            for (field in equipmentFields) {
+                field.isAccessible = true
+                val equippableItem = field.get(enemyEquipment) as Item?
+                val equippableItemDefenceComponent =
+                    equippableItem?.getComponent(DefenceComponent::class.java)
+                if (equippableItemDefenceComponent != null) {
+                    enemyPhysicalDefence += equippableItemDefenceComponent.physicalDefence
+                    for (i in 0 until NatureForces.count) {
+                        enemyForcesDefence[i] += equippableItemDefenceComponent.natureForcesDefence[i]
+                    }
                 }
             }
         }
 
-
-        val myEquipment = this.entity?.getComponent(EquipmentComponent::class.java)
 
         var myPhysicalDamage = physicalDamage
         val myForcesDamage = natureForcesDamage.toIntArray()
         var myCriticalChancePercent = criticalChancePercent
         var myCriticalMultiplier = criticalMultiplier
 
-
-        for (field in equipmentFields) {
-            field.isAccessible = true
-            val equippableItem = field.get(myEquipment) as Item?
-            val equippableItemDamageComponent = equippableItem?.getComponent(DamageComponent::class.java)
-            if (equippableItemDamageComponent != null) {
-                myPhysicalDamage += equippableItemDamageComponent.physicalDamage
-                for (i in 0 until NatureForces.count) {
-                    myForcesDamage[i] += equippableItemDamageComponent.natureForcesDamage[i]
+        val myEquipment = this.entity?.getComponent(EquipmentComponent::class.java)
+        if (myEquipment != null) {
+            for (field in equipmentFields) {
+                field.isAccessible = true
+                val equippableItem = field.get(myEquipment) as Item?
+                val equippableItemDamageComponent =
+                    equippableItem?.getComponent(DamageComponent::class.java)
+                if (equippableItemDamageComponent != null) {
+                    myPhysicalDamage += equippableItemDamageComponent.physicalDamage
+                    for (i in 0 until NatureForces.count) {
+                        myForcesDamage[i] += equippableItemDamageComponent.natureForcesDamage[i]
+                    }
+                    myCriticalChancePercent += equippableItemDamageComponent.criticalChancePercent
+                    myCriticalMultiplier += equippableItemDamageComponent.criticalMultiplier
                 }
-                myCriticalChancePercent += equippableItemDamageComponent.criticalChancePercent
-                myCriticalMultiplier += equippableItemDamageComponent.criticalMultiplier
             }
         }
 
