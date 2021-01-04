@@ -28,6 +28,7 @@ import com.mikhailgrigorev.game.databases.ItemsDB
 import com.mikhailgrigorev.game.databases.ItemsDBHelper
 import com.mikhailgrigorev.game.entities.Enemy
 import com.mikhailgrigorev.game.entities.Player
+import com.mikhailgrigorev.game.entities.sprit.Spirit
 import com.mikhailgrigorev.game.loader.EnemiesLoader
 import kotlinx.android.synthetic.main.activity_fight.*
 
@@ -36,8 +37,8 @@ class FightActivity : AppCompatActivity() {
     enum class ButtonType {
         None,
         Attack,
-        PhysicalAttack,
-        NatureAttack;
+        WeaponAttack,
+        SpiritAttack;
     }
 
     private var fightFSM = FSM<Int>()
@@ -211,10 +212,10 @@ class FightActivity : AppCompatActivity() {
                 if (enemyMulId == "-1") {
                     val playerDamageComponent = player.getComponent(DamageComponent::class.java)
                     val playerHealthComponent = player.getComponent(HealthComponent::class.java)
-
+//
                     val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
                     val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
-
+//
                     if (playerDamageComponent != null && enemyHealthComponent != null &&
                         enemyDamageComponent != null && playerHealthComponent != null
                     ) {
@@ -236,7 +237,7 @@ class FightActivity : AppCompatActivity() {
                                 setPlayerHealthText(playerHealthComponent.healthPoints.toString(), player, this)
                             }
                         }
-
+//
                     }
                 }
                 setNewPlayerHealthToDatabase(this, player)
@@ -244,12 +245,28 @@ class FightActivity : AppCompatActivity() {
         }
 
         // Выбирает атаку
-        val chooseState = fightFSM.addState(State {})
+        val attackOrEscapeState = fightFSM.addState(State {
+           //val attackButton = Button(this)
+            //val escapeButton = Button(this)
+
+                //attackButton.layoutParams = ConstraintLayout.LayoutParams(
+           //    ConstraintLayout.LayoutParams.WRAP_CONTENT,
+           //    ConstraintLayout.LayoutParams.WRAP_CONTENT
+            //)
+
+           //escapeButton.layoutParams = ConstraintLayout.LayoutParams(
+           //    ConstraintLayout.LayoutParams.WRAP_CONTENT,
+           //    ConstraintLayout.LayoutParams.WRAP_CONTENT
+            //)
+        })
 
         // Выбирает между физической и магической
-        val chooseAttackState = fightFSM.addState(State {})
+        val chooseAttackState = fightFSM.addState(State {
 
-        val attackState = fightFSM.addState(State {
+
+        })
+
+        val weaponAttackState = fightFSM.addState(State {
             if (enemyMulId == "-1") {
                 val playerDamageComponent = player.getComponent(DamageComponent::class.java)
                 val playerHealthComponent = player.getComponent(HealthComponent::class.java)
@@ -300,9 +317,26 @@ class FightActivity : AppCompatActivity() {
             }
         })
 
-        attackState.addTransition(Transition { return@Transition chooseState })
 
-        chooseState.addTransition(Transition { button ->
+        val spiritAttackState = fightFSM.addState(State {
+            val playerSpiritAbility = player.getComponent(Spirit::class.java)?.getAbility(0)
+            val playerHealthComponent = player.getComponent(HealthComponent::class.java)
+            val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
+            val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
+
+            if (playerSpiritAbility != null && playerHealthComponent != null &&
+                enemyDamageComponent != null && enemyHealthComponent != null
+            ) {
+                enemyHealthComponent.applyDamage(playerSpiritAbility.damageComponent)
+                playerHealthComponent.applyDamage(enemyDamageComponent)
+            }
+        })
+
+
+        weaponAttackState.addTransition(Transition { return@Transition attackOrEscapeState })
+        spiritAttackState.addTransition(Transition { return@Transition attackOrEscapeState })
+
+        attackOrEscapeState.addTransition(Transition { button ->
             if (button == ButtonType.Attack.ordinal) {
                 return@Transition chooseAttackState
 
@@ -311,13 +345,16 @@ class FightActivity : AppCompatActivity() {
         })
 
         chooseAttackState.addTransition(Transition { button ->
-            if (button == ButtonType.PhysicalAttack.ordinal || button == ButtonType.NatureAttack.ordinal) {
-                return@Transition attackState
+            if (button == ButtonType.WeaponAttack.ordinal) {
+                return@Transition weaponAttackState
+            }
+            if (button == ButtonType.SpiritAttack.ordinal){
+                return@Transition spiritAttackState
             }
             return@Transition null
         })
 
-        fightFSM.setCurrentState(chooseState)
+        fightFSM.setCurrentState(attackOrEscapeState)
 
     }
 
@@ -435,7 +472,7 @@ class FightActivity : AppCompatActivity() {
         )
         btnMagic.text = getString(R.string.nature_attack)
         btnMagic.setOnClickListener {
-            fightFSM.handle(ButtonType.NatureAttack.ordinal)
+            fightFSM.handle(ButtonType.SpiritAttack.ordinal)
             fightFSM.execute()
             fightFSM.handle(ButtonType.None.ordinal)
             createAttackButton()
@@ -472,7 +509,7 @@ class FightActivity : AppCompatActivity() {
         )
         btnMagic.text = getString(R.string.physical_attack)
         btnMagic.setOnClickListener {
-            fightFSM.handle(ButtonType.PhysicalAttack.ordinal)
+            fightFSM.handle(ButtonType.WeaponAttack.ordinal)
             fightFSM.execute()
             fightFSM.handle(ButtonType.None.ordinal)
             createAttackButton()

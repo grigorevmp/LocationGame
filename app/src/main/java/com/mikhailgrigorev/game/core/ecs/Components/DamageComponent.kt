@@ -19,29 +19,16 @@ class DamageComponent(
         val physicalDamage: Int,
         natureForcesDamage: NatureForcesValues
     ) : Component.ComponentUpgrader<DamageComponent>(DamageComponent::class.java) {
-        var natureForcesDamage = Array(NatureForces.count) {0}
-            private set
-
-        init {
-            for (i in 0 until NatureForces.count){
-                this.natureForcesDamage[i] = natureForcesDamage.natureForcesValues[i]
-            }
-        }
+        val natureForcesDamage = natureForcesDamage.values
     }
 
     var physicalDamage = physicalDamage
         private set
 
-    var natureForcesDamage = Array(NatureForces.count) {0}
+    var natureForcesDamage = natureForcesDamage.values
         private set
 
     private var isLastCritical: Boolean = false
-
-    init {
-        for (i in 0 until NatureForces.count){
-            this.natureForcesDamage[i] = natureForcesDamage.natureForcesValues[i]
-        }
-    }
 
     operator fun invoke(healthComponent: HealthComponent) : Int {
         val equipmentFields = EquipmentComponent::class.java.declaredFields

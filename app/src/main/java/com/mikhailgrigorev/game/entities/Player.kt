@@ -4,13 +4,11 @@ import android.content.Context
 import com.mikhailgrigorev.game.core.data.NatureForcesValues
 import com.mikhailgrigorev.game.core.ecs.Components.*
 import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquipmentComponent
-import com.mikhailgrigorev.game.core.ecs.Components.equipment.EquippableItem
-import com.mikhailgrigorev.game.core.ecs.Components.equipment.equipmentTypes.Weapon
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.InventoryComponent
-import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Gem
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
 import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.databases.DBHelperFunctions
+import com.mikhailgrigorev.game.entities.sprit.Ability
 import com.mikhailgrigorev.game.entities.sprit.Spirit
 import com.mikhailgrigorev.game.game.Game
 import com.mikhailgrigorev.game.loader.PlayerLoader
@@ -33,29 +31,36 @@ class Player(context: Context): Entity() {
     var mannaMax: Int = 0
         private set
 
-    init{
+    init {
         val playerData = PlayerLoader(context)
         //manna = playerData.manna
         manna = 20
         mannaMax = playerData.mannamax
         speed = playerData.speed
         val size = playerData.size
-        positionComponent = this.addComponent(PositionComponent(
-            playerData.x,
-            Game.maxY - size - playerData.yOffset,
-            size))
-        bitmapComponent = this.addComponent(BitmapComponent(
-            positionComponent = positionComponent,
-            context = context,
-            id = playerData.id,
-            name = playerData.name,
-            desc = playerData.desc,
-            bitmapId = playerData.bitmapId,
-            group = playerData.group
-        ))
-        healthComponent = this.addComponent(HealthComponent(
-            playerData.health, playerData.maxhealth
-        ))
+        positionComponent = this.addComponent(
+            PositionComponent(
+                playerData.x,
+                Game.maxY - size - playerData.yOffset,
+                size
+            )
+        )
+        bitmapComponent = this.addComponent(
+            BitmapComponent(
+                positionComponent = positionComponent,
+                context = context,
+                id = playerData.id,
+                name = playerData.name,
+                desc = playerData.desc,
+                bitmapId = playerData.bitmapId,
+                group = playerData.group
+            )
+        )
+        healthComponent = this.addComponent(
+            HealthComponent(
+                playerData.health, playerData.maxhealth
+            )
+        )
         damageComponent = this.addComponent(
             DamageComponent(
                 playerData.damage, playerData.naturalDamageValue, playerData.cc, playerData.cm
@@ -76,7 +81,7 @@ class Player(context: Context): Entity() {
         // _________________________________
         // _________________________________
 
-        if ( DBHelperFunctions.loadAllItem(context).count() <2) {
+        if (DBHelperFunctions.loadAllItem(context).count() < 2) {
             DBHelperFunctions.createItem(
                 context, arrayListOf(
                     "1",
@@ -175,19 +180,7 @@ class Player(context: Context): Entity() {
         for (item in itemsTemp)
             inventoryComponent.addItem(item)
 
-        equipmentComponent = this.addComponent(
-            EquipmentComponent(
-                //weapon = Weapon(
-                //    520,
-                //    "Sword",
-                //    EquipmentComponent::weapon.name,
-                //    15,
-                //    NatureForcesValues(),
-                //    0,
-                //    0f
-                //)
-            )
-        )
+        equipmentComponent = this.addComponent(EquipmentComponent())
 
         val eqItemsTemp = DBHelperFunctions.loadEquippedItem(context)
 
@@ -202,7 +195,21 @@ class Player(context: Context): Entity() {
             )
         )
 
-        spirit = this.addComponent(Spirit())
+        spirit = this.addComponent(
+            Spirit(
+                id = 505050,
+                natureForcesDamage = NatureForcesValues(),
+                natureForcesDefenceReduce = NatureForcesValues()
+            )
+        )
+        spirit.addAbility(
+            Ability(
+                id = 40404040,
+                name = "Огненное дыхание",
+                spirit = spirit,
+                damageMultiplier = 1.5f
+            )
+        )
     }
 
     override fun update() {

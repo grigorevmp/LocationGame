@@ -14,28 +14,14 @@ class DefenceComponent(
         val physicalDefence: Int,
         natureForcesDefence: NatureForcesValues
     ) : Component.ComponentUpgrader<DefenceComponent>(DefenceComponent::class.java) {
-        var natureForcesDefence = Array(NatureForces.count) {0}
-            private set
-
-        init {
-            for (i in 0 until NatureForces.count){
-                this.natureForcesDefence[i] = natureForcesDefence.natureForcesValues[i]
-            }
-        }
+        val natureForcesDefence = natureForcesDefence.values
     }
 
-    var physicalDefence: Int
+    var physicalDefence = physicalDefence
         private set
 
-    var natureForcesDefence = Array(NatureForces.count) {0}
+    var natureForcesDefence = natureForcesDefence.values
         private set
-
-    init {
-        this.physicalDefence = physicalDefence
-        for (i in 0 until NatureForces.count){
-            this.natureForcesDefence[i] = natureForcesDefence.natureForcesValues[i]
-        }
-    }
 
     override fun upgrade(context: Context, upgrader: ComponentUpgrader<Component>) {
         val defenceUpgrader = upgrader as DefenceUpgrader

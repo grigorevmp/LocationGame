@@ -13,19 +13,19 @@ enum class NatureForces {
 }
 
 class NatureForcesValues (
-    airValue: Int = 0,
-    waterValue: Int = 0,
-    earthValue: Int = 0,
-    fireValue: Int = 0
+    air: Int = 0,
+    water: Int = 0,
+    earth: Int = 0,
+    fire: Int = 0
 ) {
-    var natureForcesValues = Array(NatureForces.count) {0}
+    var values = Array(NatureForces.count) {0}
         private set
 
     init {
-        natureForcesValues[NatureForces.Air.ordinal] = airValue
-        natureForcesValues[NatureForces.Water.ordinal] = waterValue
-        natureForcesValues[NatureForces.Earth.ordinal] = earthValue
-        natureForcesValues[NatureForces.Fire.ordinal] = fireValue
+        values[NatureForces.Air.ordinal] = air
+        values[NatureForces.Water.ordinal] = water
+        values[NatureForces.Earth.ordinal] = earth
+        values[NatureForces.Fire.ordinal] = fire
 
     }
 }

@@ -21,16 +21,6 @@ abstract class Component {
         this.entity = entity
     }
 
-    /**
-    * Use to add component to parent entity
-    * @param /Component object
-    * @return added Component
-    */
-    fun <_Component : Component> addComponent(component: _Component) : _Component {
-        entity?.addComponent(component)
-        return component
-    }
-
     open fun action() {}
     open fun update() {}
     open fun upgrade(context: Context, upgrader: Component.ComponentUpgrader<Component>) {}
