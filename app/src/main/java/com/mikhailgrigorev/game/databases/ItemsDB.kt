@@ -104,5 +104,22 @@ class ItemsDB {
             cursor.close()
             return item
         }
+        fun loadItemEQ(context: Context, id: Int): String? {
+            val dbHelper = AllItemsDBHelper(context)
+            val database = dbHelper.writableDatabase
+
+            val query = "select * from all_items where _id = $id"
+            val cursor = database.rawQuery(query, null)
+
+            var item: String? = null
+            if (cursor.moveToFirst()) {
+                val indexItemID: Int = cursor.getColumnIndex(AllItemsDBHelper.EQTYPE)
+                do {
+                    item = cursor.getString(indexItemID)
+                } while (cursor.moveToNext())
+            } else Log.d("mLog", "0 rows")
+            cursor.close()
+            return item
+        }
     }
 }

@@ -663,8 +663,9 @@ class FightActivity : AppCompatActivity() {
                 if(isItemInInventory != null)
                     DBHelperFunctions.replaceItem(context, item.id, inventoryComponent.takeItem(item.id)!!.count)
                 else
-                    DBHelperFunctions.createItem(context, arrayListOf("${item.id}", item.name, "0", "${item.count}", "${item.type}"))
-                Toast.makeText(context, "You got ${item.count} ${inventoryComponent.takeItem(item.id)!!.name}", Toast.LENGTH_SHORT).show()
+                    DBHelperFunctions.createItem(context, arrayListOf("${item.id}", item.name, "0", "${item.count}", "${item.type}",
+                        "${ItemsDB.loadItemEQ(context, item.id)}", "" , "0"))
+                Toast.makeText(context, "You got ${item.count} ${item.name}", Toast.LENGTH_SHORT).show()
                 }
 
             deleteEnemyFromDatabase(context, enemy!!)
