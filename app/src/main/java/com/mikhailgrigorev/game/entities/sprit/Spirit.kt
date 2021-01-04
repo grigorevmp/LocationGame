@@ -15,11 +15,10 @@ class Spirit (
     var natureForcesDefenceReduce = natureForcesDefenceReduce.values
         private set
 
-    private var abilityPack = HashMap<Int, Ability>()
+    var abilityPack = ArrayList<Ability>()
+        private set
 
     fun addAbility(ability: Ability) {
-        abilityPack[ability.id] = ability
+        abilityPack.add(ability)
     }
-
-    fun getAbility(id : Int) = abilityPack[id]
 }

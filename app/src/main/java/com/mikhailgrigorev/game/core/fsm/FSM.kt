@@ -52,7 +52,7 @@ class State <Arguments> (
         exitAction = null
     }
 
-    private fun entry(){
+    fun entry(){
         entryAction?.invoke()
     }
 
@@ -90,5 +90,6 @@ class FSM <Arguments> {
 
     fun setCurrentState(state: State<Arguments>) {
         currentState = state
+        currentState?.entry()
     }
 }

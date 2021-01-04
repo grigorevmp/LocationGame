@@ -198,7 +198,7 @@ class Player(context: Context): Entity() {
         spirit = this.addComponent(
             Spirit(
                 id = 505050,
-                natureForcesDamage = NatureForcesValues(),
+                natureForcesDamage = NatureForcesValues(fire = 100),
                 natureForcesDefenceReduce = NatureForcesValues()
             )
         )
@@ -208,6 +208,14 @@ class Player(context: Context): Entity() {
                 name = "Огненное дыхание",
                 spirit = spirit,
                 damageMultiplier = 1.5f
+            )
+        )
+        spirit.addAbility(
+            Ability(
+                id = 40404040,
+                name = "Метеоритный дождь",
+                spirit = spirit,
+                damageMultiplier = 0.5f
             )
         )
     }
