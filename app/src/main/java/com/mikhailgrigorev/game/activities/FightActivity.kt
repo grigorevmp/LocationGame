@@ -7,6 +7,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
+import android.util.AttributeSet
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
@@ -29,6 +30,7 @@ import com.mikhailgrigorev.game.databases.ItemsDB
 import com.mikhailgrigorev.game.databases.ItemsDBHelper
 import com.mikhailgrigorev.game.entities.Enemy
 import com.mikhailgrigorev.game.entities.Player
+import com.mikhailgrigorev.game.entities.sprit.Ability
 import com.mikhailgrigorev.game.entities.sprit.Spirit
 import com.mikhailgrigorev.game.loader.EnemiesLoader
 import kotlinx.android.synthetic.main.activity_fight.*
@@ -37,10 +39,8 @@ import kotlinx.android.synthetic.main.activity_fight.*
 class FightActivity : AppCompatActivity() {
     enum class ButtonType {
         None,
-        Back,
-        Attack,
-        WeaponAttack,
-        SpiritAttack,
+        Weapon,
+        Spirit,
         Items;
     }
 
@@ -200,65 +200,30 @@ class FightActivity : AppCompatActivity() {
         // Set info text
         updateViewData(enemy, player, this)
 
-        // Выбирает атаку или побег
-        val attackOrEscapeState = fightFSM.addState(State{})
-        attackOrEscapeState.setEntryAction {
-            val attackButton = Button(this)
-            val escapeButton = Button(this)
-            attackButton.layoutParams = ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.WRAP_CONTENT,
-                ConstraintLayout.LayoutParams.WRAP_CONTENT
-            )
-            attackButton.text = "Attack"
-            attackButton.setOnClickListener {
-                fightFSM.handle(ButtonType.Attack.ordinal)
-                fightFSM.execute()
-            }
 
-            escapeButton.text = "Escape"
-            escapeButton.setOnClickListener {
-                tryEscape(player, enemyMulId)
-            }
-
-            attackButtonsLayout.addView(attackButton)
-            attackButtonsLayout.addView(escapeButton)
+        escapeButton.setOnClickListener {
+            tryEscape(player, enemyMulId)
         }
-        attackOrEscapeState.setExitAction { attackButtonsLayout.removeAllViews() }
 
-        // Выбирает между физической и магической
-        val chooseAttackState = fightFSM.addState(State {})
-        chooseAttackState.setEntryAction {
-            val weaponButton = Button(this)
-            val spiritButton = Button(this)
-            val itemButton   = Button(this)
-            val backButton   = Button(this)
+        val sectionButtons = arrayOf(weaponSectionButton, spiritSectionButton, itemsSectionButton)
+        val sectionButtonSignals = arrayOf(
+            ButtonType.Weapon.ordinal,
+            ButtonType.Spirit.ordinal,
+            ButtonType.Items.ordinal
+        )
 
-            val buttons = arrayOf(weaponButton, spiritButton, itemButton, backButton)
-            val buttonsName = arrayOf("Weapon Attack", "Spirit Attack", "Items", "Back")
-            val buttonsSignals = arrayOf(
-                ButtonType.WeaponAttack.ordinal,
-                ButtonType.SpiritAttack.ordinal,
-                ButtonType.Items.ordinal,
-                ButtonType.Back.ordinal
-            )
-
-            for(i in buttons.indices){
-                buttons[i].layoutParams = ConstraintLayout.LayoutParams(
-                    ConstraintLayout.LayoutParams.WRAP_CONTENT,
-                    ConstraintLayout.LayoutParams.WRAP_CONTENT
-                )
-                buttons[i].text = buttonsName[i]
-                buttons[i].setOnClickListener {
-                    fightFSM.handle(buttonsSignals[i])
-                    fightFSM.execute()
-                }
-                attackButtonsLayout.addView(buttons[i])
+        for (i in sectionButtons.indices) {
+            sectionButtons[i].setOnClickListener{
+                fightFSM.handle(sectionButtonSignals[i])
             }
         }
-        chooseAttackState.setExitAction { attackButtonsLayout.removeAllViews() }
 
-        val weaponChooseState = fightFSM.addState(State {})
-        weaponChooseState.setEntryAction {
+        val weaponSectionState = fightFSM.addState(State{}).setExitAction { abilityButtonsLayout.removeAllViews() }
+        val spiritSectionState = fightFSM.addState(State{}).setExitAction { abilityButtonsLayout.removeAllViews() }
+        val itemsSectionState = fightFSM.addState(State{}).setExitAction { abilityButtonsLayout.removeAllViews() }
+
+
+        weaponSectionState.setEntryAction {
             val weaponButton = Button(this)
             weaponButton.layoutParams = ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.WRAP_CONTENT,
@@ -266,215 +231,173 @@ class FightActivity : AppCompatActivity() {
             )
             weaponButton.text = "Super Weapon 100k damage"
             weaponButton.setOnClickListener {
-                fightFSM.handle(ButtonType.None.ordinal)
-                fightFSM.execute()
-                fightFSM.handle(ButtonType.None.ordinal)
-            }
+                if (enemyMulId == "-1") {
+                    val playerDamageComponent = player.getComponent(DamageComponent::class.java)
+                    val playerHealthComponent = player.getComponent(HealthComponent::class.java)
 
-            val backButton = Button(this)
-            backButton.layoutParams = ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.WRAP_CONTENT,
-                ConstraintLayout.LayoutParams.WRAP_CONTENT
-            )
-            backButton.text = "Back"
-            backButton.setOnClickListener {
-                fightFSM.handle(ButtonType.Back.ordinal)
-                fightFSM.execute()
-            }
+                    val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
+                    val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
 
-            attackButtonsLayout.addView(weaponButton)
-            attackButtonsLayout.addView(backButton)
-        }
-        weaponChooseState.setExitAction { attackButtonsLayout.removeAllViews() }
-
-        val weaponAttackState = fightFSM.addState(State {
-            if (enemyMulId == "-1") {
-                val playerDamageComponent = player.getComponent(DamageComponent::class.java)
-                val playerHealthComponent = player.getComponent(HealthComponent::class.java)
-
-                val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
-                val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
-
-                if (playerDamageComponent != null && enemyHealthComponent != null &&
-                    enemyDamageComponent != null && playerHealthComponent != null
-                ) {
-                    enemyHealthComponent.applyDamage(playerDamageComponent)
-                    playerHealthComponent.applyDamage(enemyDamageComponent)
-
-                    setEnemyHealthText(enemyHealthComponent.healthPoints.toString(),
-                        enemy!!.getComponent(BitmapComponent::class.java)!!._id, player,  this)
-                    setPlayerHealthText(playerHealthComponent.healthPoints.toString(), player, this)
-                }
-                setNewPlayerHealthToDatabase(this, player)
-            } else {
-                val playerDamageComponent = player.getComponent(DamageComponent::class.java)
-                val playerHealthComponent = player.getComponent(HealthComponent::class.java)
-                val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
-                val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
-
-
-                if (playerDamageComponent != null && playerHealthComponent != null
-                ) {
-                    if (enemyHealthComponent != null && enemyDamageComponent != null
+                    if (playerDamageComponent != null && enemyHealthComponent != null &&
+                        enemyDamageComponent != null && playerHealthComponent != null
                     ) {
                         enemyHealthComponent.applyDamage(playerDamageComponent)
-                        setEnemyHealthText(enemyHealthComponent.healthPoints.toString(),
-                            enemy!!.getComponent(BitmapComponent::class.java)!!._id,player,
-                            this)
-                    }
+                        playerHealthComponent.applyDamage(enemyDamageComponent)
 
-                    val enemiesIterator = enemies.iterator()
-                    enemiesIterator.forEach {
-                        val enemyDamageComponentTmp = it.getComponent(DamageComponent::class.java)
-                        val enemyHealthComponentTmp = it.getComponent(HealthComponent::class.java)
-                        if (enemyHealthComponentTmp != null && enemyDamageComponentTmp != null
-                        ) {
-                            playerHealthComponent.applyDamage(enemyDamageComponentTmp)
-                            setPlayerHealthText(playerHealthComponent.healthPoints.toString(), player, this)
-                        }
+                        setEnemyHealthText(enemyHealthComponent.healthPoints.toString(),
+                            enemy!!.getComponent(BitmapComponent::class.java)!!._id, player,  this)
+                        setPlayerHealthText(playerHealthComponent.healthPoints.toString(), player, this)
                     }
                     setNewPlayerHealthToDatabase(this, player)
+                } else {
+                    val playerDamageComponent = player.getComponent(DamageComponent::class.java)
+                    val playerHealthComponent = player.getComponent(HealthComponent::class.java)
+                    val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
+                    val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
+
+
+                    if (playerDamageComponent != null && playerHealthComponent != null
+                    ) {
+                        if (enemyHealthComponent != null && enemyDamageComponent != null
+                        ) {
+                            enemyHealthComponent.applyDamage(playerDamageComponent)
+                            setEnemyHealthText(enemyHealthComponent.healthPoints.toString(),
+                                enemy!!.getComponent(BitmapComponent::class.java)!!._id,player,
+                                this)
+                        }
+
+                        val enemiesIterator = enemies.iterator()
+                        enemiesIterator.forEach {
+                            val enemyDamageComponentTmp = it.getComponent(DamageComponent::class.java)
+                            val enemyHealthComponentTmp = it.getComponent(HealthComponent::class.java)
+                            if (enemyHealthComponentTmp != null && enemyDamageComponentTmp != null
+                            ) {
+                                playerHealthComponent.applyDamage(enemyDamageComponentTmp)
+                                setPlayerHealthText(playerHealthComponent.healthPoints.toString(), player, this)
+                            }
+                        }
+                        setNewPlayerHealthToDatabase(this, player)
+                    }
                 }
             }
-        })
+            abilityButtonsLayout.addView(weaponButton)
+        }
+
 
 
         val playerSpirit = player.getComponent(Spirit::class.java)
         val spiritAbilities = playerSpirit?.abilityPack
 
-        // Создание состояния для каждой абилки
-        val abilityStates = ArrayList<State<Int>>()
-        if (spiritAbilities != null){
-            for (i in 0 until spiritAbilities.size) {
-                val abilityState = fightFSM.addState(State {
-                    val playerSpiritAbility = spiritAbilities[i]
-                    val playerHealthComponent = player.getComponent(HealthComponent::class.java)
-
-                    if (enemyMulId == "-1") {
-                        val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
-                        val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
-
-                        if (enemyHealthComponent != null &&
-                            enemyDamageComponent != null && playerHealthComponent != null
-                        ) {
-                            enemyHealthComponent.applyDamage(playerSpiritAbility.damageComponent)
-                            playerHealthComponent.applyDamage(enemyDamageComponent)
-
-                            setEnemyHealthText(enemyHealthComponent.healthPoints.toString(),
-                                enemy!!.getComponent(BitmapComponent::class.java)!!._id, player,  this)
-                            setPlayerHealthText(playerHealthComponent.healthPoints.toString(), player, this)
-                        }
-                        setNewPlayerHealthToDatabase(this, player)
-                    } else {
-                        val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
-                        val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
-
-                        if (playerHealthComponent != null) {
-                            if (enemyHealthComponent != null && enemyDamageComponent != null
-                            ) {
-                                enemyHealthComponent.applyDamage(playerSpiritAbility.damageComponent)
-                                setEnemyHealthText(enemyHealthComponent.healthPoints.toString(),
-                                    enemy!!.getComponent(BitmapComponent::class.java)!!._id,player,
-                                    this)
-                            }
-
-                            val enemiesIterator = enemies.iterator()
-                            enemiesIterator.forEach {
-                                val enemyDamageComponentTmp = it.getComponent(DamageComponent::class.java)
-                                val enemyHealthComponentTmp = it.getComponent(HealthComponent::class.java)
-                                if (enemyHealthComponentTmp != null && enemyDamageComponentTmp != null
-                                ) {
-                                    playerHealthComponent.applyDamage(enemyDamageComponentTmp)
-                                    setPlayerHealthText(playerHealthComponent.healthPoints.toString(), player, this)
-                                }
-                            }
-                            setNewPlayerHealthToDatabase(this, player)
-                        }
-                    }
-                })
-                abilityState.addTransition(Transition { return@Transition attackOrEscapeState })
-                abilityStates.add(abilityState)
-            }
-        }
-
-        // Состояние выбора абилки
-        val abilityChooseState = fightFSM.addState(State {})
-        abilityChooseState.setEntryAction {
-            if (spiritAbilities != null){
+        spiritSectionState.setEntryAction {
+            if(spiritAbilities != null) {
                 for (i in 0 until spiritAbilities.size) {
                     val abilityButton = Button(this)
                     abilityButton.layoutParams = ConstraintLayout.LayoutParams(
                         ConstraintLayout.LayoutParams.WRAP_CONTENT,
                         ConstraintLayout.LayoutParams.WRAP_CONTENT
                     )
-                    abilityButton.text = (spiritAbilities[i].name + " (${spiritAbilities[i].damageComponent.natureForcesDamage[NatureForces.Fire.ordinal]} dmg)")
+                    abilityButton.text = (spiritAbilities[i].name)
                     abilityButton.setOnClickListener {
-                        fightFSM.handle((i+1)*100)
-                        fightFSM.execute()
-                        fightFSM.handle(ButtonType.None.ordinal)
+                        val playerSpiritAbility = spiritAbilities[i]
+                        val playerHealthComponent = player.getComponent(HealthComponent::class.java)
+
+                        if (enemyMulId == "-1") {
+                            val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
+                            val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
+
+                            if (enemyHealthComponent != null &&
+                                enemyDamageComponent != null && playerHealthComponent != null
+                            ) {
+                                enemyHealthComponent.applyDamage(playerSpiritAbility.damageComponent)
+                                playerHealthComponent.applyDamage(enemyDamageComponent)
+
+                                setEnemyHealthText(enemyHealthComponent.healthPoints.toString(),
+                                    enemy!!.getComponent(BitmapComponent::class.java)!!._id, player,  this)
+                                setPlayerHealthText(playerHealthComponent.healthPoints.toString(), player, this)
+                            }
+                            setNewPlayerHealthToDatabase(this, player)
+                        } else {
+                            val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
+                            val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
+
+                            if (playerHealthComponent != null) {
+                                if (enemyHealthComponent != null && enemyDamageComponent != null
+                                ) {
+                                    enemyHealthComponent.applyDamage(playerSpiritAbility.damageComponent)
+                                    setEnemyHealthText(enemyHealthComponent.healthPoints.toString(),
+                                        enemy!!.getComponent(BitmapComponent::class.java)!!._id,player,
+                                        this)
+                                }
+
+                                val enemiesIterator = enemies.iterator()
+                                enemiesIterator.forEach {
+                                    val enemyDamageComponentTmp = it.getComponent(DamageComponent::class.java)
+                                    val enemyHealthComponentTmp = it.getComponent(HealthComponent::class.java)
+                                    if (enemyHealthComponentTmp != null && enemyDamageComponentTmp != null
+                                    ) {
+                                        playerHealthComponent.applyDamage(enemyDamageComponentTmp)
+                                        setPlayerHealthText(playerHealthComponent.healthPoints.toString(), player, this)
+                                    }
+                                }
+                                setNewPlayerHealthToDatabase(this, player)
+                            }
+                        }
                     }
-                    attackButtonsLayout.addView(abilityButton)
+                    abilityButtonsLayout.addView(abilityButton)
                 }
             }
-            val backButton = Button(this)
-            backButton.layoutParams = ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.WRAP_CONTENT,
-                ConstraintLayout.LayoutParams.WRAP_CONTENT
-            )
-            backButton.text = "Back"
-            backButton.setOnClickListener {
-                fightFSM.handle(ButtonType.Back.ordinal)
-                fightFSM.execute()
-            }
-            attackButtonsLayout.addView(backButton)
         }
-        abilityChooseState.setExitAction { attackButtonsLayout.removeAllViews() }
 
-
-        attackOrEscapeState.addTransition(Transition { button ->
-            if (button == ButtonType.Attack.ordinal)
-                return@Transition chooseAttackState
-            return@Transition null
-        })
-
-        chooseAttackState.addTransition(Transition { button ->
-            if (button == ButtonType.WeaponAttack.ordinal) {
-                return@Transition weaponChooseState
+        weaponSectionState.addTransition(Transition { button ->
+            if(button == ButtonType.Spirit.ordinal) {
+                return@Transition spiritSectionState
             }
-            if (button == ButtonType.SpiritAttack.ordinal){
-                return@Transition abilityChooseState
-            }
-            if (button == ButtonType.Items.ordinal) {
-                return@Transition attackOrEscapeState
-            }
-            if (button == ButtonType.Back.ordinal) {
-                return@Transition attackOrEscapeState
+            if(button == ButtonType.Items.ordinal) {
+                return@Transition itemsSectionState
             }
             return@Transition null
         })
 
-        weaponChooseState.addTransition(Transition { button ->
-            if (button == ButtonType.Back.ordinal) {
-                return@Transition chooseAttackState
+        spiritSectionState.addTransition(Transition { button ->
+            if(button == ButtonType.Weapon.ordinal) {
+                return@Transition weaponSectionState
             }
-            return@Transition weaponAttackState
+            if(button == ButtonType.Items.ordinal) {
+                return@Transition itemsSectionState
+            }
+            return@Transition null
         })
-        abilityChooseState.addTransition(Transition { button ->
-            if (button == ButtonType.Back.ordinal ) {
-                return@Transition chooseAttackState
+
+        itemsSectionState.addTransition(Transition { button ->
+            if(button == ButtonType.Weapon.ordinal) {
+                return@Transition weaponSectionState
             }
-            if (spiritAbilities != null) {
-                val index = (button / 100) - 1
-                if (index >= 0 && index < spiritAbilities.size) {
-                    return@Transition abilityStates[index]
+            if(button == ButtonType.Spirit.ordinal) {
+                return@Transition spiritSectionState
+            }
+            return@Transition null
+        })
+
+        fightFSM.setCurrentState(weaponSectionState)
+    }
+
+    private fun putAbilitiesInLayout(abilities: ArrayList<Ability>?, abilityButtonsLayout: LinearLayout) {
+        if(abilities != null) {
+            for (i in 0 until abilities.size) {
+                val abilityButton = Button(this)
+                abilityButton.layoutParams = ConstraintLayout.LayoutParams(
+                    ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                    ConstraintLayout.LayoutParams.WRAP_CONTENT
+                )
+                abilityButton.text = (abilities[i].name)
+                abilityButton.setOnClickListener {
+                    fightFSM.handle((i+1)*100)
+                    fightFSM.execute()
+                    fightFSM.handle(ButtonType.None.ordinal)
                 }
+                abilityButtonsLayout.addView(abilityButton)
             }
-            return@Transition null
-        })
-
-        weaponAttackState.addTransition(Transition { return@Transition attackOrEscapeState })
-
-        fightFSM.setCurrentState(attackOrEscapeState)
+        }
     }
 
     private fun tryEscape(player: Player, enemyMulId: String){

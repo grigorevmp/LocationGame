@@ -36,16 +36,18 @@ class State <Arguments> (
         transitions.add(transition)
     }
 
-    fun setEntryAction(action: () -> Unit) {
+    fun setEntryAction(action: () -> Unit) : State<Arguments> {
         entryAction = Action(action)
+        return this
     }
 
     fun clearEntryAction() {
         entryAction = null
     }
 
-    fun setExitAction(action: () -> Unit) {
+    fun setExitAction(action: () -> Unit): State<Arguments> {
         exitAction = Action(action)
+        return this
     }
 
     fun clearExitAction() {

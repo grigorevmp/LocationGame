@@ -102,29 +102,65 @@
         app:layout_constraintTop_toTopOf="@+id/currentIdText" />
 
 
-    <ScrollView
+    <LinearLayout
         android:id="@+id/attackButtonsParent"
         android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="vertical"
+        android:gravity="bottom">
 
         <LinearLayout
-            android:id="@+id/attackButtonsLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|top"
-            android:layout_marginTop="0dp"
-            android:gravity="top|start"
-            android:orientation="vertical">
-
+            android:id="@+id/abilityButtonsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
+            android:gravity="start|bottom">
 
         </LinearLayout>
-    </ScrollView>
+
+
+        <LinearLayout
+            android:id="@+id/sectionButtonsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="0dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/weaponSectionButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Оружие"/>
+
+            <Button
+                android:id="@+id/spiritSectionButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Дух"/>
+
+            <Button
+                android:id="@+id/itemsSectionButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Предметы"/>
+
+            <Button
+                android:id="@+id/escapeButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Сбежать"/>
+
+        </LinearLayout>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textView2"
@@ -159,6 +195,5 @@
         app:layout_constraintEnd_toStartOf="@+id/healthValue"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
