@@ -8,6 +8,7 @@ import com.mikhailgrigorev.game.core.ecs.Components.inventory.InventoryComponent
 import com.mikhailgrigorev.game.core.ecs.Components.inventory.item.Item
 import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.databases.DBHelperFunctions
+import com.mikhailgrigorev.game.entities.sprit.AOEAbility
 import com.mikhailgrigorev.game.entities.sprit.Ability
 import com.mikhailgrigorev.game.entities.sprit.Spirit
 import com.mikhailgrigorev.game.game.Game
@@ -207,15 +208,15 @@ class Player(context: Context): Entity() {
                 id = 40404040,
                 name = "Огненное дыхание",
                 spirit = spirit,
-                damageMultiplier = 1.5f
+                damageMultipliers = arrayOf(1.5f)
             )
         )
         spirit.addAbility(
-            Ability(
+            AOEAbility(
                 id = 40404040,
                 name = "Метеоритный дождь",
                 spirit = spirit,
-                damageMultiplier = 0.5f
+                damageMultipliers = arrayOf(0.5f)
             )
         )
     }

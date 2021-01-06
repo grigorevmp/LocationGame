@@ -2,22 +2,27 @@ package com.mikhailgrigorev.game.entities.sprit
 
 import com.mikhailgrigorev.game.core.data.NatureForces
 import com.mikhailgrigorev.game.core.data.NatureForcesValues
-import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.core.ecs.Components.DamageComponent
+import com.mikhailgrigorev.game.core.ecs.Components.HealthComponent
+import com.mikhailgrigorev.game.core.ecs.Entity
+import com.mikhailgrigorev.game.entities.Enemy
 
-class Ability  (
+open class Ability  (
     val id: Int,
     val name: String,
     val spirit: Spirit,
-    damageMultiplier : Float
-    ) : Component() {
+    level: Int = 0,
+    damageMultipliers : Array<Float>
+    ) {
 
-    class AbilityUpgrader : Component.ComponentUpgrader<Ability> (Ability::class.java) {
+    var level = level
+        private set
+    val maxLevel = damageMultipliers.size - 1
 
-    }
+    val damageMultiplier: Float
+        get() = damageMultipliers[level]
 
-
-    var damageMultiplier = damageMultiplier
+    var damageMultipliers = damageMultipliers
         private set
 
     val damageComponent: DamageComponent
@@ -32,4 +37,12 @@ class Ability  (
             0,
             0f
         )
+
+    fun levelUp(){ ++level }
+
+
+    open operator fun invoke(focusedEnemy: Enemy, enemies: ArrayList<Enemy>){
+        val focusedEnemyHealthComponent = focusedEnemy.getComponent(HealthComponent::class.java)
+        focusedEnemyHealthComponent?.let { it.applyDamage(damageComponent) }
+    }
 }
