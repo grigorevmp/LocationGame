@@ -49,6 +49,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private val DEFAULT_ZOOM_LEVEL = 18f
     private val MIN_ZOOM_LEVEL = 16.5f
     private val MAX_ZOOM_LEVEL = 20f
+    private var isPlaced = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +73,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     .tilt(45f)            // Sets the tilt of the camera to 30 degrees
                     .build()              // Creates a CameraPosition from the builder
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+                if (!isPlaced){
+                    placeObj()
+                }
             }
         }
         createLocationRequest()
@@ -97,7 +101,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         // Add a marker in Sydney and move the camera
         val marat = LatLng(54.11, 54.11)
         val misha = LatLng(53.97952, 38.19016)
-
+        /*
         map.addMarker(
             MarkerOptions()
                 .position(marat)
@@ -113,14 +117,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 .snippet("Misha's home")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
         )
+         */
 
         fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, DEFAULT_ZOOM_LEVEL))
+
             }
         }
+
 
         map.setMinZoomPreference(MIN_ZOOM_LEVEL)
         map.setMaxZoomPreference(MAX_ZOOM_LEVEL)
@@ -138,49 +145,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val newTilt = 45F
         val cameraPosition = CameraPosition.Builder(map.cameraPosition).tilt(newTilt).build()
         map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-
-
-        Places.initialize(applicationContext, "AIzaSyAu-ubX47CQW9F9g-0T-oimC4qVcTJ7NL4")
-        val placesClient: PlacesClient = Places.createClient(this)
-
-        val fields: MutableList<Place.Field> = ArrayList()
-        fields.add(Place.Field.NAME)
-        fields.add(Place.Field.LAT_LNG)
-        fields.add(Place.Field.TYPES)
-        fields.add(Place.Field.ID)
-
-        val placeFields: List<Place.Field> = listOf(Place.Field.NAME, Place.Field.LAT_LNG,
-            Place.Field.TYPES, Place.Field.ID)
-
-    // Use the builder to create a FindCurrentPlaceRequest.
-        val request: FindCurrentPlaceRequest = FindCurrentPlaceRequest.newInstance(placeFields)
-
-    // Call findCurrentPlace and handle the response (first check that the user has granted permission).
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
-            PackageManager.PERMISSION_GRANTED) {
-
-            val placeResponse = placesClient.findCurrentPlace(request)
-            placeResponse.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val response = task.result
-                    for (placeLikelihood: PlaceLikelihood in response?.placeLikelihoods ?: emptyList()) {
-                        Log.i(
-                            TAG,
-                            "Place '${placeLikelihood.place.name}' has likelihood: ${placeLikelihood.likelihood}"
-                        )
-                    }
-                } else {
-                    val exception = task.exception
-                    if (exception is ApiException) {
-                        Log.e(TAG, "Place not found: ${exception.statusCode}")
-                    }
-                }
-            }
-        } else {
-            // A local method to request required permissions;
-            // See https://developer.android.com/training/permissions/requesting
-            print("ERROR")
-        }
 
     }
 
@@ -329,5 +293,35 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val toast = Toast.makeText(applicationContext, p0?.snippet, Toast.LENGTH_SHORT)
         toast.show()
         return true
+    }
+
+    fun placeObj(){
+        val pos1 = LatLng(lastLocation.latitude + 0.0010, lastLocation.longitude)
+        val pos2 = LatLng(lastLocation.latitude, lastLocation.longitude + 0.0010)
+        val pos3 = LatLng(lastLocation.latitude - 0.0010, lastLocation.longitude - 0.0010)
+
+        map.addMarker(
+            MarkerOptions()
+                .position(pos1)
+                .title("1st marker")
+                .snippet("Marker in my office")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.office))
+        )
+        map.addMarker(
+            MarkerOptions()
+                .position(pos2)
+                .title("2nd marker")
+                .snippet("Marker in my tower")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.tower))
+        )
+
+        map.addMarker(
+            MarkerOptions()
+                .position(pos3)
+                .title("3rd marker")
+                .snippet("Marker in my marker")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
+        )
+        isPlaced = true
     }
 }
