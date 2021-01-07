@@ -15,7 +15,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -23,11 +22,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.model.PlaceLikelihood
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
-import com.google.android.libraries.places.api.net.PlacesClient
+import java.util.*
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -74,7 +69,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     .build()              // Creates a CameraPosition from the builder
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
                 if (!isPlaced){
-                    placeObj()
+                    val pos1 = LatLng(lastLocation.latitude + 0.0010, lastLocation.longitude)
+                    val pos2 = LatLng(lastLocation.latitude, lastLocation.longitude + 0.0010)
+                    val pos3 = LatLng(lastLocation.latitude - 0.0005, lastLocation.longitude - 0.0005)
+                    placeObjectOnMap(pos1, BitmapDescriptorFactory.fromResource(R.drawable.marker), "Marker", "THIS IS MARKER")
+                    placeObjectOnMap(pos2, BitmapDescriptorFactory.fromResource(R.drawable.tower),"Tower", "THIS IS TOWER")
+                    placeObjectOnMap(pos3, BitmapDescriptorFactory.fromResource(R.drawable.office),"Office", "THIS IS OFFICE")
+                    isPlaced = true
                 }
             }
         }
@@ -295,33 +296,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return true
     }
 
-    fun placeObj(){
-        val pos1 = LatLng(lastLocation.latitude + 0.0010, lastLocation.longitude)
-        val pos2 = LatLng(lastLocation.latitude, lastLocation.longitude + 0.0010)
-        val pos3 = LatLng(lastLocation.latitude - 0.0010, lastLocation.longitude - 0.0010)
-
+    fun placeObjectOnMap(coordinates:LatLng, image:BitmapDescriptor, title:String="", snippet:String=""){
         map.addMarker(
             MarkerOptions()
-                .position(pos1)
-                .title("1st marker")
-                .snippet("Marker in my office")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.office))
+                .position(coordinates)
+                .title(title)
+                .snippet(snippet)
+                .icon(image)
         )
-        map.addMarker(
-            MarkerOptions()
-                .position(pos2)
-                .title("2nd marker")
-                .snippet("Marker in my tower")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.tower))
-        )
-
-        map.addMarker(
-            MarkerOptions()
-                .position(pos3)
-                .title("3rd marker")
-                .snippet("Marker in my marker")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
-        )
-        isPlaced = true
     }
 }
