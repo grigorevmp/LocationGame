@@ -9,17 +9,13 @@ import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.location.Location
-import android.location.LocationListener
 import android.os.Bundle
-import android.os.Handler
-import android.os.SystemClock
 import android.util.Log
-import android.view.animation.Interpolator
-import android.view.animation.LinearInterpolator
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -27,6 +23,11 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.PlaceLikelihood
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -44,6 +45,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
         private const val REQUEST_CHECK_SETTINGS = 2
     }
+    private var myLoc: Marker? = null
+    private val DEFAULT_ZOOM_LEVEL = 18f
+    private val MIN_ZOOM_LEVEL = 16.5f
+    private val MAX_ZOOM_LEVEL = 20f
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +65,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
                 lastLocation = p0.lastLocation
                 placeMarkerOnMap(LatLng(lastLocation.latitude, lastLocation.longitude))
+                val cameraPosition = CameraPosition.Builder()
+                    .target(LatLng(lastLocation.latitude, lastLocation.longitude)) // Sets the center of the map to Mountain View
+                    .zoom(DEFAULT_ZOOM_LEVEL)            // Sets the zoom
+                   // .bearing(0f)         // Sets the orientation of the camera to east
+                    .tilt(45f)            // Sets the tilt of the camera to 30 degrees
+                    .build()              // Creates a CameraPosition from the builder
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
             }
         }
         createLocationRequest()
@@ -73,7 +85,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         markerOptions.title(titleStr)
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.player))
 
-        map.addMarker(markerOptions)
+        myLoc?.remove()
+
+        myLoc = map.addMarker(markerOptions)
     }
 
     @SuppressLint("MissingPermission")
@@ -81,13 +95,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         map = googleMap
 
         // Add a marker in Sydney and move the camera
-        val home = LatLng(54.11, 54.11)
-        val pos = LatLng(53.97952, 38.19016)
+        val marat = LatLng(54.11, 54.11)
+        val misha = LatLng(53.97952, 38.19016)
 
-        val zoomLevel = 17f
         map.addMarker(
             MarkerOptions()
-                .position(home)
+                .position(marat)
                 .title("1st marker")
                 .snippet("Marker in my home")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
@@ -95,33 +108,79 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         map.addMarker(
             MarkerOptions()
-                .position(pos)
+                .position(misha)
                 .title("2st marker")
                 .snippet("Misha's home")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
         )
 
-        //enableMyLocation()
         fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, zoomLevel))
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, DEFAULT_ZOOM_LEVEL))
             }
         }
+
+        map.setMinZoomPreference(MIN_ZOOM_LEVEL)
+        map.setMaxZoomPreference(MAX_ZOOM_LEVEL)
 
         setMapStyle(map)
         map.setOnMarkerClickListener(this)
         val ui = map.uiSettings
-        ui.setMapToolbarEnabled(false)
-        ui.setMyLocationButtonEnabled(false)
+        ui.isMapToolbarEnabled = false
+        ui.isMyLocationButtonEnabled = false
+        ui.isTiltGesturesEnabled = false
+        ui.isCompassEnabled = false
+        // ui.isScrollGesturesEnabled = false
 
-        ui.setTiltGesturesEnabled(false)
-        ui.setCompassEnabled(false)
         // Camera Tilt
         val newTilt = 45F
         val cameraPosition = CameraPosition.Builder(map.cameraPosition).tilt(newTilt).build()
         map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+
+
+        Places.initialize(applicationContext, "AIzaSyAu-ubX47CQW9F9g-0T-oimC4qVcTJ7NL4")
+        val placesClient: PlacesClient = Places.createClient(this)
+
+        val fields: MutableList<Place.Field> = ArrayList()
+        fields.add(Place.Field.NAME)
+        fields.add(Place.Field.LAT_LNG)
+        fields.add(Place.Field.TYPES)
+        fields.add(Place.Field.ID)
+
+        val placeFields: List<Place.Field> = listOf(Place.Field.NAME, Place.Field.LAT_LNG,
+            Place.Field.TYPES, Place.Field.ID)
+
+    // Use the builder to create a FindCurrentPlaceRequest.
+        val request: FindCurrentPlaceRequest = FindCurrentPlaceRequest.newInstance(placeFields)
+
+    // Call findCurrentPlace and handle the response (first check that the user has granted permission).
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED) {
+
+            val placeResponse = placesClient.findCurrentPlace(request)
+            placeResponse.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val response = task.result
+                    for (placeLikelihood: PlaceLikelihood in response?.placeLikelihoods ?: emptyList()) {
+                        Log.i(
+                            TAG,
+                            "Place '${placeLikelihood.place.name}' has likelihood: ${placeLikelihood.likelihood}"
+                        )
+                    }
+                } else {
+                    val exception = task.exception
+                    if (exception is ApiException) {
+                        Log.e(TAG, "Place not found: ${exception.statusCode}")
+                    }
+                }
+            }
+        } else {
+            // A local method to request required permissions;
+            // See https://developer.android.com/training/permissions/requesting
+            print("ERROR")
+        }
 
     }
 
@@ -180,20 +239,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
                 arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE)
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
             return
         }
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null /* Looper */)
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            null /* Looper */
+        )
     }
 
     private fun createLocationRequest() {
         locationRequest = LocationRequest()
-        locationRequest.interval = 10000
-        locationRequest.fastestInterval = 5000
+        locationRequest.interval = 5000
+        locationRequest.fastestInterval = 1000
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
         val builder = LocationSettingsRequest.Builder()
@@ -213,8 +280,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 try {
                     // Show the dialog by calling startResolutionForResult(),
                     // and check the result in onActivityResult().
-                    e.startResolutionForResult(this@MapsActivity,
-                        REQUEST_CHECK_SETTINGS)
+                    e.startResolutionForResult(
+                        this@MapsActivity,
+                        REQUEST_CHECK_SETTINGS
+                    )
                 } catch (sendEx: IntentSender.SendIntentException) {
                     // Ignore the error.
                 }
