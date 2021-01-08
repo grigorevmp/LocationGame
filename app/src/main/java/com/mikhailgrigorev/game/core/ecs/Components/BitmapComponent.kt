@@ -43,22 +43,22 @@ class BitmapComponent(
     // сжимаем картинку до нужных размеров
     init {
         val size = positionComponent.size
-        val cBitmap = BitmapFactory.decodeResource(context.resources, _bitmapId)
-        _bitmap = Bitmap.createScaledBitmap(
-            cBitmap,
-            (size * Game.unitW).toInt(),
-            (size * Game.unitH).toInt(),
-            false
-        )
-        cBitmap.recycle()
-        val cBitmapMul = BitmapFactory.decodeResource(context.resources, context.resources.getIdentifier("tower", "drawable", context.packageName))
-        _bitmapMultiple = Bitmap.createScaledBitmap(
-            cBitmapMul,
-            (size * Game.unitW).toInt(),
-            (size * Game.unitH).toInt(),
-            false
-        )
-        cBitmapMul.recycle()
+        //val cBitmap = BitmapFactory.decodeResource(context.resources, _bitmapId)
+        //_bitmap = Bitmap.createScaledBitmap(
+        //    cBitmap,
+        //    (size * Game.unitW).toInt(),
+        //    (size * Game.unitH).toInt(),
+        //    false
+        //)
+        //cBitmap.recycle()
+        //val cBitmapMul = BitmapFactory.decodeResource(context.resources, context.resources.getIdentifier("tower", "drawable", context.packageName))
+        //_bitmapMultiple = Bitmap.createScaledBitmap(
+        //    cBitmapMul,
+        //    (size * Game.unitW).toInt(),
+        //    (size * Game.unitH).toInt(),
+        //    false
+        //)
+        //cBitmapMul.recycle()
     }
 
     // тут будут вычисляться новые координаты

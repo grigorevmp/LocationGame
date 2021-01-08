@@ -483,8 +483,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         btnOk.setOnClickListener {
             val intent = Intent(context, FightActivity::class.java)
             if (enemyMultiple == 0) {
-                // One enemy sample
-                intent.putExtra("enemyId", objBitmapComponent._id.toString())
+                intent.putExtra("enemyMulId", objBitmapComponent._id.toString())
                 println("Fighting with... @id#" + objBitmapComponent._id.toString())
             } else {
                 intent.putExtra("enemyMulId", enemiesIds)
@@ -1589,8 +1588,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             "Respawn enemies"
         ) { _, _ ->
             enemiesLoader = EnemiesLoader(context, true)
-            for (enemy in enemiesLoader!!.enemies)
+            for (enemy in enemiesLoader!!.enemies) {
                 gameEntities.add(enemy)
+
+                val i = gameEntities.size
+                val random1: Double = 0.0001 + Math.random() * (0.0020 - 0.0001)
+                val random2: Double = 0.0001 + Math.random() * (0.0020 - 0.0001)
+
+                var multiplexer = 1
+                if(Math.random() < 0.5)
+                    multiplexer = -1
+                val pos = LatLng(lastLocation.latitude + multiplexer*random1, lastLocation.longitude + multiplexer*random2)
+                val entityBitmap = enemy.getComponent(BitmapComponent::class.java)!!._bitmapId
+                val entityName = enemy.getComponent(BitmapComponent::class.java)!!._name
+                placeObjectOnMap(
+                    pos,
+                    BitmapDescriptorFactory.fromResource(entityBitmap),
+                    "$i",
+                    "THIS IS $entityName"
+                )
+
+            }
         }
         //set positive button
         builder.setNegativeButton(

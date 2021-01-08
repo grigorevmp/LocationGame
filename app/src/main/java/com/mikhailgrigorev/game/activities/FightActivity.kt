@@ -2,14 +2,9 @@ package com.mikhailgrigorev.game.activities
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Entity
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.PorterDuffColorFilter
-import android.media.session.PlaybackState
 import android.os.Bundle
-import android.util.AttributeSet
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
@@ -17,8 +12,8 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.mikhailgrigorev.game.MapsActivity
 import com.mikhailgrigorev.game.R
-import com.mikhailgrigorev.game.core.data.NatureForces
 import com.mikhailgrigorev.game.core.ecs.Components.BitmapComponent
 import com.mikhailgrigorev.game.core.ecs.Components.DamageComponent
 import com.mikhailgrigorev.game.core.ecs.Components.HealthComponent
@@ -29,7 +24,6 @@ import com.mikhailgrigorev.game.core.fsm.State
 import com.mikhailgrigorev.game.core.fsm.Transition
 import com.mikhailgrigorev.game.databases.DBHelperFunctions
 import com.mikhailgrigorev.game.databases.ItemsDB
-import com.mikhailgrigorev.game.databases.ItemsDBHelper
 import com.mikhailgrigorev.game.entities.Enemy
 import com.mikhailgrigorev.game.entities.Player
 import com.mikhailgrigorev.game.entities.sprit.Ability
@@ -48,7 +42,7 @@ class FightActivity : AppCompatActivity() {
     private var fightFSM = FSM<Int>()
     private var enemiesNum = 0
     private var enemy: Enemy? = null
-    private var player: Player? = null
+    private lateinit var player: Player
     private val enemies: ArrayList<Enemy> = ArrayList()
     private val enemiesNums: ArrayList<Int> = ArrayList()
 
@@ -61,25 +55,20 @@ class FightActivity : AppCompatActivity() {
 
         player = Player(this)
 
-        // Get information about lone enemy
-        val enemyId = if (intent.getStringExtra("enemyId") != null) {
-            intent.getStringExtra("enemyId")
-        } else {
-            "-1"
-        }
-
         // Get information about multiple enemies
-        val enemyMulId = if (intent.getStringExtra("enemyMulId") != null) {
+        val enemiesIdContent = if (intent.getStringExtra("enemyMulId") != null) {
             intent.getStringExtra("enemyMulId")
         } else {
             "-1"
         }
 
+        if (enemiesIdContent == "-1")
+            exit(-1)
 
         // PLAYER ICONS TEST BLOCK
         // --------------------------------------------------------
         // --------------------------------------------------------
-        val playerBitMap = player!!.getComponent(BitmapComponent::class.java)!!
+        val playerBitMap = player.getComponent(BitmapComponent::class.java)!!
         val prgPlayer = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal)
         prgPlayer.id = playerBitMap._id * 100
         choosePlayerLayout.addView(prgPlayer)
@@ -108,45 +97,10 @@ class FightActivity : AppCompatActivity() {
         // --------------------------------------------------------
         // --------------------------------------------------------
 
-        // Get lone enemy if exists
-        if (enemyId != "-1") {
-            enemiesNum += 1
-            enemy = findEnemyByID(enemyId)
-
-            enemy?.let { enemies.add(it) }
-            // Create image button
-            val prgPEnemy = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal)
-            val enemyBitmapComponent = enemy!!.getComponent(BitmapComponent::class.java)!!
-            prgPEnemy.id = enemyBitmapComponent._id * 100
-            val maxHealth = enemy!!.getComponent(HealthComponent::class.java)!!.maxHealthPoints
-            prgPEnemy.max = maxHealth
-            prgPEnemy.progress = maxHealth
-            chooseEnemyLayout.addView(prgPEnemy)
-
-            val btnEnemy = ImageButton(this)
-            btnEnemy.layoutParams = ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.WRAP_CONTENT,
-                ConstraintLayout.LayoutParams.WRAP_CONTENT
-            )
-            btnEnemy.id = enemyId.toInt()
-            btnEnemy.setImageResource(enemyBitmapComponent._bitmapId)
-            btnEnemy.setBackgroundColor(Color.TRANSPARENT)
-            btnEnemy.scaleX = 1f
-            btnEnemy.scaleY = 1f
-            btnEnemy.setOnClickListener {
-                updateViewData(enemy, player!!, this)
-
-                val index2: Int = btnEnemy.id
-                val buttonTest = findViewById<ImageButton>(index2)
-                buttonTest.scaleX = 1f
-                buttonTest.scaleY = 1f
-            }
-            chooseEnemyLayout.addView(btnEnemy, paramsLO)
-        }
 
         // Get multiple enemies if exist
-        if (enemyMulId != "-1") {
-            val enemyStr = enemyMulId.split(',')
+        if (enemiesIdContent != "-1") {
+            val enemyStr = enemiesIdContent.split(',')
             for ((i, it) in enemyStr.withIndex()) {
                 enemiesNum += 1
                 findEnemyByID(it)?.let { newEnemy ->
@@ -182,7 +136,7 @@ class FightActivity : AppCompatActivity() {
                 }
                 btnEnemy.setOnClickListener {
                     enemy = enemies[index]
-                    updateViewData(enemy, player!!, this)
+                    updateViewData(enemy, player, this)
 
                     scaleAllButtons(enemies)
                     val index2: Int = btnEnemy.id
@@ -191,22 +145,18 @@ class FightActivity : AppCompatActivity() {
                     buttonTest.scaleY = 1f
                 }
                 chooseEnemyLayout.addView(btnEnemy, paramsLO)
-
-
             }
             enemy = enemies[0]
         }
 
-        // Exit if data doesn't not exist
-        if ((enemy == null) or ((enemyId == "-1") and (enemyMulId == "-1")))
+        if (enemy == null)
             exit(-1)
 
         // Set info text
-        updateViewData(enemy, player!!, this)
-
+        updateViewData(enemy, player, this)
 
         escapeButton.setOnClickListener {
-            tryEscape(player!!, enemyMulId)
+            tryEscape(player, enemiesIdContent)
         }
 
         val sectionButtons = arrayOf(weaponSectionButton, spiritSectionButton, itemsSectionButton)
@@ -238,74 +188,49 @@ class FightActivity : AppCompatActivity() {
             )
             weaponButton.text = "Super Weapon 100k damage"
             weaponButton.setOnClickListener {
-                if (enemyMulId == "-1") {
-                    val playerDamageComponent = player!!.getComponent(DamageComponent::class.java)
-                    val playerHealthComponent = player!!.getComponent(HealthComponent::class.java)
 
-                    val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
-                    val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
+                val playerDamageComponent = player.getComponent(DamageComponent::class.java)
+                val playerHealthComponent = player.getComponent(HealthComponent::class.java)
+                val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
+                val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
 
-                    if (playerDamageComponent != null && enemyHealthComponent != null &&
-                        enemyDamageComponent != null && playerHealthComponent != null
+                if (playerDamageComponent != null && playerHealthComponent != null
+                ) {
+                    if (enemyHealthComponent != null && enemyDamageComponent != null
                     ) {
                         enemyHealthComponent.applyDamage(playerDamageComponent)
-                        playerHealthComponent.applyDamage(enemyDamageComponent)
-
                         setEnemyHealthText(
+                            enemy!!,
                             enemyHealthComponent.healthPoints.toString(),
-                            enemy!!.getComponent(BitmapComponent::class.java)!!._id, player!!, this
-                        )
-                        setPlayerHealthText(
-                            playerHealthComponent.healthPoints.toString(),
-                            player!!,
+                            enemy!!.getComponent(BitmapComponent::class.java)!!._id, player,
                             this
                         )
                     }
-                    setNewPlayerHealthToDatabase(this, player!!)
-                } else {
-                    val playerDamageComponent = player!!.getComponent(DamageComponent::class.java)
-                    val playerHealthComponent = player!!.getComponent(HealthComponent::class.java)
-                    val enemyDamageComponent = enemy!!.getComponent(DamageComponent::class.java)
-                    val enemyHealthComponent = enemy!!.getComponent(HealthComponent::class.java)
 
-
-                    if (playerDamageComponent != null && playerHealthComponent != null
-                    ) {
-                        if (enemyHealthComponent != null && enemyDamageComponent != null
+                    val enemiesIterator = enemies.iterator()
+                    enemiesIterator.forEach {
+                        val enemyDamageComponentTmp =
+                            it.getComponent(DamageComponent::class.java)
+                        val enemyHealthComponentTmp =
+                            it.getComponent(HealthComponent::class.java)
+                        if (enemyHealthComponentTmp != null && enemyDamageComponentTmp != null
                         ) {
-                            enemyHealthComponent.applyDamage(playerDamageComponent)
-                            setEnemyHealthText(
-                                enemyHealthComponent.healthPoints.toString(),
-                                enemy!!.getComponent(BitmapComponent::class.java)!!._id, player!!,
+                            playerHealthComponent.applyDamage(enemyDamageComponentTmp)
+                            setPlayerHealthText(
+                                playerHealthComponent.healthPoints.toString(),
+                                player,
                                 this
                             )
                         }
-
-                        val enemiesIterator = enemies.iterator()
-                        enemiesIterator.forEach {
-                            val enemyDamageComponentTmp =
-                                it.getComponent(DamageComponent::class.java)
-                            val enemyHealthComponentTmp =
-                                it.getComponent(HealthComponent::class.java)
-                            if (enemyHealthComponentTmp != null && enemyDamageComponentTmp != null
-                            ) {
-                                playerHealthComponent.applyDamage(enemyDamageComponentTmp)
-                                setPlayerHealthText(
-                                    playerHealthComponent.healthPoints.toString(),
-                                    player!!,
-                                    this
-                                )
-                            }
-                        }
-                        setNewPlayerHealthToDatabase(this, player!!)
                     }
+                    setNewPlayerHealthToDatabase(this, player)
                 }
             }
             abilityButtonsLayout.addView(weaponButton)
         }
 
 
-        val playerSpirit = player!!.getComponent(Spirit::class.java)
+        val playerSpirit = player.getComponent(Spirit::class.java)
         val spiritAbilities = playerSpirit?.abilityPack
         if (spiritAbilities != null) {
             spiritSectionState.setEntryAction {
@@ -355,7 +280,7 @@ class FightActivity : AppCompatActivity() {
             )
             abilityButton.text = (abilities[i].name)
             abilityButton.setOnClickListener {
-                 fight(player!!, abilities[i], enemy, enemies)
+                 fight(player, abilities[i], enemy, enemies)
             }
             abilityButtonsLayout.addView(abilityButton)
         }
@@ -377,7 +302,7 @@ class FightActivity : AppCompatActivity() {
             playerAbility(focusedEnemy, enemies)
             enemiesIterator.forEach {
                 val enemyHealthComponent = it.getComponent(HealthComponent::class.java)
-                setEnemyHealthText(
+                setEnemyHealthText(it,
                     enemyHealthComponent?.healthPoints.toString(),
                     it.getComponent(BitmapComponent::class.java)!!._id, player,
                     this
@@ -403,8 +328,8 @@ class FightActivity : AppCompatActivity() {
 
 
     private fun tryEscape(player: Player, enemyMulId: String){
-        val rnds = (0..10).random()
-        if(rnds > 5) {
+        val randomState = (0..10).random()
+        if(randomState > 5) {
             setNewPlayerHealthToDatabase(this, player)
             exit(2)
         }
@@ -460,14 +385,12 @@ class FightActivity : AppCompatActivity() {
     }
 
     private fun scaleAllButtons(enemies: ArrayList<Enemy>){
-        val iter = enemies.iterator()
-        iter.forEach { it3 ->
-            val id = it3.getComponent(BitmapComponent::class.java)!!._id
+        for(it in enemies){
+            val id = it.getComponent(BitmapComponent::class.java)!!._id
             val buttonTest = findViewById<ImageButton>(id)
             buttonTest.scaleX = 0.8f
             buttonTest.scaleY = 0.8f
         }
-
     }
 
     private fun setNewPlayerHealthToDatabase(context:Context, player: Player){
@@ -478,14 +401,14 @@ class FightActivity : AppCompatActivity() {
         DBHelperFunctions.deleteEnemy(context, enemy)
     }
 
-    private fun updateViewData(enemy: Enemy?, player: Player, context:Context) {
+    private fun updateViewData(_enemy: Enemy?, player: Player, context:Context) {
         /*
         Update visual info
          */
-        logEnemyIdText("Fighting with ${enemy!!.getComponent(BitmapComponent::class.java)!!._name}")
-        currentId.text = enemy.getComponent(BitmapComponent::class.java)!!._id.toString()
-        setEnemyHealthText(enemy.getComponent(HealthComponent::class.java)!!.healthPoints.toString(),
-            enemy.getComponent(BitmapComponent::class.java)!!._id, player, context)
+        logEnemyIdText("Fighting with ${_enemy!!.getComponent(BitmapComponent::class.java)!!._name}")
+        currentId.text = _enemy.getComponent(BitmapComponent::class.java)!!._id.toString()
+        setEnemyHealthText(_enemy, _enemy.getComponent(HealthComponent::class.java)!!.healthPoints.toString(),
+            _enemy.getComponent(BitmapComponent::class.java)!!._id, player, context)
         setPlayerHealthText(player.getComponent(HealthComponent::class.java)!!.healthPoints.toString(), player, context)
     }
 
@@ -506,8 +429,7 @@ class FightActivity : AppCompatActivity() {
         /*
         Left fight
          */
-        val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra("Set", "Game")
+        val intent = Intent(this, MapsActivity::class.java)
         intent.putExtra("Reason", errorCode)
         startActivity(intent)
         finish()
@@ -557,12 +479,12 @@ class FightActivity : AppCompatActivity() {
         }
     }
 
-    private fun setEnemyHealthText(valueEnemy: String, id: Int, player:Player, context: Context){
+    private fun setEnemyHealthText(_enemy: Enemy, valueEnemy: String, id: Int, player:Player, context: Context){
         /*
         Check correctness of enemy health values
          */
         if (valueEnemy.toInt() <= 0) {
-            val maxHealth = enemy!!.getComponent(HealthComponent::class.java)!!.maxHealthPoints
+            val maxHealth = _enemy.getComponent(HealthComponent::class.java)!!.maxHealthPoints
             val progressAbove = findViewById<ProgressBar>(id*100)
             progressAbove.max = maxHealth
             progressAbove.progress = valueEnemy.toInt()
@@ -570,15 +492,15 @@ class FightActivity : AppCompatActivity() {
             enemyHealthProgress.progress = valueEnemy.toInt()
             updateEnemyHealthText("0/$maxHealth")
 
-            val enemyDrop = enemy!!.items
-            val enemyDropNum = enemy!!.itemsNum
+            val enemyDrop = _enemy.items
+            val enemyDropNum = _enemy.itemsNum
             val dropItems: ArrayList<Item> = ArrayList()
 
             enemyDrop.split('.').zip(enemyDropNum.split('.')).forEach { pair ->
                 ItemsDB.init(context)
                 val item = ItemsDB.loadItemByID(context, pair.component1().toInt())
                 if (item != null) {
-                    dropItems.add(Item(pair.component1().toInt(), "", pair.component2().toInt(), 0))
+                    dropItems.add(Item(pair.component1().toInt(), item.name, pair.component2().toInt(), 0))
                 }
             }
 
@@ -594,7 +516,7 @@ class FightActivity : AppCompatActivity() {
                 Toast.makeText(context, "You got ${item.count} ${item.name}", Toast.LENGTH_SHORT).show()
                 }
 
-            deleteEnemyFromDatabase(context, enemy!!)
+            deleteEnemyFromDatabase(context, _enemy)
             hideImageButtonById(id)
             enemiesNum -= 1
             if(enemiesNum == 0){
@@ -602,7 +524,6 @@ class FightActivity : AppCompatActivity() {
                 builder.setTitle("You win")
                 builder.setMessage("You killed all enemies")
                 builder.setCancelable(false)
-                //set negative button
                 builder.setPositiveButton(
                     "Cool =>"
                 ) { _, _ ->
@@ -613,23 +534,27 @@ class FightActivity : AppCompatActivity() {
             }
             else{
                 //enemies.remove(enemy)
-                enemiesNums.remove((enemies.indexOf(enemy)))
-                enemy = enemies[enemiesNums[0]]
-                updateViewData(enemy, player, this)
-                val index2: Int = enemies[0].getComponent(BitmapComponent::class.java)!!._id
-                val buttonTest = findViewById<ImageButton>(index2)
-                buttonTest.scaleX = 1f
-                buttonTest.scaleY = 1f
+                enemiesNums.remove((enemies.indexOf(_enemy)))
+                if(_enemy == enemy) {
+                    enemy = enemies[enemiesNums[0]]
+                    updateViewData(enemy, player, this)
+                    val index2: Int = enemies[0].getComponent(BitmapComponent::class.java)!!._id
+                    val buttonTest = findViewById<ImageButton>(index2)
+                    buttonTest.scaleX = 1f
+                    buttonTest.scaleY = 1f
+                }
             }
         }
         else {
-            val maxHealth = enemy!!.getComponent(HealthComponent::class.java)!!.maxHealthPoints
+            val maxHealth = _enemy.getComponent(HealthComponent::class.java)!!.maxHealthPoints
             val progressAbove = findViewById<ProgressBar>(id*100)
             progressAbove.max = maxHealth
             progressAbove.progress = valueEnemy.toInt()
-            enemyHealthProgress.max = maxHealth
-            enemyHealthProgress.progress = valueEnemy.toInt()
-            updateEnemyHealthText("$valueEnemy/$maxHealth")
+            if(_enemy == enemy) {
+                enemyHealthProgress.max = maxHealth
+                enemyHealthProgress.progress = valueEnemy.toInt()
+                updateEnemyHealthText("$valueEnemy/$maxHealth")
+            }
         }
     }
 
@@ -651,10 +576,8 @@ class FightActivity : AppCompatActivity() {
     override fun onKeyUp(keyCode: Int, msg: KeyEvent?): Boolean {
         when (keyCode) {
             KeyEvent.KEYCODE_BACK -> {
-                val intent = Intent(this, MainActivity::class.java)
-                intent.putExtra("Set", "Game")
+                val intent = Intent(this, MapsActivity::class.java)
                 startActivity(intent)
-                finish()
             }
         }
         return false
