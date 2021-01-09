@@ -109,7 +109,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
                 lastLocation = p0.lastLocation
                 placeMarkerOnMap(LatLng(lastLocation.latitude, lastLocation.longitude))
-                updatePlayerDetails("LastPos", "${lastLocation.latitude},${lastLocation.longitude}")
+                analyzePlayerStep("LastPos", "${lastLocation.latitude},${lastLocation.longitude}")
 
                 val cameraPosition = CameraPosition.Builder()
                     .target(LatLng(lastLocation.latitude, lastLocation.longitude)) // Sets the center of the map to Mountain View
@@ -168,6 +168,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     }
 
+    // -----------------------------------
+    // -----------------------------------
+    // -----------------------------------
+    // WORK WITH DATA
+    // -----------------------------------
+    // -----------------------------------
+    // -----------------------------------
+
     private fun loadData(){
         player = Player(this)
         buildingsLoader = BuildingsLoader(this)
@@ -193,7 +201,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return loc1.distanceTo(loc2)
     }
 
-    private fun updatePlayerDetails(valueKey: String?, value: String?) {
+    private fun analyzePlayerStep(valueKey: String?, value: String?) {
         val oldPos = read(valueKey, "-1")
         var loc1: List<String>? = null
         if (value != null)
@@ -213,11 +221,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             )
         }
 
-        Log.d("DISTANCE", "$distance")
+        Log.d("DISTANCE STEP", "$distance")
         save(valueKey, value)
     }
 
-    private fun movePlayerDetails(valueKey: String?, value: String?) {
+    private fun analyzeNewPlayerLocation(valueKey: String?, value: String?) {
         val oldPos = read(valueKey, "-1")
         var loc1: List<String>? = null
         if (value != null)
@@ -239,8 +247,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             )
         }
 
-        Log.d("DISTANCE", "$distance")
-        save(valueKey, value)
+        Log.d("DISTANCE NEW", "$distance")
+        save(valueKey,
+            value)
     }
 
     private fun save(valueKey: String?, value: String?) {
@@ -257,6 +266,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             return getString(valueKey, valueDefault)
         }
     }
+
+    // -----------------------------------
+    // -----------------------------------
+    // -----------------------------------
+    // -----------------------------------
+    // -----------------------------------
+    // -----------------------------------
+    // -----------------------------------
+    // -----------------------------------
+    // -----------------------------------
 
     private fun placeMarkerOnMap(location: LatLng) {
         val markerOptions = MarkerOptions().position(location)
@@ -299,7 +318,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                movePlayerDetails("LastPos", "${lastLocation.latitude},${lastLocation.longitude}")
+                analyzeNewPlayerLocation("LastPos", "${lastLocation.latitude},${lastLocation.longitude}")
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, DEFAULT_ZOOM_LEVEL))
 
             }
