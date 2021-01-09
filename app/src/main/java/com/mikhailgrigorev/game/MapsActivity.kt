@@ -134,8 +134,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
                         val addresses_: List<Address> = geocoder.getFromLocation(pos.latitude, pos.longitude, 1)
                         if (addresses_.size > 0) {
-                            val latitude: Double = addresses_[0].getLatitude()
-                            val longitude: Double = addresses_[0].getLongitude()
+                            val latitude: Double = addresses_[0].latitude
+                            val longitude: Double = addresses_[0].longitude
                             Log.e(
                                 "Address_",
                                 "$i plat-${pos.latitude} plong-${pos.longitude} lat-$latitude long-$longitude thor-${addresses_[0].thoroughfare} feat-${addresses_[0].featureName}"
