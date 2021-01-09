@@ -12,7 +12,10 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -83,6 +86,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.decorView.systemUiVisibility = (
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+            // Transparent status bar
+            window.statusBarColor = Color.TRANSPARENT
+
+        }
+        supportActionBar?.hide();
+
         setContentView(R.layout.activity_maps)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -105,6 +118,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 if (!isPlaced){
 
                     loadData()
+                    val geocoder = Geocoder(applicationContext, Locale.getDefault())
 
                     for((i, entity) in gameEntities.withIndex()){
                         val random1: Double = 0.0001 + Math.random() * (0.0020 - 0.0001)
@@ -113,7 +127,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                         var multiplexer = 1
                         if(Math.random() < 0.5)
                             multiplexer = -1
-                        val pos = LatLng(lastLocation.latitude + multiplexer*random1, lastLocation.longitude + multiplexer*random2)
+                        val pos = LatLng(
+                            lastLocation.latitude + multiplexer * random1,
+                            lastLocation.longitude + multiplexer * random2
+                        )
+
+                        val addresses_: List<Address> = geocoder.getFromLocation(pos.latitude, pos.longitude, 1)
+                        if (addresses_.size > 0) {
+
+                            val latitude: Double = addresses_[0].getLatitude()
+                            val longitude: Double = addresses_[0].getLongitude()
+                            Log.e(
+                                "Address_",
+                                "$i plat-${pos.latitude} plong-${pos.longitude} lat-$latitude long-$longitude locale-${addresses_[0].locale} feat-${addresses_[0].featureName} locality-${addresses_[0].locality}" +
+                                        " ext-${addresses_[0].extras} prem-${addresses_[0].premises} thor-${addresses_[0].thoroughfare}"
+                            )
+                        }
+
+
                         val entityBitmap = entity.getComponent(BitmapComponent::class.java)!!._bitmapId
                         val entityName = entity.getComponent(BitmapComponent::class.java)!!._name
                         placeObjectOnMap(
@@ -233,6 +264,32 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val newTilt = 45F
         val cameraPosition = CameraPosition.Builder(map.cameraPosition).tilt(newTilt).build()
         map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+
+        var loc = "войкова 119"
+
+        val geocoder = Geocoder(this, Locale.getDefault())
+
+        val addresses: List<Address> = geocoder.getFromLocationName(loc, 5)
+        val addresses_: List<Address> = geocoder.getFromLocation(54.1127698947928, 54.09556720834653, 5)
+
+        Log.e("ADD", "${addresses.size}")
+        Log.e("ADD_", "${addresses_.size}")
+        if (addresses.size > 0) {
+            val latitude: Double = addresses[0].getLatitude()
+            val longitude: Double = addresses[0].getLongitude()
+            Log.i("Address", "$latitude $longitude")
+        }
+        if (addresses_.size > 0) {
+            for (i in 0..addresses_.size-1) {
+                val latitude: Double = addresses_[i].getLatitude()
+                val longitude: Double = addresses_[i].getLongitude()
+                Log.i(
+                    "Address_",
+                    "$i lat-$latitude long-$longitude locale-${addresses_[i].locale} feat-${addresses_[i].featureName} locality-${addresses_[i].locality}" +
+                            " ext-${addresses_[i].extras} prem-${addresses_[i].premises} thor-${addresses_[i].thoroughfare}"
+                )
+            }
+        }
 
     }
 
@@ -1598,7 +1655,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 var multiplexer = 1
                 if(Math.random() < 0.5)
                     multiplexer = -1
-                val pos = LatLng(lastLocation.latitude + multiplexer*random1, lastLocation.longitude + multiplexer*random2)
+                val pos = LatLng(
+                    lastLocation.latitude + multiplexer * random1,
+                    lastLocation.longitude + multiplexer * random2
+                )
                 val entityBitmap = enemy.getComponent(BitmapComponent::class.java)!!._bitmapId
                 val entityName = enemy.getComponent(BitmapComponent::class.java)!!._name
                 placeObjectOnMap(
