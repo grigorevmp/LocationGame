@@ -9,7 +9,7 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import com.mikhailgrigorev.game.MapsActivity
 import com.mikhailgrigorev.game.R
-import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.activity_game_menu.*
 
 class GameMenu : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
