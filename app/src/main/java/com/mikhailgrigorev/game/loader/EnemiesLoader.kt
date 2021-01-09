@@ -49,8 +49,8 @@ class EnemiesLoader(context: Context, specialSpawn:Boolean = false) {
         if(specialSpawn) {
             for (enemy in dataForFirstLoad) {
 
-                val random1: Float = (0.0001 + Math.random() * (0.0020 - 0.0001)).toFloat()
-                val random2: Float = (0.0001 + Math.random() * (0.0020 - 0.0001)).toFloat()
+                val random1: Double = (0.0001 + Math.random() * (0.0020 - 0.0001))
+                val random2: Double = (0.0001 + Math.random() * (0.0020 - 0.0001))
 
                 var multiplexer1 = 1
                 if(Math.random() < 0.5)
@@ -60,8 +60,8 @@ class EnemiesLoader(context: Context, specialSpawn:Boolean = false) {
                 if(Math.random() < 0.5)
                     multiplexer2 = -1
 
-                val x: Float = (random1*multiplexer1).toFloat()
-                val y: Float = (random2*multiplexer2).toFloat()
+                val x: Double = (random1*multiplexer1)
+                val y: Double = (random2*multiplexer2)
 
                 Log.d("DISTANCE FOR Enemies", "$x - $y")
 
@@ -138,8 +138,8 @@ class EnemiesLoader(context: Context, specialSpawn:Boolean = false) {
             val obj = Enemy(
                 context,
                 _multiple = enemy[1].toInt(),
-                _x = enemy[2].toFloat(),
-                _y = enemy[3].toFloat(),
+                _x = enemy[2].toDouble(),
+                _y = enemy[3].toDouble(),
                 _size = enemy[4].toFloat(),
                 _id = enemy[5].toInt(),
                 _name = enemyClass[enemy[0].toInt()]!![0],

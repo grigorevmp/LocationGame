@@ -89,7 +89,7 @@ class DBHelperFunctions {
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
-        fun loadEnemyIDByXY(context: Context, x: Float, y: Float): String {
+        fun loadEnemyIDByXY(context: Context, x: Double, y: Double): String {
             val dbHelper = EnemyDBHelper(context)
             val database = dbHelper.writableDatabase
 
@@ -110,7 +110,7 @@ class DBHelperFunctions {
             return enemiesIds
         }
 
-        fun spawnEnemy(context: Context, enemy: List<String>, x: Float, y:Float) {
+        fun spawnEnemy(context: Context, enemy: List<String>, x: Double, y:Double) {
             val dbHelper = EnemyDBHelper(context)
             val database = dbHelper.writableDatabase
             val contentValues = ContentValues()

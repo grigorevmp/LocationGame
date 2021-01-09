@@ -41,8 +41,8 @@ class Player(context: Context): Entity() {
         val size = playerData.size
         positionComponent = this.addComponent(
             PositionComponent(
-                playerData.x,
-                Game.maxY - size - playerData.yOffset,
+                playerData.x.toDouble(),
+                Game.maxY - size - playerData.yOffset.toDouble(),
                 size
             )
         )
@@ -226,12 +226,7 @@ class Player(context: Context): Entity() {
         bitmapComponent.update()
     }
 
-    fun stepUp() {
-        positionComponent.move(
-            0f,
-            -speed)
-        update()
-    }
+
 
 }
 

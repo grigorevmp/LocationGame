@@ -72,8 +72,8 @@ class BitmapComponent(
                 _bitmap?.let {
                     canvas.drawBitmap(
                         it,
-                        positionComponent.x * Game.unitW,
-                        positionComponent.y * Game.unitH,
+                        positionComponent.x.toFloat() * Game.unitW,
+                        positionComponent.y.toFloat() * Game.unitH,
                         paint
                     )
                 }
@@ -82,8 +82,8 @@ class BitmapComponent(
                 _bitmapMultiple?.let {
                     canvas.drawBitmap(
                         it,
-                        positionComponent.x * Game.unitW,
-                        positionComponent.y * Game.unitH,
+                        positionComponent.x.toFloat() * Game.unitW,
+                        positionComponent.y.toFloat() * Game.unitH,
                         paint
                     )
                 }

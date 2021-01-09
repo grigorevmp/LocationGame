@@ -38,8 +38,8 @@ class Totem(context: Context,
 
     private var bitmapComponent: BitmapComponent
     private var positionComponent: PositionComponent = this.addComponent(PositionComponent(
-        x,
-        y,
+        x.toDouble(),
+        y.toDouble(),
         size
     ))
     private var upgradeComponent: UpgradeComponent = this.addComponent(UpgradeComponent())

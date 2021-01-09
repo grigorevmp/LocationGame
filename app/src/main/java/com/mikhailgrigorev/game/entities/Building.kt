@@ -32,8 +32,8 @@ class Building(context: Context,
 
     init{
         positionComponent = this.addComponent(PositionComponent(
-            x,
-            y,
+            x.toDouble(),
+            y.toDouble(),
             size
         ))
         bitmapComponent = this.addComponent(BitmapComponent(
