@@ -52,6 +52,7 @@ import com.mikhailgrigorev.game.loader.EnemiesLoader
 import com.mikhailgrigorev.game.loader.TotemsLoader
 import com.mikhailgrigorev.game.views.ItemView
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -108,6 +109,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
                 lastLocation = p0.lastLocation
                 placeMarkerOnMap(LatLng(lastLocation.latitude, lastLocation.longitude))
+                updatePlayerDetails("LastPos", "${lastLocation.latitude},${lastLocation.longitude}")
+
                 val cameraPosition = CameraPosition.Builder()
                     .target(LatLng(lastLocation.latitude, lastLocation.longitude)) // Sets the center of the map to Mountain View
                     .zoom(DEFAULT_ZOOM_LEVEL)            // Sets the zoom
@@ -132,7 +135,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                             lastLocation.longitude + multiplexer * random2
                         )
 
-                        val addresses_: List<Address> = geocoder.getFromLocation(pos.latitude, pos.longitude, 1)
+                        val addresses_: List<Address> = geocoder.getFromLocation(
+                            pos.latitude,
+                            pos.longitude,
+                            1
+                        )
                         if (addresses_.size > 0) {
                             val latitude: Double = addresses_[0].latitude
                             val longitude: Double = addresses_[0].longitude
@@ -174,10 +181,87 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             gameEntities.add(enemy)
     }
 
+    private fun getDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float {
+        val loc1 = Location("")
+        loc1.latitude = lat1
+        loc1.longitude = lon1
+
+        val loc2 = Location("")
+        loc2.latitude = lat2
+        loc2.longitude = lon2
+
+        return loc1.distanceTo(loc2)
+    }
+
+    private fun updatePlayerDetails(valueKey: String?, value: String?) {
+        val oldPos = read(valueKey, "-1")
+        var loc1: List<String>? = null
+        if (value != null)
+            loc1 = value.split(",")
+
+        var loc2: List<String>? = null
+        if (oldPos != null)
+            loc2 = oldPos.split(",")
+
+        var distance = 1000f
+        if((loc1 != null) and (loc2 != null)) {
+            distance = getDistance(
+                loc1!![0].toDouble(),
+                loc1[1].toDouble(),
+                loc2!![0].toDouble(),
+                loc2[1].toDouble()
+            )
+        }
+
+        Log.d("DISTANCE", "$distance")
+        save(valueKey, value)
+    }
+
+    private fun movePlayerDetails(valueKey: String?, value: String?) {
+        val oldPos = read(valueKey, "-1")
+        var loc1: List<String>? = null
+        if (value != null)
+            if (value != "-1")
+                loc1 = value.split(",")
+
+        var loc2: List<String>? = null
+        if (oldPos != null)
+            if (oldPos != "-1")
+                loc2 = oldPos.split(",")
+
+        var distance = 1000f
+        if((loc1 != null) and (loc2 != null)) {
+            distance = getDistance(
+                loc1!![0].toDouble(),
+                loc1[1].toDouble(),
+                loc2!![0].toDouble(),
+                loc2[1].toDouble()
+            )
+        }
+
+        Log.d("DISTANCE", "$distance")
+        save(valueKey, value)
+    }
+
+    private fun save(valueKey: String?, value: String?) {
+        val sharedPref = this.getPreferences(Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putString(valueKey, value)
+            apply()
+        }
+    }
+
+    private fun read(valueKey: String?, valueDefault: String?): String? {
+        val sharedPref = this.getPreferences(Context.MODE_PRIVATE) ?: return valueDefault
+        with(sharedPref) {
+            return getString(valueKey, valueDefault)
+        }
+    }
+
     private fun placeMarkerOnMap(location: LatLng) {
         val markerOptions = MarkerOptions().position(location)
 
-        val titleStr: String = "player"  // add these two lines
+        val titleStr = "player"  // add these two lines
         markerOptions.title(titleStr)
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.player))
 
@@ -215,6 +299,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
+                movePlayerDetails("LastPos", "${lastLocation.latitude},${lastLocation.longitude}")
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, DEFAULT_ZOOM_LEVEL))
 
             }
