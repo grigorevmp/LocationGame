@@ -139,8 +139,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                             val longitude: Double = addresses_[0].getLongitude()
                             Log.e(
                                 "Address_",
-                                "$i plat-${pos.latitude} plong-${pos.longitude} lat-$latitude long-$longitude locale-${addresses_[0].locale} feat-${addresses_[0].featureName} locality-${addresses_[0].locality}" +
-                                        " ext-${addresses_[0].extras} prem-${addresses_[0].premises} thor-${addresses_[0].thoroughfare}"
+                                "$i plat-${pos.latitude} plong-${pos.longitude} lat-$latitude long-$longitude thor-${addresses_[0].thoroughfare} feat-${addresses_[0].featureName}"
                             )
                         }
 
@@ -264,32 +263,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val newTilt = 45F
         val cameraPosition = CameraPosition.Builder(map.cameraPosition).tilt(newTilt).build()
         map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-
-        var loc = "войкова 119"
-
-        val geocoder = Geocoder(this, Locale.getDefault())
-
-        val addresses: List<Address> = geocoder.getFromLocationName(loc, 5)
-        val addresses_: List<Address> = geocoder.getFromLocation(54.1127698947928, 54.09556720834653, 5)
-
-        Log.e("ADD", "${addresses.size}")
-        Log.e("ADD_", "${addresses_.size}")
-        if (addresses.size > 0) {
-            val latitude: Double = addresses[0].getLatitude()
-            val longitude: Double = addresses[0].getLongitude()
-            Log.i("Address", "$latitude $longitude")
-        }
-        if (addresses_.size > 0) {
-            for (i in 0..addresses_.size-1) {
-                val latitude: Double = addresses_[i].getLatitude()
-                val longitude: Double = addresses_[i].getLongitude()
-                Log.i(
-                    "Address_",
-                    "$i lat-$latitude long-$longitude locale-${addresses_[i].locale} feat-${addresses_[i].featureName} locality-${addresses_[i].locality}" +
-                            " ext-${addresses_[i].extras} prem-${addresses_[i].premises} thor-${addresses_[i].thoroughfare}"
-                )
-            }
-        }
 
     }
 
