@@ -134,7 +134,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
                         val addresses_: List<Address> = geocoder.getFromLocation(pos.latitude, pos.longitude, 1)
                         if (addresses_.size > 0) {
-
                             val latitude: Double = addresses_[0].getLatitude()
                             val longitude: Double = addresses_[0].getLongitude()
                             Log.e(
@@ -142,7 +141,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                                 "$i plat-${pos.latitude} plong-${pos.longitude} lat-$latitude long-$longitude thor-${addresses_[0].thoroughfare} feat-${addresses_[0].featureName}"
                             )
                         }
-
 
                         val entityBitmap = entity.getComponent(BitmapComponent::class.java)!!._bitmapId
                         val entityName = entity.getComponent(BitmapComponent::class.java)!!._name
@@ -155,31 +153,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
                     }
 
-
-                    //val pos1 = LatLng(lastLocation.latitude + 0.0010, lastLocation.longitude)
-                    //val pos2 = LatLng(lastLocation.latitude, lastLocation.longitude + 0.0010)
-                    //val pos3 = LatLng(
-                    //    lastLocation.latitude - 0.0005,
-                    //    lastLocation.longitude - 0.0005
-                    //)
-                    //placeObjectOnMap(
-                    //    pos1,
-                    //    BitmapDescriptorFactory.fromResource(R.drawable.marker),
-                    //    "Marker",
-                    //    "THIS IS MARKER"
-                    //)
-                    //placeObjectOnMap(
-                    //    pos2,
-                    //    BitmapDescriptorFactory.fromResource(R.drawable.tower),
-                    //    "Tower",
-                    //    "THIS IS TOWER"
-                    //)
-                    //placeObjectOnMap(
-                    //    pos3,
-                    //    BitmapDescriptorFactory.fromResource(R.drawable.office),
-                    //    "Office",
-                    //    "THIS IS OFFICE"
-                    //)
                     isPlaced = true
                 }
             }
