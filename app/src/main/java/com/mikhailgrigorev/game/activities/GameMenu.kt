@@ -24,13 +24,11 @@ class GameMenu : AppCompatActivity() {
 
             // MAIN - > PLAY
             menuPlay.setOnClickListener {
-                //findNavController().navigate(R.id.action_FirstFragment_to_PlayFragment)
                 val intent = Intent(this, MapsActivity::class.java)
                 startActivity(intent)
             }
             // MAIN - > SETTINGS
             menuSettings.setOnClickListener {
-                //findNavController().navigate(R.id.action_FirstFragment_to_SettingFragment)
                 val intent = Intent(this, Settings::class.java)
                 startActivity(intent)
             }

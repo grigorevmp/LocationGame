@@ -109,7 +109,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
                 lastLocation = p0.lastLocation
                 placeMarkerOnMap(LatLng(lastLocation.latitude, lastLocation.longitude))
-                analyzePlayerStep("LastPos", "${lastLocation.latitude},${lastLocation.longitude}")
 
                 val cameraPosition = CameraPosition.Builder()
                     .target(LatLng(lastLocation.latitude, lastLocation.longitude)) // Sets the center of the map to Mountain View
@@ -118,6 +117,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     .tilt(45f)            // Sets the tilt of the camera to 30 degrees
                     .build()              // Creates a CameraPosition from the builder
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+
+                val reDraw = analyzePlayerStep("LastPos", "${lastLocation.latitude},${lastLocation.longitude}")
+
                 if (!isPlaced){
 
                     loadData()
@@ -130,10 +132,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                         var multiplexer = 1
                         if(Math.random() < 0.5)
                             multiplexer = -1
-                        val pos = LatLng(
+                        var multiplexer2 = 1
+                        if(Math.random() < 0.5)
+                            multiplexer2 = -1
+                        var pos = LatLng(
                             lastLocation.latitude + multiplexer * random1,
-                            lastLocation.longitude + multiplexer * random2
+                            lastLocation.longitude + multiplexer2 * random2
                         )
+
+                        if(entity is Enemy) {
+                            val coors = entity.getComponent(PositionComponent::class.java)!!
+                            pos = LatLng(
+                                lastLocation.latitude + coors.x,
+                                lastLocation.longitude + coors.y
+                            )
+                        }
 
                         val addresses_: List<Address> = geocoder.getFromLocation(
                             pos.latitude,
@@ -201,7 +214,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return loc1.distanceTo(loc2)
     }
 
-    private fun analyzePlayerStep(valueKey: String?, value: String?) {
+    private fun analyzePlayerStep(valueKey: String?, value: String?): Boolean {
         val oldPos = read(valueKey, "-1")
         var loc1: List<String>? = null
         if (value != null)
@@ -213,16 +226,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         var distance = 1000f
         if((loc1 != null) and (loc2 != null)) {
-            distance = getDistance(
-                loc1!![0].toDouble(),
-                loc1[1].toDouble(),
-                loc2!![0].toDouble(),
-                loc2[1].toDouble()
-            )
+            if ((loc1!!.size == 2) and (loc2!!.size == 2)) {
+                distance = getDistance(
+                    loc1[0].toDouble(),
+                    loc1[1].toDouble(),
+                    loc2[0].toDouble(),
+                    loc2[1].toDouble()
+                )
+            }
         }
 
         Log.d("DISTANCE STEP", "$distance")
         save(valueKey, value)
+
+        return distance > 1000000
     }
 
     private fun analyzeNewPlayerLocation(valueKey: String?, value: String?) {
@@ -556,11 +573,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val multipleImageHandler = dialog.findViewById(R.id.multipleImageHandler) as HorizontalScrollView
 
         val nameEnemy = dialog.findViewById(R.id.name) as TextView
-        val enemiesIds = DBHelperFunctions.loadEnemyIDByXY(
-            context,
-            objPositionComponent.x.toInt(),
-            objPositionComponent.y.toInt()
-        )
+        //val enemiesIds = DBHelperFunctions.loadEnemyIDByXY(
+        //    context,
+        //    objPositionComponent.x,
+        //    objPositionComponent.y
+        //)
+
+        val enemiesIds = objBitmapComponent._id.toString()
 
         if (enemyMultiple == 0) {
             multipleImageHandler.visibility = View.GONE
@@ -1699,15 +1718,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 gameEntities.add(enemy)
 
                 val i = gameEntities.size
-                val random1: Double = 0.0001 + Math.random() * (0.0020 - 0.0001)
-                val random2: Double = 0.0001 + Math.random() * (0.0020 - 0.0001)
 
-                var multiplexer = 1
-                if(Math.random() < 0.5)
-                    multiplexer = -1
+                val coors = enemy.getComponent(PositionComponent::class.java)!!
                 val pos = LatLng(
-                    lastLocation.latitude + multiplexer * random1,
-                    lastLocation.longitude + multiplexer * random2
+                    lastLocation.latitude + coors.x,
+                    lastLocation.longitude + coors.y
                 )
                 val entityBitmap = enemy.getComponent(BitmapComponent::class.java)!!._bitmapId
                 val entityName = enemy.getComponent(BitmapComponent::class.java)!!._name

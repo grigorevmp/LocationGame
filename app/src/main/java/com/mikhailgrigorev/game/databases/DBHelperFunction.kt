@@ -89,11 +89,11 @@ class DBHelperFunctions {
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
-        fun loadEnemyIDByXY(context: Context, x: Int, y: Int): String {
+        fun loadEnemyIDByXY(context: Context, x: Float, y: Float): String {
             val dbHelper = EnemyDBHelper(context)
             val database = dbHelper.writableDatabase
 
-            val query = "select * from enemies where x = $x AND y = ${-Game.maxY + y}"
+            val query = "select * from enemies where x = $x AND y = $y"
             val cursor = database.rawQuery(query, null)
 
             var enemiesIds = ""
@@ -110,15 +110,15 @@ class DBHelperFunctions {
             return enemiesIds
         }
 
-        fun spawnEnemy(context: Context, enemy: List<String>) {
+        fun spawnEnemy(context: Context, enemy: List<String>, x: Float, y:Float) {
             val dbHelper = EnemyDBHelper(context)
             val database = dbHelper.writableDatabase
             val contentValues = ContentValues()
 
             contentValues.put(EnemyDBHelper.EnemyID, enemy[0].toInt())
             contentValues.put(EnemyDBHelper.multiple, enemy[1].toInt())
-            contentValues.put(EnemyDBHelper.X, enemy[2].toInt())
-            contentValues.put(EnemyDBHelper.Y, enemy[3].toInt())
+            contentValues.put(EnemyDBHelper.X, x)
+            contentValues.put(EnemyDBHelper.Y, y)
             contentValues.put(EnemyDBHelper.SIZE, enemy[4].toInt())
             contentValues.put(EnemyDBHelper.ID, enemy[5].toInt())
             contentValues.put(EnemyDBHelper.HEALTH, enemy[6].toInt())
@@ -167,7 +167,7 @@ class DBHelperFunctions {
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
 
-        // ENEMY FUNCTIONS
+        // ITEM FUNCTIONS
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
