@@ -48,9 +48,10 @@ import com.mikhailgrigorev.game.entities.Enemy
 import com.mikhailgrigorev.game.entities.Player
 import com.mikhailgrigorev.game.entities.Totem
 import com.mikhailgrigorev.game.loader.BuildingsLoader
-import com.mikhailgrigorev.game.loader.EnemiesLoader
+import com.mikhailgrigorev.game.loader.EnemiesGenerator
 import com.mikhailgrigorev.game.loader.TotemsLoader
 import com.mikhailgrigorev.game.views.ItemView
+import kotlinx.android.synthetic.main.activity_maps.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -81,9 +82,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     // map objects
     private var buildingsLoader: BuildingsLoader? = null
     private var totemsLoader: TotemsLoader? = null
-    private var enemiesLoader: EnemiesLoader? = null
+    private var enemiesLoader: EnemiesGenerator? = null
     // for storing game objects
     private var gameEntities = ArrayList<Entity>()
+    var globalX: Double = 0.0
+    var globalY: Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,9 +98,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             window.statusBarColor = Color.TRANSPARENT
 
         }
-        supportActionBar?.hide();
+        supportActionBar?.hide()
 
         setContentView(R.layout.activity_maps)
+
+        test2.setOnClickListener {
+            val oldPos = read("LastPos", "-1")
+            var loc2: List<String>? = null
+            if (oldPos != null)
+                if (oldPos != "-1")
+                    loc2 = oldPos.split(",")
+            save("LastPos", "${loc2!![0].toDouble() + 0.0010}, ${loc2[1].toDouble() + 0.0010}")
+        }
+
+        test3.setOnClickListener {
+            val oldPos = read("LastPos", "-1")
+            var loc2: List<String>? = null
+            if (oldPos != null)
+                if (oldPos != "-1")
+                    loc2 = oldPos.split(",")
+            save("LastPos", "${loc2!![0].toDouble() + 0.0060}, ${loc2!![1].toDouble() + 0.0060}")
+        }
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -118,7 +140,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     .build()              // Creates a CameraPosition from the builder
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 
+                globalX = lastLocation.latitude
+                globalY = lastLocation.longitude
                 val reDraw = analyzePlayerStep("LastPos", "${lastLocation.latitude},${lastLocation.longitude}")
+
 
                 if (!isPlaced){
 
@@ -143,8 +168,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                         if(entity is Enemy) {
                             val coors = entity.getComponent(PositionComponent::class.java)!!
                             pos = LatLng(
-                                lastLocation.latitude + coors.x,
-                                lastLocation.longitude + coors.y
+                                coors.x,
+                                coors.y
                             )
                         }
 
@@ -153,7 +178,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                             pos.longitude,
                             1
                         )
-                        if (addresses_.size > 0) {
+                        if (addresses_.isNotEmpty()) {
                             val latitude: Double = addresses_[0].latitude
                             val longitude: Double = addresses_[0].longitude
                             Log.e(
@@ -193,7 +218,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         player = Player(this)
         buildingsLoader = BuildingsLoader(this)
         totemsLoader = TotemsLoader(this)
-        enemiesLoader = EnemiesLoader(this)
+        Log.d("DISTANCE LARGE", "LOADING")
+        enemiesLoader = EnemiesGenerator(this)
         for (obj in buildingsLoader!!.mapObjects)
             gameEntities.add(obj)
         for (totem in totemsLoader!!.totems)
@@ -214,6 +240,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return loc1.distanceTo(loc2)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun analyzePlayerStep(valueKey: String?, value: String?): Boolean {
         val oldPos = read(valueKey, "-1")
         var loc1: List<String>? = null
@@ -224,7 +251,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         if (oldPos != null)
             loc2 = oldPos.split(",")
 
-        var distance = 1000f
+        var distance = 5000f
+        var checkDistance = false
         if((loc1 != null) and (loc2 != null)) {
             if ((loc1!!.size == 2) and (loc2!!.size == 2)) {
                 distance = getDistance(
@@ -233,22 +261,52 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     loc2[0].toDouble(),
                     loc2[1].toDouble()
                 )
+                checkDistance = true
             }
         }
 
         Log.d("DISTANCE STEP", "$distance")
-        save(valueKey, value)
+        test.text = "DISTANCE STEP $distance"
 
-        return distance > 1000000
+        if((checkDistance) and (distance >= 445.28f)) {
+            Log.d("DISTANCE LARGE $distance", "SPAWNING from step")
+            test.text = "SPAWNING"
+            enemiesLoader = EnemiesGenerator(this, x=globalX, y=globalY, oldX = loc2!![0].toDouble(), oldY = loc2[1].toDouble(), recreate=false, addNewRecords=true, num=15)
+            for (enemy in enemiesLoader!!.enemies) {
+                if (enemy !in  gameEntities) {
+                    gameEntities.add(enemy)
+
+                    val i = gameEntities.size
+
+                    val coors = enemy.getComponent(PositionComponent::class.java)!!
+                    val pos = LatLng(
+                        coors.x,
+                        coors.y
+                    )
+                    val entityBitmap = enemy.getComponent(BitmapComponent::class.java)!!._bitmapId
+                    val entityName = enemy.getComponent(BitmapComponent::class.java)!!._name
+                    placeObjectOnMap(
+                        pos,
+                        BitmapDescriptorFactory.fromResource(entityBitmap),
+                        "$i",
+                        "THIS IS $entityName"
+                    )
+                }
+            }
+            save(valueKey, value)
+        }
+
+        return distance >= 1000000
     }
 
+    @SuppressLint("SetTextI18n")
     private fun analyzeNewPlayerLocation(valueKey: String?, value: String?) {
-        val oldPos = read(valueKey, "-1")
         var loc1: List<String>? = null
         if (value != null)
             if (value != "-1")
                 loc1 = value.split(",")
 
+        val oldPos = read(valueKey, "-1")
         var loc2: List<String>? = null
         if (oldPos != null)
             if (oldPos != "-1")
@@ -265,8 +323,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
 
         Log.d("DISTANCE NEW", "$distance")
-        save(valueKey,
-            value)
+        test.text = "DISTANCE NEW $distance"
+
+        if(distance >= 1000f) {
+            Log.d("DISTANCE LARGE", "SPAWNING from analyzer")
+            enemiesLoader = EnemiesGenerator(this, x=globalX, y=globalY, recreate=true, addNewRecords=true, num=15)
+            for (enemy in enemiesLoader!!.enemies) {
+                gameEntities.add(enemy)
+
+                val i = gameEntities.size
+
+                val coors = enemy.getComponent(PositionComponent::class.java)!!
+                val pos = LatLng(
+                    coors.x,
+                    coors.y
+                )
+                val entityBitmap = enemy.getComponent(BitmapComponent::class.java)!!._bitmapId
+                val entityName = enemy.getComponent(BitmapComponent::class.java)!!._name
+                placeObjectOnMap(
+                    pos,
+                    BitmapDescriptorFactory.fromResource(entityBitmap),
+                    "$i",
+                    "THIS IS $entityName"
+                )
+
+            }
+            save(valueKey, value)
+        }
     }
 
     private fun save(valueKey: String?, value: String?) {
@@ -274,6 +357,41 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         with(sharedPref.edit()) {
             putString(valueKey, value)
             apply()
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun checkCookies(valueKey: String?, valueDefault: String?, value: String?) {
+        val context = this
+        val sharedPref = this.getPreferences(Context.MODE_PRIVATE)
+        with(sharedPref) {
+            if(getString(valueKey, valueDefault) == valueDefault){
+                Log.d("DISTANCE", "FIRST SETUP")
+                test.text = "DISTANCE - FIRST SETUP"
+                Log.d("DISTANCE LARGE", "SPAWNING from cookies")
+                enemiesLoader = EnemiesGenerator(context, x=globalX, y=globalY, recreate=true, addNewRecords=true, num=15)
+                for (enemy in enemiesLoader!!.enemies) {
+                    gameEntities.add(enemy)
+
+                    val i = gameEntities.size
+
+                    val coors = enemy.getComponent(PositionComponent::class.java)!!
+                    val pos = LatLng(
+                        coors.x,
+                        coors.y
+                    )
+                    val entityBitmap = enemy.getComponent(BitmapComponent::class.java)!!._bitmapId
+                    val entityName = enemy.getComponent(BitmapComponent::class.java)!!._name
+                    placeObjectOnMap(
+                        pos,
+                        BitmapDescriptorFactory.fromResource(entityBitmap),
+                        "$i",
+                        "THIS IS $entityName"
+                    )
+
+                }
+                save(valueKey, value)
+            }
         }
     }
 
@@ -335,6 +453,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
+                globalX = lastLocation.latitude
+                globalY = lastLocation.longitude
+                checkCookies("LastPos", "-1", "${lastLocation.latitude},${lastLocation.longitude}")
                 analyzeNewPlayerLocation("LastPos", "${lastLocation.latitude},${lastLocation.longitude}")
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, DEFAULT_ZOOM_LEVEL))
 
@@ -1713,7 +1834,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         builder.setPositiveButton(
             "Respawn enemies"
         ) { _, _ ->
-            enemiesLoader = EnemiesLoader(context, true)
+            Log.d("DISTANCE LARGE", "SPAWNING from button")
+            enemiesLoader = EnemiesGenerator(context, x=globalX, y=globalY, recreate=true, addNewRecords=true, num=15)
             for (enemy in enemiesLoader!!.enemies) {
                 gameEntities.add(enemy)
 
@@ -1721,8 +1843,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
                 val coors = enemy.getComponent(PositionComponent::class.java)!!
                 val pos = LatLng(
-                    lastLocation.latitude + coors.x,
-                    lastLocation.longitude + coors.y
+                    coors.x,
+                    coors.y
                 )
                 val entityBitmap = enemy.getComponent(BitmapComponent::class.java)!!._bitmapId
                 val entityName = enemy.getComponent(BitmapComponent::class.java)!!._name

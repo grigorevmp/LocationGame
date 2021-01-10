@@ -9,11 +9,23 @@
         android:id="@+id/test"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
         android:layout_marginTop="30dp"
         android:text="@string/noText"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+    </Button>
+
+    <Button
+        android:id="@+id/test2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp"
+        android:text="+0.0010"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/test3">
 
     </Button>
 
@@ -24,8 +36,24 @@
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:context=".MapsActivity" />
+        app:layout_constraintVertical_bias="0.0"
+        tools:context=".MapsActivity" >
+
+    </androidx.fragment.app.FragmentContainerView>
+
+    <Button
+        android:id="@+id/test3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp"
+        android:text="+0.0060"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+    </Button>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

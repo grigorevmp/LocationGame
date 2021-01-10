@@ -25,7 +25,7 @@ class DBHelperFunctions {
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
-        private fun isEnemyExists(id: Int, context: Context): Boolean {
+        fun isEnemyExists(id: Int, context: Context): Boolean {
             var c: Cursor? = null
             val db = EnemyDBHelper(context).readableDatabase
             return try {
@@ -110,15 +110,15 @@ class DBHelperFunctions {
             return enemiesIds
         }
 
-        fun spawnEnemy(context: Context, enemy: List<String>, x: Double, y:Double) {
+        fun spawnEnemy(context: Context, enemy: List<String>) {
             val dbHelper = EnemyDBHelper(context)
             val database = dbHelper.writableDatabase
             val contentValues = ContentValues()
 
             contentValues.put(EnemyDBHelper.EnemyID, enemy[0].toInt())
             contentValues.put(EnemyDBHelper.multiple, enemy[1].toInt())
-            contentValues.put(EnemyDBHelper.X, x)
-            contentValues.put(EnemyDBHelper.Y, y)
+            contentValues.put(EnemyDBHelper.X, enemy[2].toDouble())
+            contentValues.put(EnemyDBHelper.Y, enemy[3].toDouble())
             contentValues.put(EnemyDBHelper.SIZE, enemy[4].toInt())
             contentValues.put(EnemyDBHelper.ID, enemy[5].toInt())
             contentValues.put(EnemyDBHelper.HEALTH, enemy[6].toInt())
