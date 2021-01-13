@@ -4,16 +4,16 @@ import android.graphics.RectF
 import com.mikhailgrigorev.game.core.ecs.Component
 import com.mikhailgrigorev.game.game.Game
 
-class PositionComponent( x: Float, y: Float, size: Float,
+class PositionComponent( x: Double, y: Double, size: Float,
 ) : Component() {
 
-    var x: Float
+    var x: Double
         private set
-    var y: Float
+    var y: Double
         private set
     var size: Float
         private set
-    var rect: RectF = RectF(x, y, x + size, y + size)
+    var rect: RectF = RectF(x.toFloat(), y.toFloat(), x.toFloat() + size, y.toFloat() + size)
         private set
 
     init {
@@ -23,17 +23,13 @@ class PositionComponent( x: Float, y: Float, size: Float,
         update()
     }
 
-    fun move(xDisplacement: Float, yDisplacement: Float) {
-        x += xDisplacement
-        y += yDisplacement
-    }
 
     override fun update() {
         rect.set(
-            x * Game.unitW,
-            y * Game.unitH,
-            (x + size) * Game.unitW,
-            (y + size) * Game.unitH
+            x.toFloat() * Game.unitW,
+            y.toFloat() * Game.unitH,
+            (x.toFloat() + size) * Game.unitW,
+            (y.toFloat() + size) * Game.unitH
         )
     }
 }

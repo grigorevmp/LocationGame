@@ -25,7 +25,7 @@ class DBHelperFunctions {
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
-        private fun isEnemyExists(id: Int, context: Context): Boolean {
+        fun isEnemyExists(id: Int, context: Context): Boolean {
             var c: Cursor? = null
             val db = EnemyDBHelper(context).readableDatabase
             return try {
@@ -89,11 +89,11 @@ class DBHelperFunctions {
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
-        fun loadEnemyIDByXY(context: Context, x: Int, y: Int): String {
+        fun loadEnemyIDByXY(context: Context, x: Double, y: Double): String {
             val dbHelper = EnemyDBHelper(context)
             val database = dbHelper.writableDatabase
 
-            val query = "select * from enemies where x = $x AND y = ${-Game.maxY + y}"
+            val query = "select * from enemies where x = $x AND y = $y"
             val cursor = database.rawQuery(query, null)
 
             var enemiesIds = ""
@@ -117,8 +117,8 @@ class DBHelperFunctions {
 
             contentValues.put(EnemyDBHelper.EnemyID, enemy[0].toInt())
             contentValues.put(EnemyDBHelper.multiple, enemy[1].toInt())
-            contentValues.put(EnemyDBHelper.X, enemy[2].toInt())
-            contentValues.put(EnemyDBHelper.Y, enemy[3].toInt())
+            contentValues.put(EnemyDBHelper.X, enemy[2].toDouble())
+            contentValues.put(EnemyDBHelper.Y, enemy[3].toDouble())
             contentValues.put(EnemyDBHelper.SIZE, enemy[4].toInt())
             contentValues.put(EnemyDBHelper.ID, enemy[5].toInt())
             contentValues.put(EnemyDBHelper.HEALTH, enemy[6].toInt())
@@ -167,7 +167,7 @@ class DBHelperFunctions {
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
 
-        // ENEMY FUNCTIONS
+        // ITEM FUNCTIONS
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------
         // ---------------------------------------------------------------

@@ -8,66 +8,208 @@ import com.mikhailgrigorev.game.core.ecs.Entity
 import com.mikhailgrigorev.game.databases.DBHelperFunctions
 import com.mikhailgrigorev.game.databases.EnemyDBHelper
 import com.mikhailgrigorev.game.entities.Enemy
-import com.mikhailgrigorev.game.game.Game
+import java.security.SecureRandom
+import kotlin.collections.ArrayList
+import kotlin.math.sqrt
 
-class EnemiesLoader(context: Context, specialSpawn:Boolean = false) {
-    /**
-     * ENEMY CLASS
-     * format: EnemyID, NAME, CLASS, DESCRIPTION, BITMAP_HEADER
-     *
-     * +0 EnemyID
-     * +1 NAME
-     * +2 CLASS
-     * +3 DESCRIPTION
-     * +4 BITMAP_HEADER
-     *
-     * 0,Skeleton,skeleton,Bones,skeleton
-     *
-     * ENEMY DATA
-     * format: EnemyID,multiple,X,Y,SIZE,ID,HEALTH,DMG,AIR,WATER,EARTH,FIRE,CC,CM,DEFENCE,AIR,WATER,EARTH,FIRE
-     *
-     * example:
-     */
+class EnemiesGenerator(
+    private val context: Context,
+                       x: Double = 0.0,
+                       y: Double = 0.0,
+                       oldX: Double = 0.0,
+                       oldY: Double = 0.0,
+                       recreate: Boolean = false,
+                       addNewRecords: Boolean = false,
+                       num: Int = 0) {
 
     var enemies = ArrayList<Entity>()
         private set
 
     private val classesFileName = "MapData/Enemies/classes.csv"
-    private val dataFileName = "MapData/Enemies/data.csv"
 
+    val AB = "0123456789"
+    var rnd: SecureRandom = SecureRandom()
+
+    private fun isPointInCircle(x: Double,
+                        y: Double,
+                        oldX: Double,
+                        oldY: Double,
+                        radius: Double): Boolean {
+        return sqrt((x-oldX)*(x-oldX) + (y-oldY)*(y-oldY)) < radius
+    }
+
+    private fun generateUUID(len: Int): String {
+        rnd.setSeed(System.currentTimeMillis())
+        val sb = StringBuilder(len)
+        for (i in 0 until len) sb.append(AB[rnd.nextInt(AB.length)])
+        return sb.toString()
+    }
+
+    private fun getRandomArrayElement(array: List<Int>): Int {
+        val list = array.filter { it % 2 == 0 }
+        return list.shuffled().take(1)[0]
+    }
+
+    private fun generateEnemy(x: Double, y: Double): ArrayList<String>{
+        val enemy: ArrayList<String> = ArrayList()
+
+        // Items num
+        // Enemies IDs -> MapData/Enemies/classes.csv
+        val enemiesID = listOf(0, 1, 0, 1)
+        val enID = getRandomArrayElement(enemiesID).toString()
+        enemy.add(enID)
+
+        // Multiple - 0,1
+        val multiple = listOf(0)
+        enemy.add(getRandomArrayElement(multiple).toString())
+
+
+        val random1: Double = (0.0001 + Math.random() * (0.0040 - 0.0001))
+        var coeff = 1
+        if(Math.random() < 0.5)
+            coeff = -1
+
+        // X
+        val zero_x = x + (random1*coeff)
+        enemy.add(zero_x.toString())
+
+
+        val random2: Double = (0.0001 + Math.random() * (0.0040 - 0.0001))
+        var coeff2 = 1
+        if(Math.random() < 0.5)
+            coeff2 = -1
+
+        // Y
+        val zero_y = y + (random2*coeff2)
+        enemy.add(zero_y.toString())
+
+        // SIZE
+        val size = listOf(2)
+        enemy.add(getRandomArrayElement(size).toString())
+
+        // ID
+        var id = generateUUID(8).toInt()
+        while (DBHelperFunctions.isEnemyExists(id, context)){
+            id = generateUUID(10).toInt()
+        }
+        enemy.add(id.toString())
+
+        // HEALTH
+        var randomNumber:Int = (-50..50).shuffled()[0]
+        val health = 300 + randomNumber
+        enemy.add(health.toString())
+
+        // DMG
+        randomNumber = (-5..5).shuffled()[0]
+        val dmg = 5 + randomNumber
+        enemy.add(dmg.toString())
+
+        // AIR
+        randomNumber = (0..5).shuffled()[0]
+        val air = 0 + randomNumber
+        enemy.add(air.toString())
+
+        // WATER
+        randomNumber = (0..5).shuffled()[0]
+        val water = 0 + randomNumber
+        enemy.add(water.toString())
+
+        // EARTH
+        randomNumber = (0..5).shuffled()[0]
+        val earth = 0 + randomNumber
+        enemy.add(earth.toString())
+
+        // FIRE
+        randomNumber = (0..5).shuffled()[0]
+        val fire = 0 + randomNumber
+        enemy.add(fire.toString())
+
+        // CC
+        randomNumber = (0..2).shuffled()[0]
+        val cc = 0 + randomNumber
+        enemy.add(cc.toString())
+
+        // CM
+        randomNumber = (0..2).shuffled()[0]
+        val cm = 0 + randomNumber
+        enemy.add(cm.toString())
+
+        // DEFENCE
+        randomNumber = (-5..5).shuffled()[0]
+        val def = 5 + randomNumber
+        enemy.add(def.toString())
+
+        // AIR
+        randomNumber = (0..5).shuffled()[0]
+        val defAir = 0 + randomNumber
+        enemy.add(defAir.toString())
+
+        // WATER
+        randomNumber = (0..5).shuffled()[0]
+        val defWater = 0 + randomNumber
+        enemy.add(defWater.toString())
+
+        // EARTH
+        randomNumber = (0..5).shuffled()[0]
+        val defEarth = 0 + randomNumber
+        enemy.add(defEarth.toString())
+
+        // FIRE
+        randomNumber = (0..5).shuffled()[0]
+        val defFire = 0 + randomNumber
+        enemy.add(defFire.toString())
+
+        ////////////////////////////////////
+        // CHECK THIS
+        ////////////////////////////////////
+
+        // ITEMS
+        var items = ""
+        if(enID == "0"){
+            items = "2"
+        }
+        else if (enID == "1"){
+            items = "3"
+        }
+
+        // ITEMS NUM
+        randomNumber = (0..5).shuffled()[0]
+        val itemsNum = randomNumber.toString()
+
+        enemy.add(items)
+        enemy.add(itemsNum)
+
+        return enemy
+
+    }
 
     init{
         // Data files
         val classesData = CSVReader(context, classesFileName).data
-        val dataForFirstLoad = CSVReader(context, dataFileName).data
         val data = java.util.ArrayList<Array<String>>()
 
        // Database writing TEST
        val dbHelper = EnemyDBHelper(context)
        val database = dbHelper.writableDatabase
-       //val contentValues = ContentValues()
-        if(specialSpawn) {
-            for (enemy in dataForFirstLoad) {
 
-                val random1: Double = (0.0001 + Math.random() * (0.0020 - 0.0001))
-                val random2: Double = (0.0001 + Math.random() * (0.0020 - 0.0001))
+        if(recreate){
+            database.delete(EnemyDBHelper.TABLE_ENEMIES, null, null);
+        }
 
-                var multiplexer1 = 1
-                if(Math.random() < 0.5)
-                    multiplexer1 = -1
-
-                var multiplexer2 = 1
-                if(Math.random() < 0.5)
-                    multiplexer2 = -1
-
-                val x: Double = (random1*multiplexer1)
-                val y: Double = (random2*multiplexer2)
-
-                Log.d("DISTANCE FOR Enemies", "$x - $y")
-
-                DBHelperFunctions.spawnEnemy(context, enemy)
+        if(addNewRecords) {
+            for (enemy in 1..num) {
+                val newEnemy = generateEnemy(x, y)
+                val radius = 0.0040
+                Log.d("DISTANCE - Spawning", "STARTED")
+                if((isPointInCircle(newEnemy[2].toDouble(), newEnemy[3].toDouble(), oldX, oldY, radius)) and !recreate) {
+                    Log.d("DISTANCE - Spawning", "IN CIRCLE")
+                    continue
+                }
+                Log.d("DISTANCE - Spawning", "TRUE")
+                DBHelperFunctions.spawnEnemy(context, newEnemy)
             }
         }
+
 
         // Database reading TEST
         val cursor: Cursor =
@@ -125,7 +267,6 @@ class EnemiesLoader(context: Context, specialSpawn:Boolean = false) {
                 )
             } while (cursor.moveToNext())
         } else Log.d("mLog", "0 rows")
-
         cursor.close()
 
         // Load enemy classes

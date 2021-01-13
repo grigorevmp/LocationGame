@@ -8,8 +8,8 @@ import com.mikhailgrigorev.game.core.data.NatureForcesValues
 import com.mikhailgrigorev.game.core.ecs.Entity
 
 class Enemy(context: Context,
-            _x : Float,
-            _y: Float,
+            _x : Double,
+            _y: Double,
             _size: Float,
             _id: Int,
             _health: Int,

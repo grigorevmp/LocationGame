@@ -108,8 +108,8 @@ class Game(context: Context?, gameThreadName: String = "GameThread"): SurfaceVie
         val nameEnemy = dialog.findViewById(R.id.name) as TextView
         val enemiesIds = DBHelperFunctions.loadEnemyIDByXY(
             context,
-            objPositionComponent.x.toInt(),
-            objPositionComponent.y.toInt()
+            objPositionComponent.x,
+            objPositionComponent.y
         )
 
         if (enemyMultiple == 0) {
